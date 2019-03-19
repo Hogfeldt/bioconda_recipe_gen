@@ -1,2 +1,17 @@
 # bioconda_recipe_gen
 Recipe generator for Bioconda
+
+## Getting Started
+### Prerequisites
+You need to install conda on your computer. This can be downloaded from: https://docs.conda.io/en/latest/miniconda.html
+
+### Setup
+After if have cloned this repo (bioconda_recipe_gen):
+* cd into bioconda_recipe_gen, and clone the [bioconda-recipes](https://github.com/bioconda/bioconda-recipes.git) repo 
+* Create a new conda environement with the following command: conda create -n bioconda_recipe_gen python=3.6
+* Open the environment with: conda activate bioconda_recipe_gen
+* Set channels:
+	* conda config --add channels conda-forge
+	* conda config --add channels bioconda
+* Install bioconda-utils: conda install bioconda-utils
+* You can now run the script: python3 bioconda_recipe_gen.py
