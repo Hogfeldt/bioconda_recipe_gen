@@ -13,5 +13,5 @@ After if have cloned this repo (bioconda_recipe_gen):
 * Set channels:
 	* conda config --add channels conda-forge
 	* conda config --add channels bioconda
-* Install bioconda-utils: conda install bioconda-utils
+* Install bioconda-utils: conda install bioconda-utils=0.15.10
 * You can now run the script: python3 bioconda_recipe_gen.py
