@@ -43,8 +43,8 @@ def main():
     os.mkdir(path)
 
     # Copy recipe to into Bioconda
-    copyfile("./recipes/meta.yaml", path + "/meta.yaml")
-    copyfile("./recipes/build.sh", path + "/build.sh")
+    copyfile("../recipes/meta.yaml", path + "/meta.yaml")
+    copyfile("../recipes/build.sh", path + "/build.sh")
 
     proc = bioconda_utils_build(name, wd)
     print("return code: " + str(proc.returncode) + "\n")
