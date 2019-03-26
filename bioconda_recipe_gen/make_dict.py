@@ -1,20 +1,20 @@
 import jinja2
-from ruamel import yaml
+import ruamel_yaml
 import re
 import os
 
 
 def make_meta_file_from_dict(recipe_dict, path_to_meta_file):
     with open(path_to_meta_file, "w") as meta_file:
-        yaml.round_trip_dump(recipe_dict, meta_file)
+        ruamel_yaml.round_trip_dump(recipe_dict, meta_file)
 
 
 def make_dict_from_meta_file(path):
     try:
-        document = dynamic_jinja_to_static_yaml(path)
-        return yaml.safe_load(document)
-    except yaml.YAMLError as exc:
-        print("Couldn't create a dictionary from the meta.yaml. Error: {}".format(exc))
+        document = dynamic_jinja_to_static_ruamel_yaml(path)
+        return ruamel_yaml.safe_load(document)
+    except ruamel_yaml.YAMLError as exc:
+        print("Couldn't create a dictionary from the meta.ruamel_yaml. Error: {}".format(exc))
 
 
 def convert_line(line, jinja_configs):
@@ -30,7 +30,7 @@ def convert_line(line, jinja_configs):
         line = line.replace("{%", "#%")
         line = line.replace("%}", "%#")
 
-    # remove conda's own 'compiler' syntax (that the yaml parser wont accept)
+    # remove conda's own 'compiler' syntax (that the ruamel_yaml parser wont accept)
     # TODO: This code is reuse from some older code. Seems like there were a bug with the 'result' not being used
     if "{{" in line:
         result = re.search('{{ compiler(.*)}}', line)
@@ -40,7 +40,7 @@ def convert_line(line, jinja_configs):
 
 
 def convert_jinja_syntax(file_to_convert):
-    """ Converts the jinja syntax in a yaml file,
+    """ Converts the jinja syntax in a ruamel_yaml file,
     into a syntax that can be used by ruamel"""
 
     new_file = ""
@@ -58,14 +58,14 @@ def convert_jinja_syntax(file_to_convert):
         fp.write(new_file)
     
 
-def dynamic_jinja_to_static_yaml(filename):
-    tmp_file = 'tmp.yaml'
+def dynamic_jinja_to_static_ruamel_yaml(filename):
+    tmp_file = 'tmp.ruamel_yaml'
 
     convert_jinja_syntax(filename)
     
-    data = yaml.round_trip_load(open(filename))
+    data = ruamel_yaml.round_trip_load(open(filename))
     with open(tmp_file, 'w') as fp:
-        yaml.round_trip_dump(data, fp)
+        ruamel_yaml.round_trip_dump(data, fp)
 
     environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(searchpath='.'),
@@ -75,8 +75,8 @@ def dynamic_jinja_to_static_yaml(filename):
 
     try:
         recipe_dict = environment.get_template(tmp_file).render()
-        os.remove("tmp.yaml")
+        os.remove("tmp.ruamel_yaml")
         return recipe_dict
     except:
-        print("ERROR in dynamic_jinja_to_static_yaml")
+        print("ERROR in dynamic_jinja_to_static_ruamel_yaml")
         return ""
