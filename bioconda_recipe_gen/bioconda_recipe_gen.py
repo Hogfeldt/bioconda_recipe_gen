@@ -5,7 +5,7 @@ from shutil import copyfile, rmtree
 
 from make_dict import make_dict_from_meta_file, make_meta_file_from_dict
 
-
+# TODO: Move this class to its own file. The file could be called something like recipe-handler.py
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
@@ -32,7 +32,8 @@ class Recipe:
 
 
 def return_hello():
-    return 'hello'
+    """ This is a test function for our unittest setup and should be removed when we start using the test setup"""
+    return "hello"
 
 
 def bioconda_utils_build(name, wd):
@@ -81,6 +82,9 @@ def main():
     else:
         print("Build succeded")
         sys.exit(0)
+
+    # TODO: Try to build with with alpine image
+
 
     proc = bioconda_utils_build(name, wd)
     for line in proc.stdout.split("\n"):
