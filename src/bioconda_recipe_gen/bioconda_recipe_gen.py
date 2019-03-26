@@ -41,12 +41,18 @@ def main():
     # Setup variables
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
-    path = "../bioconda-recipes/recipes/" + name
+    path = "bioconda-recipes/recipes/" + name
+
+    project_root = os.path.realpath(__file__).replace(
+        "/src/bioconda_recipe_gen/bioconda_recipe_gen.py", ""
+    )
+    os.chdir(project_root)
+
     os.mkdir(path)
 
     # Copy recipe to into Bioconda
-    copyfile("./recipes/meta.yaml", path + "/meta.yaml")
-    copyfile("./recipes/build.sh", path + "/build.sh")
+    copyfile("src/bioconda_recipe_gen/recipes/meta.yaml", path + "/meta.yaml")
+    copyfile("src/bioconda_recipe_gen/recipes/build.sh", path + "/build.sh")
 
     recipe = Recipe(path + "/meta.yaml")
 
@@ -69,7 +75,7 @@ def main():
 
     # TODO: Try to build with with alpine image
     proc = alpine_build(src)
-    for line in proc.stdout.split('\n'):
+    for line in proc.stdout.split("\n"):
         print(line)
 
     proc = bioconda_utils_build(name)
