@@ -1,5 +1,6 @@
 # Don't track local bioconda-recipe repository
 bioconda-recipes/
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
