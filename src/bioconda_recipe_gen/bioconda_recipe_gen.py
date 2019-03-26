@@ -72,7 +72,7 @@ def main():
     for line in proc.stdout.split('\n'):
         print(line)
 
-    proc = bioconda_utils_build(name, wd)
+    proc = bioconda_utils_build(name)
     for line in proc.stdout.split("\n"):
         print(line)
 
