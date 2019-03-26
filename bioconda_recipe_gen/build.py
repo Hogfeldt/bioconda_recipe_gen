@@ -1,7 +1,7 @@
 import os
 import subprocess
 import tempfile
-import urllib.request 
+import urllib.request
 
 DOCKERFILE_TEMPLATE = """
 FROM alpine:3.7
@@ -45,7 +45,7 @@ def alpine_docker_build():
     """ Run docker build, to make sure the running docker installation has the requires and up to date image """
     with tempfile.TemporaryDirectory() as tmpdir:
         with open("%s/Dockerfile" % tmpdir, "w") as fp:
-            write(DOCKERFILE_TEMPLATE)
+            fp.write(DOCKERFILE_TEMPLATE)
         cmd = ["docker", "build", "--tag=alpine-buildenv", tmpdir]
         proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     if proc.returncode != 0:
@@ -54,14 +54,43 @@ def alpine_docker_build():
         return True
 
 
+# TODO: this function should probably be moved to some kind of utils file
 def download_and_unpack_source(src, dir_path):
-    if src.split('.')[-2] == 'tar' and src.split('.')[-1] == 'gz':
+    if src.split(".")[-2] == "tar" and src.split(".")[-1] == "gz":
         # TODO: Handle exceptions
-        urllib.request.urlretrieve(src, '%s/source.tar.gz' % dir_path)
-        os.mkdir('%s/source' % dir_path)
-        cmd = ['tar', '-xzf', '%s/source.tar.gz' % dir_path, '-C', '%s/source' % dir_path, '--strip-components=1']
-        subprocess.run(cmd, encoding='utf-8', stdout=subprocess.PIPE)
+        urllib.request.urlretrieve(src, "%s/source.tar.gz" % dir_path)
+        os.mkdir("%s/source" % dir_path)
+        cmd = [
+            "tar",
+            "-xzf",
+            "%s/source.tar.gz" % dir_path,
+            "-C",
+            "%s/source" % dir_path,
+            "--strip-components=1",
+        ]
+        subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
+
+def run_alpine_build(dir_path):
+    cmd = [
+        "docker",
+        "run",
+        "-v",
+        "%s:/package" % dir_path,
+        "--rm",
+        "-ti",
+        "alpine-buildenv",
+        "/bin/sh",
+        "-c",
+        "mkdir build; cd build; cmake ..; make .",
+    ]
+    proc = subprocess.run(['ls',dir_path ], encoding="utf-8", stdout=subprocess.PIPE)
+#    for line in proc.stdout.split('\n'):
+#        print(line)
+    proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+    for line in proc.stdout.split('\n'):
+        print(line)
+    return proc
 
 def alpine_build(src):
     """ Build a bioconda package with an Alpine Docker image and return the standard output 
@@ -73,12 +102,7 @@ def alpine_build(src):
     if alpine_docker_build():
         with tempfile.TemporaryDirectory() as tmpdir:
             download_and_unpack_source(src, tmpdir)
-
-        # on succesfull build: Download the source and unpack
-        # Run the alpine image with acces to the source files
-        # make build directory
-        # run $cmake ..
-        # if succesfull
-        # run $make .
+            proc = run_alpine_build("%s/source" % tmpdir)
+        return proc
     else:
         pass

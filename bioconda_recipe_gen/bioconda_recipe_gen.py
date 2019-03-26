@@ -4,7 +4,7 @@ import sys
 from shutil import copyfile, rmtree
 
 from make_dict import make_dict_from_meta_file, make_meta_file_from_dict
-from build import bioconda_utils_build
+from build import bioconda_utils_build, alpine_build
 
 # TODO: Move this class to its own file. The file could be called something like recipe-handler.py
 class Recipe:
@@ -68,7 +68,9 @@ def main():
         sys.exit(0)
 
     # TODO: Try to build with with alpine image
-
+    proc = alpine_build(src)
+    for line in proc.stdout.split('\n'):
+        print(line)
 
     proc = bioconda_utils_build(name, wd)
     for line in proc.stdout.split("\n"):
