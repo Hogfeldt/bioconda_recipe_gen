@@ -3,22 +3,37 @@ import os
 import sys
 from shutil import copyfile, rmtree
 
+from make_dict import make_dict_from_meta_file, make_meta_file_from_dict
 
-def add_pack_to_host(recipe_path, pack_name):
-    with open(recipe_path, "r") as meta_file:
-        in_file = meta_file.readlines()
 
-    out_file = []
-    for line in in_file:
-        out_file.append(line)
-        if "host" in line:
-            out_file.append("       - " + pack_name)
+class Recipe:
+    """ Represents a meta.yaml recipe file """
 
-    with open(recipe_path, "w") as meta_file:
-        meta_file.writelines(out_file)
+    def __init__(self, path_to_meta_file):
+        self.path_to_meta_file = path_to_meta_file
+
+        self.recipe_dict = make_dict_from_meta_file(path_to_meta_file)
+
+    def write_recipe_to_meta_file(self):
+        """ Writes the current recipe_dict into the meta.yaml file """
+        make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
+
+    def add_requirement(self, pack_name, type_of_requirement):
+        """ Adds a package to the list of requirements in the recipe
+
+        Args:
+            pack_name: Name of the package to add
+            type_of_requirement: Specify were you want to add the package "host", "build" or "run"
+        """
+        if self.recipe_dict["requirements"][type_of_requirement]:
+            self.recipe_dict["requirements"][type_of_requirement].append(pack_name)
+        else:
+            self.recipe_dict["requirements"][type_of_requirement] = [pack_name]
+
 
 def return_hello():
     return 'hello'
+
 
 def bioconda_utils_build(name, wd):
     os.chdir("../bioconda-recipes")
@@ -48,6 +63,8 @@ def main():
     copyfile("./recipes/meta.yaml", path + "/meta.yaml")
     copyfile("./recipes/build.sh", path + "/build.sh")
 
+    recipe = Recipe(path + "/meta.yaml")
+
     proc = bioconda_utils_build(name, wd)
     print("return code: " + str(proc.returncode) + "\n")
     if proc.returncode != 0:
@@ -57,7 +74,10 @@ def main():
             if "missing" in line_norma:
                 print(line_norma)
                 if "hdf5" in line_norma:
-                    add_pack_to_host(path + "/meta.yaml", "hdf5")
+                    recipe.add_requirement("hdf5", "host")
+
+        # after new requirements are added: write new recipe to meta.yaml
+        recipe.write_recipe_to_meta_file()
     else:
         print("Build succeded")
         sys.exit(0)
