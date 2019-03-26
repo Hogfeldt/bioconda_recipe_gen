@@ -56,6 +56,7 @@ def alpine_docker_build(tmpdir):
 # TODO: this function should probably be moved to some kind of utils file
 def download_and_unpack_source(src, dir_path):
     """ Download a source file and unpack it """
+    # TODO: should probably chech with endswith() instead
     if src.split(".")[-2] == "tar" and src.split(".")[-1] == "gz":
         # TODO: Handle exceptions
         urllib.request.urlretrieve(src, "%s/source.tar.gz" % dir_path)
