@@ -3,7 +3,7 @@ import os
 import sys
 from shutil import copyfile, rmtree
 
-from make_dict import make_dict_from_meta_file, make_meta_file_from_dict
+from . import make_dict
 
 
 class Recipe:
@@ -11,12 +11,11 @@ class Recipe:
 
     def __init__(self, path_to_meta_file):
         self.path_to_meta_file = path_to_meta_file
-
-        self.recipe_dict = make_dict_from_meta_file(path_to_meta_file)
+        self.recipe_dict = make_dict.make_dict_from_meta_file(path_to_meta_file)
 
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
-        make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
+        make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
 
     def add_requirement(self, pack_name, type_of_requirement):
         """ Adds a package to the list of requirements in the recipe
