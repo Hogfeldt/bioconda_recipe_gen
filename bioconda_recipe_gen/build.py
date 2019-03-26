@@ -41,13 +41,13 @@ def bioconda_utils_build(package_name):
     return proc
 
 
-def alpine_docker_build():
+def alpine_docker_build(tmpdir):
     """ Run docker build, to make sure the running docker installation has the requires and up to date image """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        with open("%s/Dockerfile" % tmpdir, "w") as fp:
-            fp.write(DOCKERFILE_TEMPLATE)
-        cmd = ["docker", "build", "--tag=alpine-buildenv", tmpdir]
-        proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+    with open("%s/Dockerfile" % tmpdir, "w") as fp:
+        print('%s\nCOPY ./source /package' % DOCKERFILE_TEMPLATE)
+        fp.write('%s\nCOPY ./source /package' % DOCKERFILE_TEMPLATE)
+    cmd = ["docker", "build", "--tag=alpine-buildenv", tmpdir]
+    proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     if proc.returncode != 0:
         return False
     else:
@@ -71,12 +71,10 @@ def download_and_unpack_source(src, dir_path):
         subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
 
-def run_alpine_build(dir_path):
+def run_alpine_build():
     cmd = [
         "docker",
         "run",
-        "-v",
-        "%s:/package" % dir_path,
         "--rm",
         "-ti",
         "alpine-buildenv",
@@ -84,9 +82,6 @@ def run_alpine_build(dir_path):
         "-c",
         "mkdir build; cd build; cmake ..; make .",
     ]
-    proc = subprocess.run(['ls',dir_path ], encoding="utf-8", stdout=subprocess.PIPE)
-#    for line in proc.stdout.split('\n'):
-#        print(line)
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     for line in proc.stdout.split('\n'):
         print(line)
@@ -99,10 +94,8 @@ def alpine_build(src):
         src: A link to where the source file can be downloaded
     """
     # build alpine image
-    if alpine_docker_build():
-        with tempfile.TemporaryDirectory() as tmpdir:
-            download_and_unpack_source(src, tmpdir)
-            proc = run_alpine_build("%s/source" % tmpdir)
-        return proc
-    else:
-        pass
+    with tempfile.TemporaryDirectory() as tmpdir:
+        download_and_unpack_source(src, tmpdir)
+        alpine_docker_build(tmpdir)
+        proc = run_alpine_build()
+    return proc
