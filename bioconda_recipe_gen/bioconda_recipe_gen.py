@@ -42,7 +42,6 @@ def main():
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
     path = "../bioconda-recipes/recipes/" + name
-    wd = os.getcwd()
     os.mkdir(path)
 
     # Copy recipe to into Bioconda
@@ -51,7 +50,7 @@ def main():
 
     recipe = Recipe(path + "/meta.yaml")
 
-    proc = bioconda_utils_build(name, wd)
+    proc = bioconda_utils_build(name)
     print("return code: " + str(proc.returncode) + "\n")
     if proc.returncode != 0:
         # Check for dependencies
