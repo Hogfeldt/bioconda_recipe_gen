@@ -15,3 +15,8 @@ After if have cloned this repo (bioconda_recipe_gen):
 	* conda config --add channels bioconda
 * Install bioconda-utils: conda install bioconda-utils=0.15.10
 * You can now run the script: python3 bioconda_recipe_gen.py
+
+### How to run the script
+First, run the following command: python3 setup.py develop
+You can now run the program by calling: bioconda-recipe-gen
+And you can run the tests by calling: python3 setup.py test
