@@ -1,0 +1,25 @@
+from . import make_dict
+
+
+class Recipe:
+    """ Represents a meta.yaml recipe file """
+
+    def __init__(self, path_to_meta_file):
+        self.path_to_meta_file = path_to_meta_file
+        self.recipe_dict = make_dict.make_dict_from_meta_file(path_to_meta_file)
+
+    def write_recipe_to_meta_file(self):
+        """ Writes the current recipe_dict into the meta.yaml file """
+        make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
+
+    def add_requirement(self, pack_name, type_of_requirement):
+        """ Adds a package to the list of requirements in the recipe
+
+        Args:
+            pack_name: Name of the package to add
+            type_of_requirement: Specify were you want to add the package "host", "build" or "run"
+        """
+        if self.recipe_dict["requirements"][type_of_requirement]:
+            self.recipe_dict["requirements"][type_of_requirement].append(pack_name)
+        else:
+            self.recipe_dict["requirements"][type_of_requirement] = [pack_name]
