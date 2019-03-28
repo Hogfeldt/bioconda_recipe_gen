@@ -3,6 +3,7 @@ import ruamel_yaml
 import re
 import os
 
+compilers_in_build = set()
 
 def make_meta_file_from_dict(recipe_dict, path_to_meta_file):
     with open(path_to_meta_file, "w") as meta_file:
@@ -12,7 +13,12 @@ def make_meta_file_from_dict(recipe_dict, path_to_meta_file):
 def make_dict_from_meta_file(path):
     try:
         document = dynamic_jinja_to_static_ruamel_yaml(path)
-        return ruamel_yaml.safe_load(document)
+        recipe_dict = ruamel_yaml.safe_load(document)
+        # add compilers to the dict
+        for comp in compilers_in_build:
+            recipe_dict["requirements"]["build"].append(comp)
+        
+        return recipe_dict
     except ruamel_yaml.YAMLError as exc:
         print("Couldn't create a dictionary from the meta.ruamel_yaml. Error: {}".format(exc))
 
@@ -30,12 +36,6 @@ def convert_line(line, jinja_configs):
         line = line.replace("{%", "#%")
         line = line.replace("%}", "%#")
 
-    # remove conda's own 'compiler' syntax (that the ruamel_yaml parser wont accept)
-    # TODO: This code is reuse from some older code. Seems like there were a bug with the 'result' not being used
-    if "{{" in line:
-        result = re.search('{{ compiler(.*)}}', line)
-        line = ""
-
     return line
 
 
@@ -44,7 +44,7 @@ def convert_jinja_syntax(file_to_convert):
     into a syntax that can be used by ruamel"""
 
     new_file = ""
-    jinja_configs = set()
+    jinja_configs = {"compilter"}
 
     with open(file_to_convert, 'r') as fp:
         for line in fp:
@@ -52,7 +52,15 @@ def convert_jinja_syntax(file_to_convert):
                 result = re.search('{% set (.*)=', line)
                 jinja_configs.add(result.group(1).strip())
 
-            new_file += convert_line(line, jinja_configs)
+            converted_line = convert_line(line, jinja_configs)
+            if re.search('{{ compiler(.*)}}', converted_line):
+                # violates jinja2's syntax and is therefore saved
+                # to be added after the dict is made.
+                cleaned_line = converted_line.strip()[2:]
+                compilers_in_build.add(cleaned_line)
+            else:
+                new_file += converted_line
+            
     
     with open(file_to_convert, 'w') as fp:
         fp.write(new_file)
