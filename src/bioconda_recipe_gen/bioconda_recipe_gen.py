@@ -1,5 +1,6 @@
 import os
 import sys
+import argsparse
 from shutil import copyfile, rmtree
 
 from . import build
@@ -12,10 +13,15 @@ def return_hello():
 
 
 def main():
+    parser = argparse.ArgumentParser(description='bioconda-recipe-gen is a tool for automatically generating a bioconda recipe for a given pice of software')
+    parser.add_argument('bioconda_recipe_path', help='Path to your local copy of the bioconda-recipe repository')
+    args = parser.parse_args()
+    bioconda_recipe_path = args.bioconda_recipe_path
+
     # Setup variables
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
-    path = "bioconda-recipes/recipes/" + name
+    path = "%s/%s" % (bioconda_recipe_path, name)
 
     project_root = os.path.realpath(__file__).replace(
         "/src/bioconda_recipe_gen/bioconda_recipe_gen.py", ""
