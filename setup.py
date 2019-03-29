@@ -17,5 +17,6 @@ setup(
     entry_points={
          'console_scripts': ['bioconda-recipe-gen = bioconda_recipe_gen.bioconda_recipe_gen:main'],
     },
+    include_package_data=True,
 )
 

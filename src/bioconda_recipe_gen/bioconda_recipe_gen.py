@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 from shutil import copyfile, rmtree
+import pkg_resources
 
 from . import build
 from . recipe import Recipe
@@ -13,6 +14,7 @@ def return_hello():
 
 
 def main():
+    #TODO: All argument parsing should be moved to a seperate file cli.py see issue #15
     parser = argparse.ArgumentParser(description='bioconda-recipe-gen is a tool for automatically generating a bioconda recipe for a given pice of software')
     parser.add_argument('bioconda_recipe_path', help='Path to your local copy of the bioconda-recipe repository')
     args = parser.parse_args()
@@ -21,22 +23,24 @@ def main():
     # Setup variables
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
-    path = "%s/%s" % (bioconda_recipe_path, name)
-
-    project_root = os.path.realpath(__file__).replace(
-        "/src/bioconda_recipe_gen/bioconda_recipe_gen.py", ""
-    )
-    os.chdir(project_root)
+    path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     os.mkdir(path)
 
     # Copy recipe to into Bioconda
-    copyfile("src/bioconda_recipe_gen/recipes/meta.yaml", path + "/meta.yaml")
-    copyfile("src/bioconda_recipe_gen/recipes/build.sh", path + "/build.sh")
+    resource_package = __name__
+    resource_path = '/'.join(('recipes','meta.yaml'))
+    meta_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open('%s/%s' % (path, 'meta.yaml'), 'wb') as fp:
+        fp.write(meta_template)
+    resource_path = '/'.join(('recipes','build.sh'))
+    build_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open('%s/%s' % (path, 'build.sh'), 'wb') as fp:
+        fp.write(build_template)
 
     recipe = Recipe(path + "/meta.yaml")
 
-    proc = build.bioconda_utils_build(name)
+    proc = build.bioconda_utils_build(name, bioconda_recipe_path)
     for line in proc.stdout.split("\n"):
         print(line)
     print("return code: " + str(proc.returncode) + "\n")
