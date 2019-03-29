@@ -1,6 +1,5 @@
 import os
 import sys
-import argparse
 from shutil import copyfile, rmtree
 import pkg_resources
 
@@ -13,13 +12,7 @@ def return_hello():
     return "hello"
 
 
-def main():
-    #TODO: All argument parsing should be moved to a seperate file cli.py see issue #15
-    parser = argparse.ArgumentParser(description='bioconda-recipe-gen is a tool for automatically generating a bioconda recipe for a given pice of software')
-    parser.add_argument('bioconda_recipe_path', help='Path to your local copy of the bioconda-recipe repository')
-    args = parser.parse_args()
-    bioconda_recipe_path = args.bioconda_recipe_path
-
+def main(bioconda_recipe_path):
     # Setup variables
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
@@ -59,18 +52,14 @@ def main():
         print("Build succeded")
         sys.exit(0)
 
-    # TODO: Try to build with with alpine image
+    # TODO: Try to iterate alpine image build
     proc = build.alpine_build(src)
     for line in proc.stdout.split("\n"):
         print(line)
 
-    proc = build.bioconda_utils_build(name)
+    proc = build.bioconda_utils_build(name, bioconda_recipe_path)
     for line in proc.stdout.split("\n"):
         print(line)
 
     # clean up
     rmtree(path)
-
-
-if __name__ == "__main__":
-    main()
