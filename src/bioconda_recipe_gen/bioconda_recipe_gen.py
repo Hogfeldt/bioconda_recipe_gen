@@ -1,6 +1,6 @@
 import os
 import sys
-import argsparse
+import argparse
 from shutil import copyfile, rmtree
 
 from . import build
