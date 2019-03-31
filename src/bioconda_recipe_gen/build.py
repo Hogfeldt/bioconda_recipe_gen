@@ -20,14 +20,14 @@ WORKDIR /package
 """
 
 
-def bioconda_utils_build(package_name):
+def bioconda_utils_build(package_name, bioconda_recipe_path):
     """ Build a bioconda package with bioconda-utils and return the standard output
     
     Args:
         package_name: Name of the package to build
     """
     wd = os.getcwd()
-    os.chdir("../bioconda-recipes")
+    os.chdir(bioconda_recipe_path)
     cmd = [
         "bioconda-utils",
         "build",

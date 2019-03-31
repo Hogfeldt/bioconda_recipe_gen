@@ -15,7 +15,8 @@ setup(
     test_suite="test",
     install_requires=REQUIRED,
     entry_points={
-         'console_scripts': ['bioconda-recipe-gen = bioconda_recipe_gen.bioconda_recipe_gen:main'],
+         'console_scripts': ['bioconda-recipe-gen = bioconda_recipe_gen.cli:start'],
     },
+    include_package_data=True,
 )
 
