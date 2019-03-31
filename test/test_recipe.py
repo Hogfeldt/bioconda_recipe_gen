@@ -1,11 +1,23 @@
 import unittest
+import shutil
+import filecmp
 from bioconda_recipe_gen.recipe import Recipe
 
 
 class TestRecipeClass(unittest.TestCase):
     def test_initialization_method(self):
-        recipe = Recipe("test/files_for_testing/full_kallisto_recipe.yaml")
-        self.assertEqual("test/files_for_testing/full_kallisto_recipe.yaml", recipe.path_to_meta_file)
+        # Make a copy of the correct recipe file and work on that
+        # (because when loading the file, some modifications happens 
+        # to the meta file that is being read, and we want to keep the
+        # original intact for other tests.)
+        shutil.copy("test/files_for_testing/full_kallisto_recipe.yaml", "test/files_for_testing/temp.yaml")
+
+        # TODO: use self.asserDict instead
+
+        # Loads the full kalliste recipe into a Recipe instance
+        # Then checking if all values has been correctly read into the recipe_dict
+        recipe = Recipe("test/files_for_testing/temp.yaml")
+        self.assertEqual("test/files_for_testing/temp.yaml", recipe.path_to_meta_file)
         self.assertEqual(recipe.recipe_dict["package"]["name"], "kallisto")
         self.assertEqual(recipe.recipe_dict["package"]["version"], "0.45.0")
         self.assertEqual(recipe.recipe_dict["source"]["url"], "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz")
@@ -34,6 +46,31 @@ class TestRecipeClass(unittest.TestCase):
         recipe.add_requirement("GARBAGE", "host")
         correct_recipe = Recipe("test/files_for_testing/kallisto_recipe_with_hdf5.txt")
         self.assertNotEqual(correct_recipe.recipe_dict, recipe.recipe_dict)
+
+    def test_write_recipe_to_meta_file(self):
+        # Make a copy of the correct recipe file and work on that
+        # (because when loading the file, some modifications happens 
+        # to the meta file that is being read, and we want to keep the
+        # original intact for other tests.)
+        shutil.copy("test/files_for_testing/full_kallisto_recipe.yaml", "test/files_for_testing/temp.yaml")
+        
+        # Load file into recipe
+        recipe = Recipe("test/files_for_testing/temp.yaml")
+        
+        # Clean the temp file
+        f = open("test/files_for_testing/temp.yaml", "w")
+        f.close() #may remove??
+        
+        # Write it back to the temp file
+        recipe.write_recipe_to_meta_file()
+        
+        self.assertTrue(filecmp.cmp("test/files_for_testing/temp.yaml", "test/files_for_testing/full_kallisto_recipe.yaml"))
+        
+        
+
+
+
+
 
     # test multiple adds to a recipe
     # test the write to file method - should give a bug because of the
