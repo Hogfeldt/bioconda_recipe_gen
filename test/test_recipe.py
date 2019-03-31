@@ -1,78 +1,72 @@
 import unittest
 import shutil
+import os
 import filecmp
 from bioconda_recipe_gen.recipe import Recipe
 
 
 class TestRecipeClass(unittest.TestCase):
+
+    def setUp(self):
+        self.kallisto_dict = {
+            'package': 
+                {'name': 'kallisto', 
+                'version': '0.45.0'},
+            'source': 
+                {'url': 'https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz', 
+                'sha256': '42cf3949065e286e0a184586e160a909d7660825dbbb25ca350cb1dd82aafa57'}, 
+            'build': 
+                {'number': 0}, 
+            'requirements': 
+                {'build': ['cmake', 'autoconf', 'automake', "{{ compiler('cxx') }}"], 
+                'host': ['hdf5', 'zlib'], 
+                'run': ['hdf5', 'zlib']}, 
+            'test': 
+                {'files': ['t.fa', 't.fq'], 
+                'commands': ['kallisto version']},
+            'about': 
+                {'home': 'http://pachterlab.github.io/kallisto', 
+                'license': 'BSD_2_Clause', 
+                'summary': 'Quantifying abundances of transcripts from RNA-Seq data, or more generally of target sequences using high-throughput sequencing reads.'}, 
+            'extra': 
+                {'identifiers': ['biotools:kallisto', 'doi:10.1038/nbt.3519']}}
+
     def test_initialization_method(self):
-        # Make a copy of the correct recipe file and work on that
-        # (because when loading the file, some modifications happens 
-        # to the meta file that is being read, and we want to keep the
-        # original intact for other tests.)
-        shutil.copy("test/files_for_testing/full_kallisto_recipe.yaml", "test/files_for_testing/temp.yaml")
-
-        # TODO: use self.asserDict instead
-
-        # Loads the full kalliste recipe into a Recipe instance
-        # Then checking if all values has been correctly read into the recipe_dict
-        recipe = Recipe("test/files_for_testing/temp.yaml")
-        self.assertEqual("test/files_for_testing/temp.yaml", recipe.path_to_meta_file)
-        self.assertEqual(recipe.recipe_dict["package"]["name"], "kallisto")
-        self.assertEqual(recipe.recipe_dict["package"]["version"], "0.45.0")
-        self.assertEqual(recipe.recipe_dict["source"]["url"], "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz")
-        self.assertEqual(recipe.recipe_dict["source"]["sha256"], "42cf3949065e286e0a184586e160a909d7660825dbbb25ca350cb1dd82aafa57") 
-        self.assertEqual(recipe.recipe_dict["build"]["number"], 0) 
-        self.assertEqual(recipe.recipe_dict["requirements"]["build"].sort(), ["cmake", "{{ compiler('cxx') }}", "autoconf", "automake"].sort()) 
-        self.assertEqual(recipe.recipe_dict["requirements"]["host"], ["hdf5", "zlib"]) 
-        self.assertEqual(recipe.recipe_dict["requirements"]["run"], ["hdf5", "zlib"]) 
-        self.assertEqual(recipe.recipe_dict["test"]["files"], ["t.fa", "t.fq"]) 
-        self.assertEqual(recipe.recipe_dict["test"]["commands"], ["kallisto version"]) 
-        self.assertEqual(recipe.recipe_dict["about"]["home"], "http://pachterlab.github.io/kallisto") 
-        self.assertEqual(recipe.recipe_dict["about"]["license"], "BSD_2_Clause") 
-        self.assertEqual(recipe.recipe_dict["about"]["summary"], "Quantifying abundances of transcripts from RNA-Seq data, or more generally of target sequences using high-throughput sequencing reads.") 
-        self.assertEqual(recipe.recipe_dict["extra"]["identifiers"], ["biotools:kallisto", "doi:10.1038/nbt.3519"]) 
-
-    def test_add_requirement(self):
-        # This test assumes that the initialization test passes
-        recipe = Recipe("test/files_for_testing/kallisto_recipe_without_hdf5.txt")
-        recipe.add_requirement("hdf5", "host")
-        correct_recipe = Recipe("test/files_for_testing/kallisto_recipe_with_hdf5.txt")
-        self.assertEqual(correct_recipe.recipe_dict, recipe.recipe_dict)
-
-    def test_add_requirement_negative_test(self):
-        # This test assumes that the initialization test passes
-        recipe = Recipe("test/files_for_testing/kallisto_recipe_without_hdf5.txt")
-        recipe.add_requirement("GARBAGE", "host")
-        correct_recipe = Recipe("test/files_for_testing/kallisto_recipe_with_hdf5.txt")
-        self.assertNotEqual(correct_recipe.recipe_dict, recipe.recipe_dict)
+        recipe = Recipe("test/files_for_testing/full_kallisto_recipe.yaml")
+        self.assertDictEqual(recipe.recipe_dict, self.kallisto_dict)
 
     def test_write_recipe_to_meta_file(self):
-        # Make a copy of the correct recipe file and work on that
-        # (because when loading the file, some modifications happens 
-        # to the meta file that is being read, and we want to keep the
-        # original intact for other tests.)
-        shutil.copy("test/files_for_testing/full_kallisto_recipe.yaml", "test/files_for_testing/temp.yaml")
+        temp_file_path = "test/files_for_testing/temp.yaml"
+        kallisto_file_path = "test/files_for_testing/full_kallisto_recipe.yaml" 
+        simple_file_path = "test/files_for_testing/simple_recipe.yaml"
         
-        # Load file into recipe
-        recipe = Recipe("test/files_for_testing/temp.yaml")
+        # making a copy of the simple recipe, to avoid overriding 
+        # the simple recipe when writing to it with write_recipe_to_meta_file
+        shutil.copy(simple_file_path, temp_file_path)
+        recipe = Recipe(temp_file_path)
         
-        # Clean the temp file
-        f = open("test/files_for_testing/temp.yaml", "w")
-        f.close() #may remove??
-        
-        # Write it back to the temp file
+        # override the loaded dict with the kallisto dict that
+        # matches the full_kallisto_recipe.yaml file
+        recipe.recipe_dict = self.kallisto_dict
         recipe.write_recipe_to_meta_file()
+
+        with open(temp_file_path, "r") as temp_file:
+            temp_data = temp_file.read().strip().replace(" ", "").replace("\n", "")
+        with open(kallisto_file_path, "r") as kallisto_file:
+            kallisto_data = kallisto_file.read().replace(" ", "").replace("\n", "")
+    
+        self.assertTrue(temp_data == kallisto_data)
         
-        self.assertTrue(filecmp.cmp("test/files_for_testing/temp.yaml", "test/files_for_testing/full_kallisto_recipe.yaml"))
+        # clean up
+        os.remove(temp_file_path)
+
+    def test_add_requirement(self):
+        recipe = Recipe("test/files_for_testing/full_kallisto_recipe.yaml")
+        self.assertNotIn("newRequirement", recipe.recipe_dict["requirements"]["build"])
+        self.assertNotIn("secNewRequirement", recipe.recipe_dict["requirements"]["build"])
         
-        
+        recipe.add_requirement("newRequirement", "build")
+        self.assertIn("newRequirement", recipe.recipe_dict["requirements"]["build"])
 
-
-
-
-
-    # test multiple adds to a recipe
-    # test the write to file method - should give a bug because of the
-    #   different syntax that we convert to be able to read it. (need to convert back)
-    #   remember to copy the correct recipe into the test folder
+        recipe.add_requirement("secNewRequirement", "build")
+        self.assertIn("secNewRequirement", recipe.recipe_dict["requirements"]["build"])
