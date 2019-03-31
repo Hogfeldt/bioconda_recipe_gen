@@ -5,6 +5,7 @@ import os
 
 compilers_in_build = set()
 
+
 def make_meta_file_from_dict(recipe_dict, path_to_meta_file):
     with open(path_to_meta_file, "w") as meta_file:
         ruamel_yaml.round_trip_dump(recipe_dict, meta_file)
@@ -43,7 +44,7 @@ def convert_jinja_syntax(file_to_convert):
     """ Converts the jinja syntax in a ruamel_yaml file,
     into a syntax that can be used by ruamel"""
 
-    new_file = ""
+    converted_file = ""
     jinja_configs = {"compilter"}
 
     with open(file_to_convert, 'r') as fp:
@@ -59,19 +60,19 @@ def convert_jinja_syntax(file_to_convert):
                 cleaned_line = converted_line.strip()[2:]
                 compilers_in_build.add(cleaned_line)
             else:
-                new_file += converted_line
+                converted_file += converted_line
             
     
-    with open(file_to_convert, 'w') as fp:
-        fp.write(new_file)
-    
+    # with open(file_to_convert, 'w') as fp:
+    #     fp.write(new_file)
+    return converted_file 
 
 def dynamic_jinja_to_static_ruamel_yaml(filename):
     tmp_file = 'tmp.ruamel_yaml'
 
-    convert_jinja_syntax(filename)
+    converted_file_string = convert_jinja_syntax(filename)
     
-    data = ruamel_yaml.round_trip_load(open(filename))
+    data = ruamel_yaml.round_trip_load(converted_file_string) # open(filename)
     with open(tmp_file, 'w') as fp:
         ruamel_yaml.round_trip_dump(data, fp)
 
