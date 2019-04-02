@@ -12,10 +12,6 @@ RUN echo http://dl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
 
 RUN apk add --update \
     bash \
-    g++ \
-    gcc \
-    cmake \
-    make
 
 WORKDIR /package
 """
@@ -42,10 +38,10 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
     return proc
 
 
-def alpine_docker_build(tmpdir, dockerfile):
+def alpine_docker_build(tmpdir, dockerfile, exstras = ''):
     """ Run docker build, to make sure the running docker installation has the requires and up to date image """
     with open("%s/Dockerfile" % tmpdir, "w") as fp:
-        fp.write("%s\nCOPY ./source /package" % dockerfile)
+        fp.write("%s\nCOPY ./source /package %s" % (dockerfile, exstras))
     cmd = ["docker", "build", "--tag=alpine-buildenv", tmpdir]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     if proc.returncode != 0:
@@ -90,7 +86,10 @@ def alpine_iterative_build(src):
         src: A link to where the source file can be downloaded
     """
     dockerfile = DOCKERFILE_TEMPLATE
-    dependencies = []
+    dependencies = ["g++", "gcc", "make", "cmake"]
+    for d in dependencies:
+        dockerfile += "\nRUN apk add --update \ \n    %s" % d
+
     with tempfile.TemporaryDirectory() as tmpdir:
         download_and_unpack_source(src, tmpdir)
         # look for hdf5
@@ -100,7 +99,7 @@ def alpine_iterative_build(src):
             line_normalized = line.lower()
             if "missing" in line_normalized:
                 dockerfile += "\nRUN apk add --update \ \n    hdf5"
-                dependencies.append('hdf5')
+                dependencies.append("hdf5")
         # look for zlib
         alpine_docker_build(tmpdir, dockerfile)
         proc = run_alpine_build()
@@ -108,14 +107,14 @@ def alpine_iterative_build(src):
             line_normalized = line.lower()
             if "missing" in line_normalized:
                 dockerfile += "\nRUN apk add --update \ \n    zlib-dev"
-                dependencies.append('zlib-dev')
+                dependencies.append("zlib-dev")
         # look for autoconf when running make install
         alpine_docker_build(tmpdir, dockerfile)
         proc = run_alpine_build()
         std_out = proc.stdout.lower()
         if "make install failed" in std_out and "autoheader: not found" in std_out:
             dockerfile += "\nRUN apk add --update \ \n    autoconf"
-            dependencies.append('autoconf')
+            dependencies.append("autoconf")
         # look for hdf5-dev when running make install
         alpine_docker_build(tmpdir, dockerfile)
         proc = run_alpine_build()
@@ -126,8 +125,49 @@ def alpine_iterative_build(src):
         ):
             if "hdf5" in dockerfile:
                 dockerfile = dockerfile.replace("hdf5", "hdf5-dev")
-                dependencies.remove('hdf5')
-                dependencies.append('hdf5-dev')
+                dependencies.remove("hdf5")
+                dependencies.append("hdf5-dev")
         alpine_docker_build(tmpdir, dockerfile)
         proc = run_alpine_build()
     return (proc, dependencies)
+
+
+def run_alpine_test(test, deps_to_remove):
+    """ Run docker run and and try the test command """
+    rm_cmd = 'apk del '
+    for d in deps_to_remove:
+        rm_cmd += '%s ' % d
+    cmd = [
+        "docker",
+        "run",
+        "--rm",
+        "-ti",
+        "alpine-buildenv",
+        "/bin/sh",
+        "-c",
+        "%s;%s && echo 'test pass' || echo 'test failed'" % (rm_cmd, test),
+    ]
+    return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+
+
+def alpine_run_test(src, build_dependencies, test):
+    dockerfile = DOCKERFILE_TEMPLATE
+    dependencies = ['g++', 'gcc']
+    deps_to_remove = [d for d in build_dependencies if d != 'gcc' and d != 'g++']
+    docker_exstra = '\nRUN mkdir build; cd build; cmake ..; make .; make install;'
+    for d in build_dependencies:
+        dockerfile += "\nRUN apk add --update \ \n    %s" % d
+    with tempfile.TemporaryDirectory() as tmpdir:
+        download_and_unpack_source(src, tmpdir)
+        # Look for missing hdf5
+        alpine_docker_build(tmpdir, dockerfile, docker_exstra)
+        proc = run_alpine_test(test, deps_to_remove)
+        if 'libhdf5.so' in proc.stdout:
+            docker_exstra += '\nRUN apk add --update hdf5'
+            dependencies.append('hdf5')
+        alpine_docker_build(tmpdir, dockerfile, docker_exstra)
+        proc = run_alpine_test(test, deps_to_remove)
+        if "test pass" in proc.stdout:
+            return (True, dependencies)
+        else:
+            return (False, dependencies)
