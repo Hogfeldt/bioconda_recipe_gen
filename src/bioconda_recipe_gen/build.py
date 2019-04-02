@@ -1,7 +1,8 @@
 import os
 import subprocess
 import tempfile
-import urllib.request
+
+from .utils import download_and_unpack_source
 
 DOCKERFILE_TEMPLATE = """
 FROM alpine:3.7
@@ -51,25 +52,6 @@ def alpine_docker_build(tmpdir):
         return False
     else:
         return True
-
-
-# TODO: this function should probably be moved to some kind of utils file
-def download_and_unpack_source(src, dir_path):
-    """ Download a source file and unpack it """
-    # TODO: should probably chech with endswith() instead
-    if src.split(".")[-2] == "tar" and src.split(".")[-1] == "gz":
-        # TODO: Handle exceptions
-        urllib.request.urlretrieve(src, "%s/source.tar.gz" % dir_path)
-        os.mkdir("%s/source" % dir_path)
-        cmd = [
-            "tar",
-            "-xzf",
-            "%s/source.tar.gz" % dir_path,
-            "-C",
-            "%s/source" % dir_path,
-            "--strip-components=1",
-        ]
-        subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
 
 def run_alpine_build():
