@@ -53,7 +53,7 @@ def main(bioconda_recipe_path):
             sys.exit(0)
 
         # TODO: Try to iterate alpine image build
-        proc = build.alpine_build(src)
+        proc = build.alpine_iterative_build(src)
         for line in proc.stdout.split("\n"):
             print(line)
 
