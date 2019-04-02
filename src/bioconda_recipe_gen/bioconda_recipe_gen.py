@@ -30,36 +30,36 @@ def main(bioconda_recipe_path):
     build_template = pkg_resources.resource_string(resource_package, resource_path)
     with open('%s/%s' % (path, 'build.sh'), 'wb') as fp:
         fp.write(build_template)
+    try:
+        recipe = Recipe(path + "/meta.yaml")
 
-    recipe = Recipe(path + "/meta.yaml")
-
-    proc = build.bioconda_utils_build(name, bioconda_recipe_path)
-    for line in proc.stdout.split("\n"):
-        print(line)
-    print("return code: " + str(proc.returncode) + "\n")
-    if proc.returncode != 0:
-        # Check for dependencies
+        proc = build.bioconda_utils_build(name, bioconda_recipe_path)
         for line in proc.stdout.split("\n"):
-            line_norma = line.lower()
-            if "missing" in line_norma:
-                print(line_norma)
-                if "hdf5" in line_norma:
-                    recipe.add_requirement("hdf5", "host")
+            print(line)
+        print("return code: " + str(proc.returncode) + "\n")
+        if proc.returncode != 0:
+            # Check for dependencies
+            for line in proc.stdout.split("\n"):
+                line_norma = line.lower()
+                if "missing" in line_norma:
+                    print(line_norma)
+                    if "hdf5" in line_norma:
+                        recipe.add_requirement("hdf5", "host")
 
-        # after new requirements are added: write new recipe to meta.yaml
-        recipe.write_recipe_to_meta_file()
-    else:
-        print("Build succeded")
-        sys.exit(0)
+            # after new requirements are added: write new recipe to meta.yaml
+            recipe.write_recipe_to_meta_file()
+        else:
+            print("Build succeded")
+            sys.exit(0)
 
-    # TODO: Try to iterate alpine image build
-    proc = build.alpine_build(src)
-    for line in proc.stdout.split("\n"):
-        print(line)
+        # TODO: Try to iterate alpine image build
+        proc = build.alpine_build(src)
+        for line in proc.stdout.split("\n"):
+            print(line)
 
-    proc = build.bioconda_utils_build(name, bioconda_recipe_path)
-    for line in proc.stdout.split("\n"):
-        print(line)
-
-    # clean up
-    rmtree(path)
+        proc = build.bioconda_utils_build(name, bioconda_recipe_path)
+        for line in proc.stdout.split("\n"):
+            print(line)
+    finally:
+        # clean up
+        rmtree(path)

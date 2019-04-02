@@ -80,6 +80,4 @@ def alpine_build(src):
         download_and_unpack_source(src, tmpdir)
         alpine_docker_build(tmpdir)
         proc = run_alpine_build()
-    for line in proc.stdout.split("\n"):
-        print(line)
     return proc

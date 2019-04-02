@@ -1,5 +1,6 @@
 import urllib.request
 import subprocess
+import os
 
 def download_and_unpack_source(src, dir_path):
     """ Download a source file and unpack it """
