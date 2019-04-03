@@ -40,6 +40,7 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
     return proc
 
 def bioconda_utils_build_setup(bioconda_recipe_path, name):
+    """ Copy build.sh and meta.yaml templates to bioconda-recipes. Return a Recipe object based on the templates. """
     # SETUP
     # Make a new dir in 'bioconda-recipe/recipes'
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
@@ -54,12 +55,12 @@ def bioconda_utils_build_setup(bioconda_recipe_path, name):
     build_template = pkg_resources.resource_string(resource_package, resource_path)
     with open("%s/%s" % (path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-        recipe = Recipe(path + "/meta.yaml")
+    return Recipe(path + "/meta.yaml")
 
 
 def bioconda_utils_iterative_build(bioconda_recipe_path, name):
-    """ Try to build a package with bioconda-utils"""
-    bioconda_utils_build_setup(bioconda_recipe_path, name)
+    """ Try to build a package with bioconda-utils """
+    recipe = bioconda_utils_build_setup(bioconda_recipe_path, name)
     # BUILD
     # Do the iterative build
     dependencies = []
