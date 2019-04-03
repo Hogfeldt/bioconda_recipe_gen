@@ -19,7 +19,5 @@ class Recipe:
             pack_name: Name of the package to add
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
         """
-        if self.recipe_dict["requirements"][type_of_requirement]:
-            self.recipe_dict["requirements"][type_of_requirement].append(pack_name)
-        else:
-            self.recipe_dict["requirements"][type_of_requirement] = [pack_name]
+        curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
+        curr_list.append(pack_name)

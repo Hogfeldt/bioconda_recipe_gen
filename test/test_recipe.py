@@ -61,12 +61,19 @@ class TestRecipeClass(unittest.TestCase):
         os.remove(temp_file_path)
 
     def test_add_requirement(self):
-        recipe = Recipe("test/files_for_testing/full_kallisto_recipe.yaml")
-        self.assertNotIn("newRequirement", recipe.recipe_dict["requirements"]["build"])
-        self.assertNotIn("secNewRequirement", recipe.recipe_dict["requirements"]["build"])
-        
-        recipe.add_requirement("newRequirement", "build")
-        self.assertIn("newRequirement", recipe.recipe_dict["requirements"]["build"])
+        recipe = Recipe("test/files_for_testing/kallisto_recipe_with_hdf5.txt")
+        self.assertListEqual(recipe.recipe_dict["requirements"]["build"], ["cmake", "make"])
+        self.assertListEqual(recipe.recipe_dict["requirements"]["host"], ["hdf5"])
+        self.assertRaises(KeyError, lambda: recipe.recipe_dict["requirements"]["run"])
 
-        recipe.add_requirement("secNewRequirement", "build")
-        self.assertIn("secNewRequirement", recipe.recipe_dict["requirements"]["build"])
+        recipe.add_requirement("firstRequirement", "build")
+        recipe.add_requirement("secRequirement", "build")
+        self.assertListEqual(recipe.recipe_dict["requirements"]["build"], ["cmake", "make", "firstRequirement", "secRequirement"]) 
+
+        recipe.add_requirement("firstRequirement", "host")
+        recipe.add_requirement("secRequirement", "host")
+        self.assertListEqual(recipe.recipe_dict["requirements"]["host"], ["hdf5", "firstRequirement", "secRequirement"])  
+
+        recipe.add_requirement("firstRequirement", "run")
+        recipe.add_requirement("secRequirement", "run")
+        self.assertListEqual(recipe.recipe_dict["requirements"]["run"], ["firstRequirement", "secRequirement"])   
