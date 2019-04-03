@@ -1,8 +1,10 @@
 import os
 import subprocess
 import tempfile
+import pkg_resources
 
 from .utils import download_and_unpack_source
+from .recipe import Recipe
 
 DOCKERFILE_TEMPLATE = """
 FROM alpine:3.7
@@ -37,8 +39,48 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
     os.chdir(wd)
     return proc
 
+def bioconda_utils_build_setup(bioconda_recipe_path, name):
+    # SETUP
+    # Make a new dir in 'bioconda-recipe/recipes'
+    path = "%s/recipes/%s" % (bioconda_recipe_path, name)
+    os.mkdir(path)
+    # Copy recipe to into the new dir
+    resource_package = __name__
+    resource_path = "/".join(("recipes", "meta.yaml"))
+    meta_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open("%s/%s" % (path, "meta.yaml"), "wb") as fp:
+        fp.write(meta_template)
+    resource_path = "/".join(("recipes", "build.sh"))
+    build_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open("%s/%s" % (path, "build.sh"), "wb") as fp:
+        fp.write(build_template)
+        recipe = Recipe(path + "/meta.yaml")
 
-def alpine_docker_build(tmpdir, dockerfile, exstras = ''):
+
+def bioconda_utils_iterative_build(bioconda_recipe_path, name):
+    """ Try to build a package with bioconda-utils"""
+    bioconda_utils_build_setup(bioconda_recipe_path, name)
+    # BUILD
+    # Do the iterative build
+    dependencies = []
+    proc = bioconda_utils_build(name, bioconda_recipe_path)
+    if proc.returncode != 0:
+        # Check for dependencies
+        for line in proc.stdout.split("\n"):
+            line_norma = line.lower()
+            if "missing" in line_norma:
+                print(line_norma)
+                if "hdf5" in line_norma:
+                    recipe.add_requirement("hdf5", "host")
+                    dependencies.append("hdf5")
+
+        # after new requirements are added: write new recipe to meta.yaml
+        recipe.write_recipe_to_meta_file()
+    proc = bioconda_utils_build(name, bioconda_recipe_path)
+    return (proc, dependencies)
+
+
+def alpine_docker_build(tmpdir, dockerfile, exstras=""):
     """ Run docker build, to make sure the running docker installation has the requires and up to date image """
     with open("%s/Dockerfile" % tmpdir, "w") as fp:
         fp.write("%s\nCOPY ./source /package %s" % (dockerfile, exstras))
@@ -134,9 +176,9 @@ def alpine_iterative_build(src):
 
 def run_alpine_test(test, deps_to_remove):
     """ Run docker run and and try the test command """
-    rm_cmd = 'apk del '
+    rm_cmd = "apk del "
     for d in deps_to_remove:
-        rm_cmd += '%s ' % d
+        rm_cmd += "%s " % d
     cmd = [
         "docker",
         "run",
@@ -152,9 +194,9 @@ def run_alpine_test(test, deps_to_remove):
 
 def alpine_run_test(src, build_dependencies, test):
     dockerfile = DOCKERFILE_TEMPLATE
-    dependencies = ['g++', 'gcc']
-    deps_to_remove = [d for d in build_dependencies if d != 'gcc' and d != 'g++']
-    docker_exstra = '\nRUN mkdir build; cd build; cmake ..; make .; make install;'
+    dependencies = ["g++", "gcc"]
+    deps_to_remove = [d for d in build_dependencies if d != "gcc" and d != "g++"]
+    docker_exstra = "\nRUN mkdir build; cd build; cmake ..; make .; make install;"
     for d in build_dependencies:
         dockerfile += "\nRUN apk add --update \ \n    %s" % d
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -162,9 +204,9 @@ def alpine_run_test(src, build_dependencies, test):
         # Look for missing hdf5
         alpine_docker_build(tmpdir, dockerfile, docker_exstra)
         proc = run_alpine_test(test, deps_to_remove)
-        if 'libhdf5.so' in proc.stdout:
-            docker_exstra += '\nRUN apk add --update hdf5'
-            dependencies.append('hdf5')
+        if "libhdf5.so" in proc.stdout:
+            docker_exstra += "\nRUN apk add --update hdf5"
+            dependencies.append("hdf5")
         alpine_docker_build(tmpdir, dockerfile, docker_exstra)
         proc = run_alpine_test(test, deps_to_remove)
         if "test pass" in proc.stdout:
