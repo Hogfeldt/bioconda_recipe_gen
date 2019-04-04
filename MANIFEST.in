@@ -1,2 +1,3 @@
 include src/bioconda_recipe_gen/recipes/*.yaml
 include src/bioconda_recipe_gen/recipes/*.sh
+include src/bioconda_recipe_gen/alpine_to_conda_map.txt
