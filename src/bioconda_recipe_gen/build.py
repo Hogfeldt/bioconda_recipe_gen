@@ -40,6 +40,7 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
 
 
 def bioconda_utils_build_setup(bioconda_recipe_path, name):
+    """ Copy build.sh and meta.yaml templates to bioconda-recipes. Return a Recipe object based on the templates. """
     # SETUP
     # Make a new dir in 'bioconda-recipe/recipes'
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
@@ -58,8 +59,8 @@ def bioconda_utils_build_setup(bioconda_recipe_path, name):
 
 
 def bioconda_utils_iterative_build(bioconda_recipe_path, name):
-    """ Try to build a package with bioconda-utils"""
-    bioconda_utils_build_setup(bioconda_recipe_path, name)
+    """ Try to build a package with bioconda-utils """
+    recipe = bioconda_utils_build_setup(bioconda_recipe_path, name)
     # BUILD
     # Do the iterative build
     dependencies = []
