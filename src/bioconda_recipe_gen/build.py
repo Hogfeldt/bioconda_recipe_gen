@@ -4,6 +4,7 @@ import tempfile
 import pkg_resources
 
 from .utils import download_and_unpack_source
+from .recipe import Recipe
 
 DOCKERFILE_TEMPLATE = """
 FROM alpine:3.7
@@ -55,7 +56,8 @@ def bioconda_utils_build_setup(bioconda_recipe_path, name):
     build_template = pkg_resources.resource_string(resource_package, resource_path)
     with open("%s/%s" % (path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-        #recipe = Recipe(path + "/meta.yaml")
+    
+    return Recipe(path + "/meta.yaml")
 
 
 def bioconda_utils_iterative_build(bioconda_recipe_path, name):
@@ -65,6 +67,7 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     # Do the iterative build
     dependencies = []
     proc = bioconda_utils_build(name, bioconda_recipe_path)
+
     if proc.returncode != 0:
         # Check for dependencies
         for line in proc.stdout.split("\n"):
@@ -72,11 +75,11 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
             if "missing" in line_norma:
                 print(line_norma)
                 if "hdf5" in line_norma:
-                    #recipe.add_requirement("hdf5", "host")
+                    recipe.add_requirement("hdf5", "host")
                     dependencies.append("hdf5")
 
         # after new requirements are added: write new recipe to meta.yaml
-        #recipe.write_recipe_to_meta_file()
+        recipe.write_recipe_to_meta_file()
     proc = bioconda_utils_build(name, bioconda_recipe_path)
     return (proc, dependencies)
 
@@ -172,6 +175,7 @@ def alpine_iterative_build(src):
                 dependencies.append("hdf5-dev")
         alpine_docker_build(tmpdir, dockerfile)
         proc = run_alpine_build()
+    
     return (proc, dependencies)
 
 

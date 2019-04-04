@@ -21,19 +21,24 @@ def main(bioconda_recipe_path):
 
     try:
         bioconda_proc, bioconda_dependencies = build.bioconda_utils_iterative_build(bioconda_recipe_path, name)
-
+        print("bioconda_proc return code:", bioconda_proc.returncode)
+        for line in bioconda_proc.stdout.split("\n"):
+            print(line) 
+        
         # TODO: Try to iterate alpine image build
         alpine_proc, alpine_build_dependencies = build.alpine_iterative_build(src)
+        print("alpine_proc return code:", alpine_proc.returncode)
         for line in alpine_proc.stdout.split("\n"):
             print(line)
 
-        alpine_run_proc, alpine_run_dependencies = build.alpine_run_test(src, alpine_build_dependencies, "kallisto --version")
+        alpine_run_proc, alpine_run_dependencies = build.alpine_run_test(src, alpine_build_dependencies, "kallisto version")
         print("Alpine_run_proc:", alpine_run_proc)
 
         # Create recipe from the dependencies
         recipe = Recipe(path + "/meta.yaml")
 
         for dep in bioconda_dependencies:
+            recipe.add_requirement(dep, "host")
             recipe.add_requirement(dep, "host")
 
         for dep in alpine_build_dependencies:
