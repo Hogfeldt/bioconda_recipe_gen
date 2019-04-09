@@ -20,4 +20,5 @@ class Recipe:
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
         """
         curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
-        curr_list.append(pack_name)
+        if pack_name not in curr_list:
+            curr_list.append(pack_name)

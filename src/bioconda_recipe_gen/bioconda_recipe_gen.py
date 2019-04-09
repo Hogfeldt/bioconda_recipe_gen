@@ -39,7 +39,7 @@ def main(bioconda_recipe_path):
 
         for dep in bioconda_dependencies:
             recipe.add_requirement(dep, "host")
-            recipe.add_requirement(dep, "host")
+            recipe.add_requirement(dep, "build")
 
         for dep in alpine_build_dependencies:
             conda_pkg_name = utils.map_alpine_pkg_to_conda_pkg(dep)
