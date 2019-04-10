@@ -83,6 +83,20 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     proc = bioconda_utils_build(name, bioconda_recipe_path)
     return (proc, dependencies)
 
+def mini_build_setup(name):
+    """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
+    path = "./%s" % name
+    os.mkdir(path)
+    resource_package = __name__
+    resource_path = "/".join(("recipes", "meta.yaml"))
+    meta_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open("%s/%s" % (path, "meta.yaml"), "wb") as fp:
+        fp.write(meta_template)
+    resource_path = "/".join(("recipes", "build.sh"))
+    build_template = pkg_resources.resource_string(resource_package, resource_path)
+    with open("%s/%s" % (path, "build.sh"), "wb") as fp:
+        fp.write(build_template)
+    return Recipe(path + "/meta.yaml")
 
 def mini_docker_build(tmpdir):
     """ Run docker build, to make sure that the running docker installation has the required and up to date image """
@@ -98,17 +112,16 @@ def mini_docker_build(tmpdir):
         return True
 
 
-def run_alpine_build():
-    """ Run docker run and build the package in a docker Alpine image"""
+def run_mini_build(name):
+    """ Run docker run and build the package in a docker mini image"""
     cmd = [
         "docker",
         "run",
+        '-v',
+        './%s:/home' % name,
         "--rm",
         "-ti",
-        "alpine-buildenv",
-        "/bin/sh",
-        "-c",
-        "mkdir build; cd build; cmake .. && echo 'cmake pass' || echo 'cmake failed'; make . && echo 'make pass' || echo 'make failed'; make install && echo 'make install pass' || echo 'make install failed'",
+        "mini-buildenv",
     ]
     return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
