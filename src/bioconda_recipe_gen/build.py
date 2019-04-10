@@ -2,6 +2,7 @@ import os
 import subprocess
 import tempfile
 import pkg_resources
+from shutil import rmtree
 
 from .utils import download_and_unpack_source
 from .recipe import Recipe
@@ -98,30 +99,35 @@ def mini_build_setup(name):
         fp.write(build_template)
     return Recipe(path + "/meta.yaml")
 
-def mini_docker_build(tmpdir):
+def mini_docker_build():
     """ Run docker build, to make sure that the running docker installation has the required and up to date image """
-    resource_path = "/".join(("containers", "Dockerfile"))
-    dockerfile = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (path, "Dockerfile"), "wb") as fp:
-        fp.write(dockerfile)
-    cmd = ["docker", "build", "--tag=mini-buildenv", tmpdir]
-    proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
-    if proc.returncode != 0:
-        return False
-    else:
-        return True
+    with tempfile.TemporaryDirectory() as tmpdir:
+        resource_path = "/".join(("containers", "Dockerfile"))
+        dockerfile = pkg_resources.resource_string(__name__, resource_path)
+        with open("%s/%s" % (tmpdir, "Dockerfile"), "wb") as fp:
+            fp.write(dockerfile)
+        cmd = ["docker", "build", "--tag=mini-buildenv", tmpdir]
+        proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+        if proc.returncode != 0:
+            return False
+        else:
+            return True
 
 
 def run_mini_build(name):
     """ Run docker run and build the package in a docker mini image"""
+    path = "%s/%s" % (os.getcwd(), name)
     cmd = [
         "docker",
         "run",
         '-v',
-        './%s:/home' % name,
+        '%s:/home' % path,
         "--rm",
         "-ti",
         "mini-buildenv",
+        '/bin/sh',
+        '-c',
+        'conda build /home'
     ]
     return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
@@ -138,6 +144,37 @@ def alpine_build(src):
         proc = run_alpine_build()
     return proc
 
+def mini_iterative_build():
+    """ Build a bioconda package with a Docker mini image and try to find missing packages,
+        return a tupple with the last standard output and a list of found dependencies.
+    
+    Args:
+        src: A link to where the source file can be downloaded
+    """
+    try:
+        name = 'kallisto2'
+        mini_docker_build()
+        print("build done")
+        recipe = mini_build_setup(name)
+        print('mini setup done')
+        proc = run_mini_build(name)
+        for line in proc.stdout.split("\n"):
+            line_normalized = line.lower()
+            if "autoreconf: command not found" in line_normalized:
+                recipe.add_requirement('autoconf', 'build')
+        recipe.write_recipe_to_meta_file()
+        print('first iteration done')
+        proc = run_mini_build(name)
+        for line in proc.stdout.split("\n"):
+            line_normalized = line.lower()
+            if "autoreconf: failed to run aclocal" in line_normalized:
+                recipe.add_requirement('automake', 'build')
+        recipe.write_recipe_to_meta_file()
+        print('second iteration done')
+        proc = run_mini_build(name)
+        return proc
+    finally:
+        rmtree('./%s' % name)
 
 def alpine_iterative_build(src):
     """ Build a bioconda package with an Alpine Docker image and try to find missing packages,
