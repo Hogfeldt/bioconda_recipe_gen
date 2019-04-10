@@ -84,11 +84,13 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     return (proc, dependencies)
 
 
-def alpine_docker_build(tmpdir, dockerfile, exstras=""):
-    """ Run docker build, to make sure the running docker installation has the requires and up to date image """
-    with open("%s/Dockerfile" % tmpdir, "w") as fp:
-        fp.write("%s\nCOPY ./source /package %s" % (dockerfile, exstras))
-    cmd = ["docker", "build", "--tag=alpine-buildenv", tmpdir]
+def mini_docker_build(tmpdir):
+    """ Run docker build, to make sure that the running docker installation has the required and up to date image """
+    resource_path = "/".join(("containers", "Dockerfile"))
+    dockerfile = pkg_resources.resource_string(__name__, resource_path)
+    with open("%s/%s" % (path, "Dockerfile"), "wb") as fp:
+        fp.write(dockerfile)
+    cmd = ["docker", "build", "--tag=mini-buildenv", tmpdir]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     if proc.returncode != 0:
         return False
