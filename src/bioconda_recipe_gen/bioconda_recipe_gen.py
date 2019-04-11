@@ -20,49 +20,17 @@ def main(bioconda_recipe_path):
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
-        bioconda_proc, bioconda_dependencies = build.bioconda_utils_iterative_build(bioconda_recipe_path, name)
-        print("bioconda_proc return code:", bioconda_proc.returncode)
-        for line in bioconda_proc.stdout.split("\n"):
-            print(line) 
-        
-        # TODO: Try to iterate alpine image build
-        alpine_proc, alpine_build_dependencies = build.alpine_iterative_build(src)
-        print("alpine_proc return code:", alpine_proc.returncode)
-        for line in alpine_proc.stdout.split("\n"):
+        mini_proc = build.mini_iterative_build(name)
+        print("mini_proc return code:", mini_proc.returncode)
+        for line in mini_proc.stdout.split("\n"):
             print(line)
-
-        alpine_run_proc, alpine_run_dependencies = build.alpine_run_test(src, alpine_build_dependencies, "kallisto version")
-        print("Alpine_run_proc:", alpine_run_proc)
-
-        # Create recipe from the dependencies
-        recipe = Recipe(path + "/meta.yaml")
-
-        for dep in bioconda_dependencies:
-            recipe.add_requirement(dep, "host")
-            recipe.add_requirement(dep, "build")
-
-        for dep in alpine_build_dependencies:
-            conda_pkg_name = utils.map_alpine_pkg_to_conda_pkg(dep)
-            if conda_pkg_name is None:
-                print("ERROR: couldn't find an equivalent conda package to %s" % dep)
-                continue
-            # TODO: how do we know which type of requirement it is?
-            recipe.add_requirement(conda_pkg_name, "host")
-            recipe.add_requirement(conda_pkg_name, "build")
-
-        for dep in alpine_run_dependencies:
-            conda_pkg_name = utils.map_alpine_pkg_to_conda_pkg(dep)
-            if conda_pkg_name is None:
-                print("ERROR: couldn't find an equivalent conda package to %s" % dep)
-                continue
-            recipe.add_requirement(conda_pkg_name, "run") 
-        
-        recipe.write_recipe_to_meta_file()
 
         # Sanity check
-        proc = build.bioconda_utils_build(name, bioconda_recipe_path)
-        for line in proc.stdout.split("\n"):
-            print(line)
+        success = build.mini_sanity_check(bioconda_recipe_path, name)
+        if success:
+            print("SUCCESS: Package was successfully build")
+        else:
+            print("ERROR: Didn't pass the sanity check!")
 
         # copy the final recipe into the current directory
         copyfile(path + "/meta.yaml", "./meta.yaml")
@@ -70,3 +38,4 @@ def main(bioconda_recipe_path):
     finally:
         # clean up
         rmtree(path)
+        rmtree('./%s' % name)
