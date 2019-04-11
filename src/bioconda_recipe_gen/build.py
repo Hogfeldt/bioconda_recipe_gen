@@ -88,13 +88,12 @@ def mini_build_setup(name):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     path = "./%s" % name
     os.mkdir(path)
-    resource_package = __name__
     resource_path = "/".join(("recipes", "meta.yaml"))
-    meta_template = pkg_resources.resource_string(resource_package, resource_path)
+    meta_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (path, "meta.yaml"), "wb") as fp:
         fp.write(meta_template)
     resource_path = "/".join(("recipes", "build.sh"))
-    build_template = pkg_resources.resource_string(resource_package, resource_path)
+    build_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (path, "build.sh"), "wb") as fp:
         fp.write(build_template)
     return Recipe(path + "/meta.yaml")
@@ -131,6 +130,79 @@ def run_mini_build(name):
     ]
     return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
+def mini_iterative_build(name):
+    """ Build a bioconda package with a Docker mini image and try to find missing packages,
+        return a tupple with the last standard output and a list of found dependencies.
+    
+    Args:
+        src: A link to where the source file can be downloaded
+    """
+    
+    mini_docker_build()
+    print("build done")
+    recipe = mini_build_setup(name)
+    print('mini setup done')
+    
+    proc = run_mini_build(name)
+    for line in proc.stdout.split("\n"):
+        line_normalized = line.lower()
+        if "autoreconf: command not found" in line_normalized:
+            recipe.add_requirement('autoconf', 'build')
+    recipe.write_recipe_to_meta_file()
+    print('first iteration done')
+    
+    proc = run_mini_build(name)
+    for line in proc.stdout.split("\n"):
+        line_normalized = line.lower()
+        if "autoreconf: failed to run aclocal" in line_normalized:
+            recipe.add_requirement('automake', 'build')
+    recipe.write_recipe_to_meta_file()
+    print('second iteration done')
+    
+    proc = run_mini_build(name)
+    for line in proc.stdout.split("\n"):
+        line_normalized = line.lower()
+        if "could not find hdf5" in line_normalized:
+            recipe.add_requirement('hdf5', 'host')
+            # adds hdf5 to host. We still need to find a way to add hdf5 to run
+    recipe.write_recipe_to_meta_file()
+    print('third iteration done')
+
+    proc  = run_mini_build(name)
+    for line in proc.stdout.split("\n"):
+        line_normalized = line.lower()
+        if "ar: command not found" in line_normalized:
+            recipe.add_requirement('binutils', 'host')
+    recipe.write_recipe_to_meta_file()
+    print('fourth iteration done')
+    
+    proc  = run_mini_build(name) 
+    return proc
+
+
+def mini_sanity_check(bioconda_recipe_path, name):
+    """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
+    recipes_kallisto_path = "%s/recipes/%s/" % (bioconda_recipe_path, name)
+    os.mkdir(recipes_kallisto_path)
+    current_recipe_path = "%s/%s/" % (os.getcwd(), name)
+
+    # Copy meta.yaml and build.sh into bioconda-recipes/recipes/name_of_pkg    
+    with open(current_recipe_path + "meta.yaml", "r") as f:
+        curr_meta = f.read()
+    with open(recipes_kallisto_path + "meta.yaml", "w") as f:
+        f.write(curr_meta)
+    
+    with open(current_recipe_path + "build.sh", "r") as f:
+        curr_build = f.read()
+    with open(recipes_kallisto_path + "build.sh", "w") as f:
+        f.write(curr_build) 
+    
+    # Try to build the package
+    proc = bioconda_utils_build(name, bioconda_recipe_path)
+    if proc.returncode == 0:
+        return True
+    else: 
+        return False
 
 def alpine_build(src):
     """ Build a bioconda package with an Alpine Docker image and return the standard output 
@@ -144,49 +216,6 @@ def alpine_build(src):
         proc = run_alpine_build()
     return proc
 
-def mini_iterative_build():
-    """ Build a bioconda package with a Docker mini image and try to find missing packages,
-        return a tupple with the last standard output and a list of found dependencies.
-    
-    Args:
-        src: A link to where the source file can be downloaded
-    """
-    try:
-        name = 'kallisto2'
-        mini_docker_build()
-        print("build done")
-        recipe = mini_build_setup(name)
-        print('mini setup done')
-        
-        proc = run_mini_build(name)
-        for line in proc.stdout.split("\n"):
-            line_normalized = line.lower()
-            if "autoreconf: command not found" in line_normalized:
-                recipe.add_requirement('autoconf', 'build')
-        recipe.write_recipe_to_meta_file()
-        print('first iteration done')
-        
-        proc = run_mini_build(name)
-        for line in proc.stdout.split("\n"):
-            line_normalized = line.lower()
-            if "autoreconf: failed to run aclocal" in line_normalized:
-                recipe.add_requirement('automake', 'build')
-        recipe.write_recipe_to_meta_file()
-        print('second iteration done')
-        
-        proc = run_mini_build(name)
-        for line in proc.stdout.split("\n"):
-            line_normalized = line.lower()
-            if "could not find hdf5" in line_normalized:
-                recipe.add_requirement('hdf5', 'host')
-                # adds hdf5 to host. We still need to find a way to add hdf5 to run
-        recipe.write_recipe_to_meta_file()
-        print('third iteration done')
-
-        proc  = run_mini_build(name)
-        return proc
-    finally:
-        rmtree('./%s' % name)
 
 def alpine_iterative_build(src):
     """ Build a bioconda package with an Alpine Docker image and try to find missing packages,
