@@ -157,6 +157,7 @@ def mini_iterative_build():
         print("build done")
         recipe = mini_build_setup(name)
         print('mini setup done')
+        
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
@@ -164,6 +165,7 @@ def mini_iterative_build():
                 recipe.add_requirement('autoconf', 'build')
         recipe.write_recipe_to_meta_file()
         print('first iteration done')
+        
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
@@ -171,7 +173,17 @@ def mini_iterative_build():
                 recipe.add_requirement('automake', 'build')
         recipe.write_recipe_to_meta_file()
         print('second iteration done')
+        
         proc = run_mini_build(name)
+        for line in proc.stdout.split("\n"):
+            line_normalized = line.lower()
+            if "could not find hdf5" in line_normalized:
+                recipe.add_requirement('hdf5', 'host')
+                # adds hdf5 to host. We still need to find a way to add hdf5 to run
+        recipe.write_recipe_to_meta_file()
+        print('third iteration done')
+
+        proc  = run_mini_build(name)
         return proc
     finally:
         rmtree('./%s' % name)
