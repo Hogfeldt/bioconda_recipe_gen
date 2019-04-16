@@ -116,7 +116,7 @@ def run_mini_build(name):
         "mini-buildenv",
         "/bin/sh",
         "-c",
-        "conda build /home",
+        "conda build --build-only /home",
     ]
     return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
 
