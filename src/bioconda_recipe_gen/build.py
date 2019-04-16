@@ -7,18 +7,6 @@ from shutil import rmtree
 from .utils import download_and_unpack_source
 from .recipe import Recipe
 
-DOCKERFILE_TEMPLATE = """
-FROM alpine:3.7
-
-RUN echo http://dl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-#RUN echo http://dl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
-
-RUN apk add --update \
-    bash \
-
-WORKDIR /package
-"""
-
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
     """ Build a bioconda package with bioconda-utils and return the standard output
@@ -148,12 +136,12 @@ def mini_iterative_build(name):
 
     # TODO: find a better stop condition
     c = 0
-    while c != 4:
+    while c != 5:
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
-            if "autoheader: not found" in line_normalized:
+            if "autoheader: not found" in line_normalized:  # only occures when minimal build.sh for kallisto is used
                 recipe.add_requirement("autoconf", "build")
             if "autoreconf: command not found" in line_normalized:
                 recipe.add_requirement("autoconf", "build")
@@ -161,9 +149,8 @@ def mini_iterative_build(name):
                 recipe.add_requirement("automake", "build")
             if "could not find hdf5" in line_normalized:
                 recipe.add_requirement("hdf5", "host")
-                # adds hdf5 to host. We still need to find a way to add hdf5 to run
-            if "ar: command not found" in line_normalized:
-                recipe.add_requirement("binutils", "host")
+            if "['zlib'] not in reqs/run" in line_normalized:
+                recipe.add_requirement("zlib", "run")
         recipe.write_recipe_to_meta_file()
         c += 1
         print("%s iteration" % c)
@@ -194,74 +181,6 @@ def mini_sanity_check(bioconda_recipe_path, name):
         return True
     else:
         return False
-
-
-def alpine_build(src):
-    """ Build a bioconda package with an Alpine Docker image and return the standard output 
-    
-    Args:
-        src: A link to where the source file can be downloaded
-    """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        download_and_unpack_source(src, tmpdir)
-        alpine_docker_build(tmpdir, DOCKERFILE_TEMPLATE)
-        proc = run_alpine_build()
-    return proc
-
-
-def alpine_iterative_build(src):
-    """ Build a bioconda package with an Alpine Docker image and try to find missing packages,
-        return a tupple with the last standard output and a list of found dependencies.
-    
-    Args:
-        src: A link to where the source file can be downloaded
-    """
-    dockerfile = DOCKERFILE_TEMPLATE
-    dependencies = ["g++", "gcc", "make", "cmake"]
-    for d in dependencies:
-        dockerfile += "\nRUN apk add --update \ \n    %s" % d
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        download_and_unpack_source(src, tmpdir)
-        # look for hdf5
-        alpine_docker_build(tmpdir, dockerfile)
-        proc = run_alpine_build()
-        for line in proc.stdout.split("\n"):
-            line_normalized = line.lower()
-            if "missing" in line_normalized:
-                dockerfile += "\nRUN apk add --update \ \n    hdf5"
-                dependencies.append("hdf5")
-        # look for zlib
-        alpine_docker_build(tmpdir, dockerfile)
-        proc = run_alpine_build()
-        for line in proc.stdout.split("\n"):
-            line_normalized = line.lower()
-            if "missing" in line_normalized:
-                dockerfile += "\nRUN apk add --update \ \n    zlib-dev"
-                dependencies.append("zlib-dev")
-        # look for autoconf when running make install
-        alpine_docker_build(tmpdir, dockerfile)
-        proc = run_alpine_build()
-        std_out = proc.stdout.lower()
-        if "make install failed" in std_out and "autoheader: not found" in std_out:
-            dockerfile += "\nRUN apk add --update \ \n    autoconf"
-            dependencies.append("autoconf")
-        # look for hdf5-dev when running make install
-        alpine_docker_build(tmpdir, dockerfile)
-        proc = run_alpine_build()
-        std_out = proc.stdout.lower()
-        if (
-            "make install failed" in std_out
-            and "hdf5.h: no such file or directory" in std_out
-        ):
-            if "hdf5" in dockerfile:
-                dockerfile = dockerfile.replace("hdf5", "hdf5-dev")
-                dependencies.remove("hdf5")
-                dependencies.append("hdf5-dev")
-        alpine_docker_build(tmpdir, dockerfile)
-        proc = run_alpine_build()
-
-    return (proc, dependencies)
 
 
 def run_alpine_test(test, deps_to_remove):
