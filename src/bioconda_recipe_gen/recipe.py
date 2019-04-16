@@ -1,7 +1,11 @@
+from os import listdir
+from os.path import isfile, join
+
 from . import make_dict
 
-build_tools = ['cmake', 'make', 'autoconf']
-libs = ['hdf5', 'zlib']
+build_tools = ["cmake", "make", "autoconf"]
+libs = ["hdf5", "zlib"]
+
 
 class Recipe:
     """ Represents a meta.yaml recipe file """
@@ -21,10 +25,21 @@ class Recipe:
             pack_name: Name of the package to add
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
         """
-        if type_of_requirement == 'build' and pack_name in libs:
+        if type_of_requirement == "build" and pack_name in libs:
             return
-        elif type_of_requirement == 'host' and pack_name in build_tools:
+        elif type_of_requirement == "host" and pack_name in build_tools:
             return
         curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
         if pack_name not in curr_list:
             curr_list.append(pack_name)
+
+    def add_tests(self, test_path):
+        if test_path is not None:
+            files = [
+                f
+                for f in listdir(test_path)
+                if isfile(join(test_path, f)) and "run_test." not in f
+            ]
+            curr_list = self.recipe_dict["test"].setdefault("files", [])
+            for f in files:
+                curr_list.append(f)
