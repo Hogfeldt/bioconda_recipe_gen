@@ -19,9 +19,14 @@ def start():
         "bioconda_recipe_path",
         help="Path to your local copy of the bioconda-recipe repository",
     )
+    parser.add_argument(
+        "--tests",
+        help="Add path to a directory, containing tests for your package. The Directory will have to contain a run_test.[py,pl,sh,bat] file and eventually other files needed for the run_test.[py,pl,sh,bat] file",
+        nargs=1,
+    )
     args = parser.parse_args()
 
     if bioconda_recipes_exists(args.bioconda_recipe_path):
-        main(args.bioconda_recipe_path)
+        main(args.bioconda_recipe_path, args.tests)
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")
