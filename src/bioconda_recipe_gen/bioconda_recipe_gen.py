@@ -38,4 +38,5 @@ def main(bioconda_recipe_path):
     finally:
         # clean up
         rmtree(path)
+        # Only for development
         rmtree('./%s' % name)
