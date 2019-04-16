@@ -13,5 +13,5 @@ requirements:
         - make
     
 test:
-    command:
+    commands:
         - kallisto version
