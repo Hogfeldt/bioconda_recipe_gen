@@ -2,6 +2,16 @@ import urllib.request
 import subprocess
 import os
 import pkg_resources
+import shutil
+
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
 
 def download_and_unpack_source(src, dir_path):
     """ Download a source file and unpack it """
