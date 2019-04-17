@@ -13,14 +13,21 @@ def return_hello():
     return "hello"
 
 
-def main(bioconda_recipe_path):
+def main(bioconda_recipe_path, test_path=None):
     # Setup variables
     name = "kallisto2"
     src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
-        mini_proc = build.mini_iterative_build(name)
+        # run conda-build wiht --only-build flag
+        mini_proc, recipe = build.mini_iterative_build(name)
+        print("mini_proc return code:", mini_proc.returncode)
+        for line in mini_proc.stdout.split("\n"):
+            print(line)
+
+        # run conda-build with tests
+        mini_proc, recipe = build.mini_iterative_test(name, recipe, test_path)
         print("mini_proc return code:", mini_proc.returncode)
         for line in mini_proc.stdout.split("\n"):
             print(line)

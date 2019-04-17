@@ -4,7 +4,7 @@ import tempfile
 import pkg_resources
 from shutil import rmtree
 
-from .utils import download_and_unpack_source
+from .utils import download_and_unpack_source, copytree
 from .recipe import Recipe
 
 
@@ -57,7 +57,7 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     dependencies = []
     proc = bioconda_utils_build(name, bioconda_recipe_path)
 
-    if proc.returncode != 0:
+    if proc.returncode != 5:
         # Check for dependencies
         for line in proc.stdout.split("\n"):
             line_norma = line.lower()
@@ -103,8 +103,9 @@ def mini_docker_build():
             return True
 
 
-def run_mini_build(name):
+def run_mini_build(name, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
+    flag = "--build-only" if build_only else ""
     path = "%s/%s" % (os.getcwd(), name)
     cmd = [
         "docker",
@@ -116,9 +117,14 @@ def run_mini_build(name):
         "mini-buildenv",
         "/bin/sh",
         "-c",
-        "conda build --build-only /home",
+        "conda build %s /home" % flag,
     ]
     return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+
+
+def run_mini_test(name):
+    """ Call run_mini_build with the build_only parameter as False """
+    return run_mini_build(name, False)
 
 
 def mini_iterative_build(name):
@@ -136,12 +142,14 @@ def mini_iterative_build(name):
 
     # TODO: find a better stop condition
     c = 0
-    while c != 5:
+    while c != 0:
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
-            if "autoheader: not found" in line_normalized:  # only occures when minimal build.sh for kallisto is used
+            if (
+                "autoheader: not found" in line_normalized
+            ):  # only occures when minimal build.sh for kallisto is used
                 recipe.add_requirement("autoconf", "build")
             if "autoreconf: command not found" in line_normalized:
                 recipe.add_requirement("autoconf", "build")
@@ -155,7 +163,24 @@ def mini_iterative_build(name):
         c += 1
         print("%s iteration" % c)
     proc = run_mini_build(name)
-    return proc
+    return (proc, recipe)
+
+
+def add_tests(name, recipe, test_path):
+    """ Copy test files from test_path to './name' and add test files to the recipe """
+    print("Copying test files")
+    path = "./%s" % name
+    copytree(test_path, path)
+    recipe.add_tests(test_path)
+    recipe.write_recipe_to_meta_file()
+
+
+def mini_iterative_test(name, recipe, test_path):
+    print("mini iterative test started")
+    if test_path is not None:
+        add_tests(name, recipe, test_path)
+    proc = run_mini_test(name)
+    return (proc, recipe)
 
 
 def mini_sanity_check(bioconda_recipe_path, name):
