@@ -142,7 +142,7 @@ def mini_iterative_build(name):
 
     # TODO: find a better stop condition
     c = 0
-    while c != 0:
+    while c != 5:
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()

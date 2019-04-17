@@ -34,6 +34,7 @@ class Recipe:
             curr_list.append(pack_name)
 
     def add_tests(self, test_path):
+        """ Adds test files from test_path to 'test: files: ... ' in recipe """
         if test_path is not None:
             files = [
                 f
@@ -43,3 +44,10 @@ class Recipe:
             curr_list = self.recipe_dict["test"].setdefault("files", [])
             for f in files:
                 curr_list.append(f)
+
+    def add_test_command(self, command):
+        """ Adds a test command to 'test: commands: ... ' in recipe """
+        curr_list = self.recipe_dict["test"].setdefault("commands", [])
+        if command not in curr_list:
+            curr_list.append(command)
+
