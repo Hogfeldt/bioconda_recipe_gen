@@ -6,7 +6,7 @@ import shutil
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
-    """ Enhanced utils.copytree function. This function will if the destination directory already exists copy all items from source to the destination, instead of throwing a FileExistsError """
+    """ Enhanced shutil.copytree function. This function will if the destination directory already exists copy all items from source to the destination, instead of throwing a FileExistsError """
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
