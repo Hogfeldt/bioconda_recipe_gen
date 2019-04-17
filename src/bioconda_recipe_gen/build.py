@@ -57,7 +57,7 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     dependencies = []
     proc = bioconda_utils_build(name, bioconda_recipe_path)
 
-    if proc.returncode != 5:
+    if proc.returncode != 0:
         # Check for dependencies
         for line in proc.stdout.split("\n"):
             line_norma = line.lower()
@@ -157,8 +157,6 @@ def mini_iterative_build(name):
                 recipe.add_requirement("automake", "build")
             if "could not find hdf5" in line_normalized:
                 recipe.add_requirement("hdf5", "host")
-            if "['zlib'] not in reqs/run" in line_normalized:
-                recipe.add_requirement("zlib", "run")
         recipe.write_recipe_to_meta_file()
         c += 1
         print("%s iteration" % c)
@@ -180,6 +178,9 @@ def mini_iterative_test(name, recipe, test_path):
     if test_path is not None:
         add_tests(name, recipe, test_path)
     proc = run_mini_test(name)
+    if "['zlib'] not in reqs/run" in line_normalized:
+        recipe.add_requirement("zlib", "run")
+    recipe.write_recipe_to_meta_file()
     return (proc, recipe)
 
 
