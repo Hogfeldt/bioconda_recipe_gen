@@ -27,6 +27,6 @@ def start():
     args = parser.parse_args()
 
     if bioconda_recipes_exists(args.bioconda_recipe_path):
-        main(args.bioconda_recipe_path, args.tests)
+        main(args.bioconda_recipe_path, args.tests[0])
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")
