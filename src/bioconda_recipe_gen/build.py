@@ -157,6 +157,7 @@ def mini_iterative_build(name):
                 recipe.add_requirement("automake", "build")
             if "could not find hdf5" in line_normalized:
                 recipe.add_requirement("hdf5", "host")
+                recipe.add_requirement("hdf5", "run") 
         recipe.write_recipe_to_meta_file()
         c += 1
         print("%s iteration" % c)
