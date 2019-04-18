@@ -165,6 +165,9 @@ def mini_iterative_build(name):
     return (proc, recipe)
 
 
+
+
+
 def add_tests(name, recipe, test_path):
     """ Copy test files from test_path to './name' and add test files to the recipe """
     print("Copying test files")
@@ -179,8 +182,10 @@ def mini_iterative_test(name, recipe, test_path):
     if test_path is not None:
         add_tests(name, recipe, test_path)
     proc = run_mini_test(name)
-    if "['zlib'] not in reqs/run" in line_normalized:
-        recipe.add_requirement("zlib", "run")
+    for line in proc.stdout.split("\n"):
+        line_normalized = line.lower()
+        if "['zlib'] not in reqs/run" in line_normalized:
+            recipe.add_requirement("zlib", "run")
     recipe.write_recipe_to_meta_file()
     return (proc, recipe)
 
