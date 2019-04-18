@@ -20,16 +20,16 @@ def main(bioconda_recipe_path, test_path=None):
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
-        # run conda-build wiht --only-build flag
-        mini_proc, recipe = build.mini_iterative_build(name)
-        print("mini_proc return code:", mini_proc.returncode)
-        for line in mini_proc.stdout.split("\n"):
+        # run conda-build with --build-only flag
+        mini_proc_build, recipe = build.mini_iterative_build(name)
+        print("mini_proc_build return code:", mini_proc_build.returncode)
+        for line in mini_proc_build.stdout.split("\n"):
             print(line)
 
         # run conda-build with tests
-        mini_proc, recipe = build.mini_iterative_test(name, recipe, test_path)
-        print("mini_proc return code:", mini_proc.returncode)
-        for line in mini_proc.stdout.split("\n"):
+        mini_proc_test, recipe = build.mini_iterative_test(name, recipe, test_path)
+        print("mini_proc_test return code:", mini_proc_test.returncode)
+        for line in mini_proc_test.stdout.split("\n"):
             print(line)
 
         # Sanity check
