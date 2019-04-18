@@ -42,6 +42,9 @@ def main(bioconda_recipe_path, test_path=None):
         # copy the final recipe into the current directory
         copyfile(path + "/meta.yaml", "./meta.yaml")
 
+        # extract the final package out of the container
+        extract_proc = build.extract_package_from_container(name)
+
     finally:
         # clean up
         rmtree(path)

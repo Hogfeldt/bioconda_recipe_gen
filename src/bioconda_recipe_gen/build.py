@@ -165,7 +165,57 @@ def mini_iterative_build(name):
     return (proc, recipe)
 
 
+def extract_package_from_container(name):
+    """ Extract the package that has just been build from the contaier """
+    print("Extracting package")
+    
+    # start container without --rm flag
+    path = "%s/%s/" % (os.getcwd(), name)
+    cmd = [
+        "docker",
+        "run",
+        "--name",
+        "mini-image-container",
+        "-v",
+        "%s:/home" % path,
+        "-ti",
+        "mini-buildenv",
+        "/bin/sh",
+        "-c",
+        "conda build /home"
+    ]
+    
+    docker_run_proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+    print("docker_run_proc return code:", docker_run_proc.returncode)
+    package_path = ""
+    for line in docker_run_proc.stdout.split("\n"):
+        print(line)
+        if line.startswith("anaconda upload"):
+            package_path = line.split()[-1]
 
+    # extract package from container
+    cmd = [
+        "docker",
+        "cp",
+        "mini-image-container:%s" % package_path,
+        "./"
+    ]
+    extract_proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE) 
+    print("extract_proc return code:", extract_proc.returncode)
+    for line in extract_proc.stdout.split("\n"):
+        print(line)
+
+    # remove container
+    cmd = [
+        "docker",
+        "container",
+        "rm",
+        "mini-image-container"
+    ]
+    docker_rm_proc = docker_run_proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+    print("docker_rm_proc return code:", docker_rm_proc.returncode)
+    for line in docker_rm_proc.stdout.split("\n"):
+        print(line)
 
 
 def add_tests(name, recipe, test_path):
