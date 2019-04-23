@@ -74,7 +74,7 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     return (proc, dependencies)
 
 
-def mini_build_setup(name):
+def mini_build_setup(name, sha):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     path = "./%s" % name
     os.mkdir(path)
@@ -87,7 +87,7 @@ def mini_build_setup(name):
     build_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-    return Recipe(path + "/meta.yaml")
+    return Recipe(path + "/meta.yaml", sha)
 
 
 def mini_docker_build():
@@ -129,7 +129,7 @@ def run_mini_test(name):
     return run_mini_build(name, False)
 
 
-def mini_iterative_build(name):
+def mini_iterative_build(name, sha):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tupple with the last standard output and a list of found dependencies.
     
@@ -139,7 +139,7 @@ def mini_iterative_build(name):
 
     mini_docker_build()
     print("build done")
-    recipe = mini_build_setup(name)
+    recipe = mini_build_setup(name, sha)
     print("mini setup done")
 
     c = 0

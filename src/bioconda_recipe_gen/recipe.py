@@ -10,9 +10,11 @@ libs = ["hdf5", "zlib"]
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, path_to_meta_file):
+    def __init__(self, path_to_meta_file, sha):
         self.path_to_meta_file = path_to_meta_file
         self.recipe_dict = make_dict.make_dict_from_meta_file(path_to_meta_file)
+        self.recipe_dict["source"]["sha256"] = sha
+        self.write_recipe_to_meta_file()
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """

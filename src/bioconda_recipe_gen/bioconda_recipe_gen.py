@@ -13,13 +13,13 @@ def return_hello():
     return "hello"
 
 
-def main(name, src, bioconda_recipe_path, test_path=None):
+def main(name, src, sha, bioconda_recipe_path, test_path=None):
     # Setup variables
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
         # run conda-build with --build-only flag
-        mini_proc_build, recipe = build.mini_iterative_build(name)
+        mini_proc_build, recipe = build.mini_iterative_build(name, sha)
         print("mini_proc_build return code:", mini_proc_build.returncode)
         for line in mini_proc_build.stdout.split("\n"):
             print(line)

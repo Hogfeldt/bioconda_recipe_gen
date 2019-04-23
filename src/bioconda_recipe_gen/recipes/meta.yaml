@@ -4,7 +4,7 @@ package:
 
 source: 
     url: https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz
-    sha256: b32c74cdc0349c2fe0847b3464a3698da89212a507332a06291b6fc27b4e2305 
+    sha256:
     
 requirements:
     build:
