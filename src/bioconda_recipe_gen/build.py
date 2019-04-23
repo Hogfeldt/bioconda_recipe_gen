@@ -1,5 +1,6 @@
 import os
 import subprocess
+import logging
 import tempfile
 import pkg_resources
 from shutil import rmtree, copy2
@@ -77,7 +78,6 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
 def mini_build_setup(name, sha):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     path = "./%s" % name
-    os.mkdir(path)
     os.mkdir("%s/output" % path)
     resource_path = "/".join(("recipes", "meta.yaml"))
     meta_template = pkg_resources.resource_string(__name__, resource_path)

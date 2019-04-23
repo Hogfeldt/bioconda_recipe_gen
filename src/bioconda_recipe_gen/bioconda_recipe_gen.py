@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 from shutil import copyfile, rmtree
 import pkg_resources
 
@@ -13,10 +14,25 @@ def return_hello():
     return "hello"
 
 
-def main(name, src, sha, bioconda_recipe_path, test_path=None):
+def setup_logging(debug, output_dir_path):
+    if debug:
+        debug_filename = "%s/debug.log" % output_dir_path
+        logging.basicConfig(filename = debug_filename, level = logging.DEBUG)
+    else:
+        logging.getLogger().disabled = True
+
+
+def main(name, src, sha, bioconda_recipe_path, debug, test_path=None):
+    # Create output directory 
+    output_dir_path = "./%s" % name
+    os.mkdir(output_dir_path)
+
+    # Setup debugging
+    setup_logging(debug, output_dir_path)
+    
     # Setup variables
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
-
+    
     try:
         # run conda-build with --build-only flag
         mini_proc_build, recipe = build.mini_iterative_build(name, sha)
