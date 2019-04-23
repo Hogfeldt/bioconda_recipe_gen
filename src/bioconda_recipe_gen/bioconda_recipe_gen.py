@@ -13,10 +13,8 @@ def return_hello():
     return "hello"
 
 
-def main(bioconda_recipe_path, test_path=None):
+def main(name, src, bioconda_recipe_path, test_path=None):
     # Setup variables
-    name = "kallisto2"
-    src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
@@ -41,9 +39,6 @@ def main(bioconda_recipe_path, test_path=None):
 
         # copy the final recipe into the current directory
         copyfile(path + "/meta.yaml", "./meta.yaml")
-
-        # extract the final package out of the container
-        extract_proc = build.extract_package_from_container(name)
 
     finally:
         # clean up
