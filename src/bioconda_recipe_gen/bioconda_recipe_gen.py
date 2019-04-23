@@ -13,10 +13,8 @@ def return_hello():
     return "hello"
 
 
-def main(bioconda_recipe_path, test_path=None):
+def main(name, src, bioconda_recipe_path, test_path=None):
     # Setup variables
-    name = "kallisto2"
-    src = "https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz"
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
 
     try:
