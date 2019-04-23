@@ -32,6 +32,8 @@ class Recipe:
         curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
         if pack_name not in curr_list:
             curr_list.append(pack_name)
+            if type_of_requirement == "host":
+                add_requirement(pack_name, "run")
 
     def add_tests(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
