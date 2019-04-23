@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import pkg_resources
 from shutil import rmtree
+from copy import deepcopy
 
 from .utils import download_and_unpack_source, copytree
 from .recipe import Recipe
@@ -140,9 +141,10 @@ def mini_iterative_build(name):
     recipe = mini_build_setup(name)
     print("mini setup done")
 
-    # TODO: find a better stop condition
     c = 0
-    while c != 5:
+    new_recipe = deepcopy(recipe) 
+    return_code = 1
+    while return_code != 0:
         proc = run_mini_build(name)
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
@@ -150,17 +152,21 @@ def mini_iterative_build(name):
             if (
                 "autoheader: not found" in line_normalized
             ):  # only occures when minimal build.sh for kallisto is used
-                recipe.add_requirement("autoconf", "build")
+                new_recipe.add_requirement("autoconf", "build")
             if "autoreconf: command not found" in line_normalized:
-                recipe.add_requirement("autoconf", "build")
+                new_recipe.add_requirement("autoconf", "build")
             if "autoreconf: failed to run aclocal" in line_normalized:
-                recipe.add_requirement("automake", "build")
+                new_recipe.add_requirement("automake", "build")
             if "could not find hdf5" in line_normalized:
-                recipe.add_requirement("hdf5", "host")
-        recipe.write_recipe_to_meta_file()
+                new_recipe.add_requirement("hdf5", "host")
+        if new_recipe == recipe:
+            break
+        else:
+            recipe = deepcopy(new_recipe)
+            recipe.write_recipe_to_meta_file()
+        return_code = proc.returncode
         c += 1
         print("%s iteration" % c)
-    proc = run_mini_build(name)
     return (proc, recipe)
 
 

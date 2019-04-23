@@ -14,6 +14,12 @@ class Recipe:
         self.path_to_meta_file = path_to_meta_file
         self.recipe_dict = make_dict.make_dict_from_meta_file(path_to_meta_file)
 
+    def __eq__(self, other):
+        """ Overwrite default implementation. Compare recipe_dict instead of id """
+        if isinstance(other, Recipe):
+            return self.recipe_dict == other.recipe_dict
+        return False
+
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
         make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
@@ -33,7 +39,7 @@ class Recipe:
         if pack_name not in curr_list:
             curr_list.append(pack_name)
             if type_of_requirement == "host":
-                add_requirement(pack_name, "run")
+                self.add_requirement(pack_name, "run")
 
     def add_tests(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
