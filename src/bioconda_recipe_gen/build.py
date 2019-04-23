@@ -2,7 +2,7 @@ import os
 import subprocess
 import tempfile
 import pkg_resources
-from shutil import rmtree
+from shutil import rmtree, copy2
 from copy import deepcopy
 
 from .utils import download_and_unpack_source, copytree
@@ -240,20 +240,17 @@ def mini_iterative_test(name, recipe, test_path):
 
 def mini_sanity_check(bioconda_recipe_path, name):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
-    recipes_kallisto_path = "%s/recipes/%s/" % (bioconda_recipe_path, name)
-    os.mkdir(recipes_kallisto_path)
+    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, name)
+    os.mkdir(recipes_pkg_path)
     current_recipe_path = "%s/%s/" % (os.getcwd(), name)
 
-    # Copy meta.yaml and build.sh into bioconda-recipes/recipes/name_of_pkg
-    with open(current_recipe_path + "meta.yaml", "r") as f:
-        curr_meta = f.read()
-    with open(recipes_kallisto_path + "meta.yaml", "w") as f:
-        f.write(curr_meta)
-
-    with open(current_recipe_path + "build.sh", "r") as f:
-        curr_build = f.read()
-    with open(recipes_kallisto_path + "build.sh", "w") as f:
-        f.write(curr_build)
+    for item in os.listdir(current_recipe_path):
+        s = os.path.join(current_recipe_path, item)
+        d = os.path.join(recipes_pkg_path, item)
+        if os.path.isdir(s) and item is not "output":
+            copytree(s, d)
+        else:
+            copy2(s,d)
 
     # Try to build the package
     proc = bioconda_utils_build(name, bioconda_recipe_path)
