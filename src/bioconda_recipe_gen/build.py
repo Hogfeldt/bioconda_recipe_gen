@@ -3,7 +3,7 @@ import subprocess
 import logging
 import tempfile
 import pkg_resources
-from shutil import rmtree, copy2
+from shutil import rmtree, copy2, copyfile
 from copy import deepcopy
 
 from .utils import download_and_unpack_source, copytree
@@ -148,11 +148,11 @@ def mini_iterative_build(name, sha):
     while return_code != 0:
         proc = run_mini_build(name)
 
-        if not logging.getLogger().disabled:
-            src = "%s/%s/output" % (os.getcwd(), name) 
-            dst = "%s/%s/debug_output_files/iter%d" % (os.getcwd(), name, (c+1))
-            os.mkdir(dst)
-            copytree(src, dst)
+        # if not logging.getLogger().disabled:
+        #     src = "%s/%s/output" % (os.getcwd(), name) 
+        #     dst = "%s/%s/debug_output_files/iter%d" % (os.getcwd(), name, (c+1))
+        #     os.mkdir(dst)
+        #     copytree(src, dst)
 
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
@@ -179,6 +179,13 @@ def mini_iterative_build(name, sha):
         return_code = proc.returncode
         c += 1
         print("%s iteration" % c)
+
+        if not logging.getLogger().disabled:
+            src = "%s/%s/output" % (os.getcwd(), name) 
+            dst = "%s/%s/debug_output_files/build_iter%d" % (os.getcwd(), name, c)
+            os.mkdir(dst)
+            copytree(src, dst)
+        
     return (proc, recipe)
 
 
@@ -201,6 +208,13 @@ def mini_iterative_test(name, recipe, test_path):
         if "['zlib'] not in reqs/run" in line_normalized:
             recipe.add_requirement("zlib", "run")
     recipe.write_recipe_to_meta_file()
+
+    if not logging.getLogger().disabled:
+        src = "%s/%s/output" % (os.getcwd(), name) 
+        dst = "%s/%s/debug_output_files/test_iter1" % (os.getcwd(), name)
+        os.mkdir(dst)
+        copytree(src, dst)
+
     return (proc, recipe)
 
 
@@ -228,3 +242,4 @@ def mini_sanity_check(bioconda_recipe_path, name):
         return True
     else:
         return False
+
