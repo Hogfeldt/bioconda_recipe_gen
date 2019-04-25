@@ -147,6 +147,13 @@ def mini_iterative_build(name, sha):
     return_code = 1
     while return_code != 0:
         proc = run_mini_build(name)
+
+        if not logging.getLogger().disabled:
+            src = "%s/%s/output" % (os.getcwd(), name) 
+            dst = "%s/%s/debug_output_files/iter%d" % (os.getcwd(), name, (c+1))
+            os.mkdir(dst)
+            copytree(src, dst)
+
         for line in proc.stdout.split("\n"):
             line_normalized = line.lower()
             print(line)

@@ -18,6 +18,8 @@ def setup_logging(debug, output_dir_path):
     if debug:
         debug_filename = "%s/debug.log" % output_dir_path
         logging.basicConfig(filename = debug_filename, level = logging.DEBUG)
+        debug_folder = "%s/debug_output_files" % output_dir_path
+        os.mkdir(debug_folder)
     else:
         logging.getLogger().disabled = True
 
