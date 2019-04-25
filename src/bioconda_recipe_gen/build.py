@@ -202,10 +202,12 @@ def mini_sanity_check(bioconda_recipe_path, name):
     for item in os.listdir(current_recipe_path):
         s = os.path.join(current_recipe_path, item)
         d = os.path.join(recipes_pkg_path, item)
-        if os.path.isdir(s) and item is not "output":
-            copytree(s, d)
-        else:
+
+        if not os.path.isdir(s):
             copy2(s,d)
+        elif item != "output":       
+            copytree(s, d)
+        
 
     # Try to build the package
     proc = bioconda_utils_build(name, bioconda_recipe_path)
