@@ -1,3 +1,4 @@
+import logging
 from os import listdir
 from os.path import isfile, join
 
@@ -26,12 +27,13 @@ class Recipe:
         """ Writes the current recipe_dict into the meta.yaml file """
         make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
 
-    def add_requirement(self, pack_name, type_of_requirement):
+    def add_requirement(self, pack_name, type_of_requirement, debug_message = "Not specified"):
         """ Adds a package to the list of requirements in the recipe
 
         Args:
             pack_name: Name of the package to add
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
+            debug_message: A message explaining why the package was added as a requirement
         """
         if type_of_requirement == "build" and pack_name in libs:
             return
@@ -39,6 +41,7 @@ class Recipe:
             return
         curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
         if pack_name not in curr_list:
+            logging.debug("Adding %s to %s. Reason for adding requirement: %s" % (pack_name, type_of_requirement, debug_message))
             curr_list.append(pack_name)
             if type_of_requirement == "host":
                 self.add_requirement(pack_name, "run")

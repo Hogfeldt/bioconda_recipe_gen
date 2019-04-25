@@ -153,13 +153,17 @@ def mini_iterative_build(name, sha):
             if (
                 "autoheader: not found" in line_normalized
             ):  # only occures when minimal build.sh for kallisto is used
-                new_recipe.add_requirement("autoconf", "build")
+                debug_message = "Because 'autoheader: not found' was in the error message"
+                new_recipe.add_requirement("autoconf", "build", debug_message = debug_message)
             if "autoreconf: command not found" in line_normalized:
-                new_recipe.add_requirement("autoconf", "build")
+                debug_message = "Because 'autoreconf: command not found' was in the error message"
+                new_recipe.add_requirement("autoconf", "build", debug_message = debug_message)
             if "autoreconf: failed to run aclocal" in line_normalized:
-                new_recipe.add_requirement("automake", "build")
+                debug_message = "Because 'autoreconf: failed to run aclocal' was in the error message"
+                new_recipe.add_requirement("automake", "build", debug_message = debug_message)
             if "could not find hdf5" in line_normalized:
-                new_recipe.add_requirement("hdf5", "host")
+                debug_message = "Because 'could not find hdf5' was in the error message"
+                new_recipe.add_requirement("hdf5", "host", debug_message = debug_message)
         if new_recipe == recipe:
             break
         else:
