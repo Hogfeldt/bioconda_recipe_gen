@@ -1,9 +1,9 @@
 package:
-    name: kallisto2
-    version: 0.45.0
+    name: 
+    version: 
 
 source: 
-    url: https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz
+    url: 
     sha256:
     
 requirements:
