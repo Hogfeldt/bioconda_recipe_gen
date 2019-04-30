@@ -91,22 +91,7 @@ def mini_build_setup(name, version, src, sha):
     return Recipe(path + "/meta.yaml", name, version, src, sha)
 
 
-def mini_docker_build():
-    """ Run docker build, to make sure that the running docker installation has the required and up to date image """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        resource_path = "/".join(("containers", "Dockerfile"))
-        dockerfile = pkg_resources.resource_string(__name__, resource_path)
-        with open("%s/%s" % (tmpdir, "Dockerfile"), "wb") as fp:
-            fp.write(dockerfile)
-        cmd = ["docker", "build", "--tag=mini-buildenv", tmpdir]
-        proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
-        if proc.returncode != 0:
-            return False
-        else:
-            return True
-
-
-def run_mini_build(name, build_only=True):
+def run_conda_build_mini(name, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
     # Setup image
     client = docker.from_env()
@@ -130,9 +115,9 @@ def run_mini_build(name, build_only=True):
     return (result, stdout)
 
 
-def run_mini_test(name):
+def run_conda_build_mini_test(name):
     """ Call run_mini_build with the build_only parameter as False """
-    return run_mini_build(name, False)
+    return run_conda_build_mini(name, False)
 
 
 def mini_iterative_build(name, version, src, sha):
@@ -150,7 +135,7 @@ def mini_iterative_build(name, version, src, sha):
     new_recipe = deepcopy(recipe)
     return_code = 1
     while return_code != 0:
-        result, stdout = run_mini_build(name)
+        result, stdout = run_conda_build_mini(name)
 
         # if not logging.getLogger().disabled:
         #     src = "%s/%s/output" % (os.getcwd(), name)
@@ -216,7 +201,7 @@ def mini_iterative_test(name, recipe, test_path):
     print("mini iterative test started")
     if test_path is not None:
         add_tests(name, recipe, test_path)
-    result, stdout = run_mini_test(name)
+    result, stdout = run_conda_build_mini_test(name)
     for line in stdout.split("\n"):
         line_normalized = line.lower()
         if "['zlib'] not in reqs/run" in line_normalized:
