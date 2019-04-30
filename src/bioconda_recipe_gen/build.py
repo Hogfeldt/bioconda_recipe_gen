@@ -1,4 +1,6 @@
 import os
+import io
+import tarfile
 import subprocess
 import logging
 import tempfile
@@ -95,22 +97,31 @@ def run_conda_build_mini(name, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
     # Setup image
     client = docker.from_env()
-    try:
-        client.images.get("conda-build-mini")
-    except docker.errors.ImageNotFound:
-        client.images.pull("perhogfeldt/conda-build-mini")
 
     # Run docker image
     flag = "--build-only" if build_only else ""
     path = "%s/%s" % (os.getcwd(), name)
     container = client.containers.run(
-        "conda-build-mini",
+        'perhogfeldt/conda-build-mini:latest',
         "conda build %s --output-folder /home/output /mnt/recipe " % flag,
         volumes={path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
     stdout = container.logs().decode('utf-8')
+    if result['StatusCode'] is 0:
+        #TODO: Copy output files from image
+        for line in stdout.split('\n'):
+            if "anaconda upload " in line:
+                output_file = line.split()[2]
+                stream, info = container.get_archive(output_file)
+                file_name = info['name']
+                fd = io.BytesIO()
+                for b in stream:
+                    fd.write(b)
+                fd.seek(0)
+                tar_file = tarfile.open(mode='r', fileobj=fd)
+                tar_file.extractall("%s/output" % path)
     container.remove()
     return (result, stdout)
 
