@@ -17,7 +17,7 @@ def return_hello():
 def setup_logging(debug, output_dir_path):
     if debug:
         debug_filename = "%s/debug.log" % output_dir_path
-        logging.basicConfig(filename = debug_filename, level = logging.DEBUG)
+        logging.basicConfig(filename=debug_filename, level=logging.DEBUG)
         debug_folder = "%s/debug_output_files" % output_dir_path
         os.mkdir(debug_folder)
     else:
@@ -25,27 +25,27 @@ def setup_logging(debug, output_dir_path):
 
 
 def main(name, version, src, sha, bioconda_recipe_path, debug, test_path=None):
-    # Create output directory 
+    # Create output directory
     output_dir_path = "./%s" % name
     os.mkdir(output_dir_path)
 
     # Setup debugging
     setup_logging(debug, output_dir_path)
-    
+
     # Setup variables
     path = "%s/recipes/%s" % (bioconda_recipe_path, name)
-    
+
     try:
         # run conda-build with --build-only flag
         mini_proc_build, recipe = build.mini_iterative_build(name, version, src, sha)
-        print("mini_proc_build return code:", mini_proc_build.returncode)
-        for line in mini_proc_build.stdout.split("\n"):
+        print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
+        for line in mini_proc_build[1].split("\n"):
             print(line)
 
         # run conda-build with tests
         mini_proc_test, recipe = build.mini_iterative_test(name, recipe, test_path)
-        print("mini_proc_test return code:", mini_proc_test.returncode)
-        for line in mini_proc_test.stdout.split("\n"):
+        print("mini_proc_test return code:", mini_proc_test[0]["StatusCode"])
+        for line in mini_proc_test[1].split("\n"):
             print(line)
 
         # Sanity check

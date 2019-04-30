@@ -3,6 +3,7 @@ import subprocess
 import logging
 import tempfile
 import pkg_resources
+import docker
 from shutil import rmtree, copy2, copyfile
 from copy import deepcopy
 
@@ -107,21 +108,26 @@ def mini_docker_build():
 
 def run_mini_build(name, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
+    # Setup image
+    client = docker.from_env()
+    try:
+        client.images.get("conda-build-mini")
+    except docker.errors.ImageNotFound:
+        client.images.pull("perhogfeldt/conda-build-mini")
+
+    # Run docker image
     flag = "--build-only" if build_only else ""
     path = "%s/%s" % (os.getcwd(), name)
-    cmd = [
-        "docker",
-        "run",
-        "-v",
-        "%s:/home" % path,
-        "--rm",
-        "-ti",
-        "mini-buildenv",
-        "/bin/sh",
-        "-c",
+    container = client.containers.run(
+        "conda-build-mini",
         "conda build %s --output-folder /home/output /home " % flag,
-    ]
-    return subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+        volumes={path: {"bind": "/home", "mode": "rw"}},
+        detach=True,
+    )
+    result = container.wait()
+    stdout = container.logs().decode('utf-8')
+    container.remove()
+    return (result, stdout)
 
 
 def run_mini_test(name):
@@ -137,56 +143,64 @@ def mini_iterative_build(name, version, src, sha):
         src: A link to where the source file can be downloaded
     """
 
-    mini_docker_build()
-    print("build done")
     recipe = mini_build_setup(name, version, src, sha)
     print("mini setup done")
 
     c = 0
-    new_recipe = deepcopy(recipe) 
+    new_recipe = deepcopy(recipe)
     return_code = 1
     while return_code != 0:
-        proc = run_mini_build(name)
+        result, stdout = run_mini_build(name)
 
         # if not logging.getLogger().disabled:
-        #     src = "%s/%s/output" % (os.getcwd(), name) 
+        #     src = "%s/%s/output" % (os.getcwd(), name)
         #     dst = "%s/%s/debug_output_files/iter%d" % (os.getcwd(), name, (c+1))
         #     os.mkdir(dst)
         #     copytree(src, dst)
 
-        for line in proc.stdout.split("\n"):
+        for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
             if (
                 "autoheader: not found" in line_normalized
             ):  # only occures when minimal build.sh for kallisto is used
-                debug_message = "Because 'autoheader: not found' was in the error message"
-                new_recipe.add_requirement("autoconf", "build", debug_message = debug_message)
+                debug_message = (
+                    "Because 'autoheader: not found' was in the error message"
+                )
+                new_recipe.add_requirement(
+                    "autoconf", "build", debug_message=debug_message
+                )
             if "autoreconf: command not found" in line_normalized:
-                debug_message = "Because 'autoreconf: command not found' was in the error message"
-                new_recipe.add_requirement("autoconf", "build", debug_message = debug_message)
+                debug_message = (
+                    "Because 'autoreconf: command not found' was in the error message"
+                )
+                new_recipe.add_requirement(
+                    "autoconf", "build", debug_message=debug_message
+                )
             if "autoreconf: failed to run aclocal" in line_normalized:
                 debug_message = "Because 'autoreconf: failed to run aclocal' was in the error message"
-                new_recipe.add_requirement("automake", "build", debug_message = debug_message)
+                new_recipe.add_requirement(
+                    "automake", "build", debug_message=debug_message
+                )
             if "could not find hdf5" in line_normalized:
                 debug_message = "Because 'could not find hdf5' was in the error message"
-                new_recipe.add_requirement("hdf5", "host", debug_message = debug_message)
+                new_recipe.add_requirement("hdf5", "host", debug_message=debug_message)
         if new_recipe == recipe:
             break
         else:
             recipe = deepcopy(new_recipe)
             recipe.write_recipe_to_meta_file()
-        return_code = proc.returncode
+        return_code = result['StatusCode']
         c += 1
         print("%s iteration" % c)
 
         if not logging.getLogger().disabled:
-            src = "%s/%s/output" % (os.getcwd(), name) 
+            src = "%s/%s/output" % (os.getcwd(), name)
             dst = "%s/%s/debug_output_files/build_iter%d" % (os.getcwd(), name, c)
             os.mkdir(dst)
             copytree(src, dst)
-        
-    return (proc, recipe)
+
+    return ((result, stdout), recipe)
 
 
 def add_tests(name, recipe, test_path):
@@ -202,20 +216,20 @@ def mini_iterative_test(name, recipe, test_path):
     print("mini iterative test started")
     if test_path is not None:
         add_tests(name, recipe, test_path)
-    proc = run_mini_test(name)
-    for line in proc.stdout.split("\n"):
+    result, stdout = run_mini_test(name)
+    for line in stdout.split("\n"):
         line_normalized = line.lower()
         if "['zlib'] not in reqs/run" in line_normalized:
             recipe.add_requirement("zlib", "run")
     recipe.write_recipe_to_meta_file()
 
     if not logging.getLogger().disabled:
-        src = "%s/%s/output" % (os.getcwd(), name) 
+        src = "%s/%s/output" % (os.getcwd(), name)
         dst = "%s/%s/debug_output_files/test_iter1" % (os.getcwd(), name)
         os.mkdir(dst)
         copytree(src, dst)
 
-    return (proc, recipe)
+    return ((result, stdout), recipe)
 
 
 def mini_sanity_check(bioconda_recipe_path, name):
@@ -229,17 +243,15 @@ def mini_sanity_check(bioconda_recipe_path, name):
         d = os.path.join(recipes_pkg_path, item)
 
         if not os.path.isdir(s):
-            copy2(s,d)
-        elif item != "output":       
+            copy2(s, d)
+        elif item != "output":
             copytree(s, d)
-        
 
     # Try to build the package
     proc = bioconda_utils_build(name, bioconda_recipe_path)
-    for line in proc.stdout.split('\n'):
+    for line in proc.stdout.split("\n"):
         print(line)
     if proc.returncode == 0:
         return True
     else:
         return False
-

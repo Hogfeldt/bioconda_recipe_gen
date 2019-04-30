@@ -1,10 +1,5 @@
 FROM debian:latest
 
-#  $ docker build . -t continuumio/miniconda3:latest -t continuumio/miniconda3:4.5.11
-#  $ docker run --rm -it continuumio/miniconda3:latest /bin/bash
-#  $ docker push continuumio/miniconda3:latest
-#  $ docker push continuumio/miniconda3:4.5.11
-
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
