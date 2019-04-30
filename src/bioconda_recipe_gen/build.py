@@ -105,8 +105,8 @@ def run_conda_build_mini(name, build_only=True):
     path = "%s/%s" % (os.getcwd(), name)
     container = client.containers.run(
         "conda-build-mini",
-        "conda build %s --output-folder /home/output /home " % flag,
-        volumes={path: {"bind": "/home", "mode": "rw"}},
+        "conda build %s --output-folder /home/output /mnt/recipe " % flag,
+        volumes={path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
