@@ -24,7 +24,7 @@ def setup_logging(debug, output_dir_path):
         logging.getLogger().disabled = True
 
 
-def main(name, version, src, sha, bioconda_recipe_path, debug, test_path=None):
+def main(name, version, src, hashing, bioconda_recipe_path, debug, test_path=None):
     # Create output directory
     output_dir_path = "./%s" % name
     os.mkdir(output_dir_path)
@@ -37,7 +37,7 @@ def main(name, version, src, sha, bioconda_recipe_path, debug, test_path=None):
 
     try:
         # run conda-build with --build-only flag
-        mini_proc_build, recipe = build.mini_iterative_build(name, version, src, sha)
+        mini_proc_build, recipe = build.mini_iterative_build(name, version, src, hashing)
         print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
         for line in mini_proc_build[1].split("\n"):
             print(line)

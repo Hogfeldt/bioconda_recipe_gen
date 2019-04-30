@@ -76,7 +76,7 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     return (proc, dependencies)
 
 
-def mini_build_setup(name, version, src, sha):
+def mini_build_setup(name, version, src, hashing):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     path = "./%s" % name
     os.mkdir("%s/output" % path)
@@ -88,23 +88,19 @@ def mini_build_setup(name, version, src, sha):
     build_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-    return Recipe(path + "/meta.yaml", name, version, src, sha)
+    return Recipe(path + "/meta.yaml", name, version, src, hashing)
 
 
 def run_conda_build_mini(name, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
     # Setup image
     client = docker.from_env()
-    try:
-        client.images.get("conda-build-mini")
-    except docker.errors.ImageNotFound:
-        client.images.pull("perhogfeldt/conda-build-mini")
-
+    
     # Run docker image
     flag = "--build-only" if build_only else ""
     path = "%s/%s" % (os.getcwd(), name)
     container = client.containers.run(
-        "conda-build-mini",
+        "perhogfeldt/conda-build-mini",
         "conda build %s --output-folder /home/output /mnt/recipe " % flag,
         volumes={path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
@@ -120,7 +116,7 @@ def run_conda_build_mini_test(name):
     return run_conda_build_mini(name, False)
 
 
-def mini_iterative_build(name, version, src, sha):
+def mini_iterative_build(name, version, src, hashing):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tupple with the last standard output and a list of found dependencies.
     
@@ -128,7 +124,7 @@ def mini_iterative_build(name, version, src, sha):
         src: A link to where the source file can be downloaded
     """
 
-    recipe = mini_build_setup(name, version, src, sha)
+    recipe = mini_build_setup(name, version, src, hashing)
     print("mini setup done")
 
     c = 0
@@ -136,12 +132,6 @@ def mini_iterative_build(name, version, src, sha):
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini(name)
-
-        # if not logging.getLogger().disabled:
-        #     src = "%s/%s/output" % (os.getcwd(), name)
-        #     dst = "%s/%s/debug_output_files/iter%d" % (os.getcwd(), name, (c+1))
-        #     os.mkdir(dst)
-        #     copytree(src, dst)
 
         for line in stdout.split("\n"):
             line_normalized = line.lower()

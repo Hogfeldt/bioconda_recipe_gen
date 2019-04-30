@@ -26,6 +26,12 @@ def start():
         nargs=1,
     )
     parser.add_argument(
+        "-d",
+        "--debug",
+        help="Set this flag if you want to activate the debug mode. This creates an debug.log file that contains all debug prints",
+        action='store_true',
+    )
+    parser.add_argument(
         "-n",
         "--name",
         help="Name of your package",
@@ -38,29 +44,34 @@ def start():
         required=True,
     )
     parser.add_argument(
-        "-s",
-        "--sha",
-        help="The SHA that matches the project which the url argument points to",
-        required=True,
-    )
-    parser.add_argument(
         "-v",
         "--version",
         help="The version number of the build",
         required=True,
     )
-    parser.add_argument(
-        "-d",
-        "--debug",
-        help="Set this flag if you want to activate the debug mode. This creates an debug.log file that contains all debug prints",
-        action='store_true',
+    # make sure that we either SHA or MD5 (not both of them, not none of them)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "-s",
+        "--sha",
+        help="The SHA that matches the project which the url argument points to",
     )
+    group.add_argument(
+        "-m",
+        "--md5",
+        help="The MD5 that matches the project which the url argument points to",
+    )
+
     args = parser.parse_args()
+    if args.sha is None:
+        hashing = ("md5", args.md5)
+    else:
+        hashing = ("sha", args.sha)
 
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         if args.tests is None:
-            main(args.name, args.version, args.url, args.sha, args.bioconda_recipe_path, args.debug)
+            main(args.name, args.version, args.url, hashing, args.bioconda_recipe_path, args.debug)
         else:
-            main(args.name, args.version, args.url, args.sha, args.bioconda_recipe_path, args.debug, args.tests[0])
+            main(args.name, args.version, args.url, hashing, args.bioconda_recipe_path, args.debug, args.tests[0])
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")

@@ -4,7 +4,6 @@ package:
 
 source: 
     url: 
-    sha256:
     
 requirements:
     build:
