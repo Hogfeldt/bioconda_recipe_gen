@@ -78,13 +78,13 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     return (proc, dependencies)
 
 
-def mini_build_setup(recipe_path):
+def mini_build_setup(recipe):
     """ Copy build.sh and meta.yaml recipe path. """
-    os.mkdir("%s/output" % recipe_path)
+    os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
     resource_path = "/".join(("recipes", "build.sh"))
     build_template = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (recipe_path, "build.sh"), "wb") as fp:
+    with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
         fp.write(build_template)
 
 
@@ -131,7 +131,7 @@ def mini_iterative_build(recipe):
         src: A link to where the source file can be downloaded
     """
 
-    mini_build_setup(recipe.path)
+    mini_build_setup(recipe)
     print("mini setup done")
 
     c = 0

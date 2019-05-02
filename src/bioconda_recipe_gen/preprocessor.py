@@ -19,5 +19,5 @@ def preprocess(args):
     if args.tests is not None:
         recipe.add_tests(args.tests[0])
     if args.command is not None:
-        recipe.add_test_command(arg.command)
+        recipe.add_test_command(args.command)
     return recipe
