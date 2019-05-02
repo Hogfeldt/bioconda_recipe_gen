@@ -25,33 +25,27 @@ def setup_logging(debug, output_dir_path):
 
 
 def main(bioconda_recipe_path, recipe, debug):
-    # Create output directory
-    output_dir_path = "./%s" % recipe.name
-    os.mkdir(output_dir_path)
-
     # Setup debugging
-    setup_logging(debug, output_dir_path)
+    setup_logging(debug, recipe.path)
 
     # Setup variables
-    path = "%s/recipes/%s" % (bioconda_recipe_path, name)
+    path = "%s/recipes/%s" % (bioconda_recipe_path, recipe.name)
 
     try:
         # run conda-build with --build-only flag
-        mini_proc_build, recipe = build.mini_iterative_build(
-            name, version, src, hashing
-        )
+        mini_proc_build, recipe = build.mini_iterative_build(recipe)
         print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
         for line in mini_proc_build[1].split("\n"):
             print(line)
 
         # run conda-build with tests
-        mini_proc_test, recipe = build.mini_iterative_test(name, recipe, test_path)
+        mini_proc_test, recipe = build.mini_iterative_test(recipe)
         print("mini_proc_test return code:", mini_proc_test[0]["StatusCode"])
         for line in mini_proc_test[1].split("\n"):
             print(line)
 
         # Sanity check
-        success = build.mini_sanity_check(bioconda_recipe_path, name)
+        success = build.mini_sanity_check(bioconda_recipe_path, recipe.name)
         if success:
             print("SUCCESS: Package was successfully build")
         else:

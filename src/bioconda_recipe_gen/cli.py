@@ -26,7 +26,7 @@ def start():
         help="Add path to a directory, containing tests for your package. The Directory will have to contain a run_test.[py,pl,sh,bat] file and eventually other files needed for the run_test.[py,pl,sh,bat] file",
         nargs=1,
     )
-    parser.add_argument("--test-command", help="Add test command to recipe")
+    parser.add_argument("--command", "--test-command", help="Add test command to recipe")
     parser.add_argument(
         "-d",
         "--debug",
@@ -55,8 +55,8 @@ def start():
         "--md5",
         help="The MD5 that matches the project which the url argument points to",
     )
-
-    recipe = preprocess(parser.parse_args())
+    args = parser.parse_args()
+    recipe = preprocess(args)
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         main(args.bioconda_recipe_path, recipe, args.debug)
     else:

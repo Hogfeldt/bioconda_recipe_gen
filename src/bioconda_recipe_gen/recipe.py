@@ -1,8 +1,9 @@
 import logging
-from os import listdir
-from os.path import isfile, join
+from os import listdir, getcwd, mkdir
+from os.path import isfile, join, exists
 
 from . import make_dict
+from .utils import copytree
 
 build_tools = ["cmake", "make", "autoconf"]
 libs = ["hdf5", "zlib"]
@@ -11,8 +12,12 @@ libs = ["hdf5", "zlib"]
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version):
+    def __init__(self, name, version, path=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
+        if path is None:
+            self._path = "%s/%s" % (getcwd(), name) 
+        else: 
+            self._path = path
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -24,14 +29,17 @@ class Recipe:
     def name(self):
         return self.recipe_dict["package"]["name"] 
 
-    def add_meta_file_path(self, path)
-        self.path_to_meta_file = path_to_meta_file
+    @property
+    def path(self):
+        return self._path
 
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
-        make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
+        if exists(self._path) is False:
+            mkdir(self._path)    
+        make_dict.make_meta_file_from_dict(self.recipe_dict, "%s/meta.yaml" % self._path)
 
-    def add_source_url(self, url)
+    def add_source_url(self, url):
         source = self.recipe_dict.setdefault("source", dict())
         source["url"] = url
 
@@ -65,6 +73,9 @@ class Recipe:
 
     def add_tests(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
+        if exists(self._path) is False:
+            mkdir(self._path)    
+        copytree(test_path, self._path) 
         if test_path is not None:
             files = [
                 f

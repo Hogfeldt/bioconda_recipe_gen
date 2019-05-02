@@ -78,32 +78,26 @@ def bioconda_utils_iterative_build(bioconda_recipe_path, name):
     return (proc, dependencies)
 
 
-def mini_build_setup(name, version, src, hashing):
-    """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
-    path = "./%s" % name
-    os.mkdir("%s/output" % path)
-    resource_path = "/".join(("recipes", "meta.yaml"))
-    meta_template = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (path, "meta.yaml"), "wb") as fp:
-        fp.write(meta_template)
+def mini_build_setup(recipe_path):
+    """ Copy build.sh and meta.yaml recipe path. """
+    os.mkdir("%s/output" % recipe_path)
+    recipe.write_recipe_to_meta_file()
     resource_path = "/".join(("recipes", "build.sh"))
     build_template = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (path, "build.sh"), "wb") as fp:
+    with open("%s/%s" % (recipe_path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-    return Recipe(path + "/meta.yaml", name, version, src, hashing)
 
 
-def run_conda_build_mini(name, build_only=True):
+def run_conda_build_mini(recipe_path, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
     # Setup image
     client = docker.from_env()
     # Run docker image
     flag = "--build-only" if build_only else ""
-    path = "%s/%s" % (os.getcwd(), name)
     container = client.containers.run(
         'perhogfeldt/conda-build-mini:latest',
         "conda build %s --output-folder /home/output /mnt/recipe " % flag,
-        volumes={path: {"bind": "/mnt/recipe", "mode": "ro"}},
+        volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
@@ -119,17 +113,17 @@ def run_conda_build_mini(name, build_only=True):
                     fd.write(b)
                 fd.seek(0)
                 tar_file = tarfile.open(mode='r', fileobj=fd)
-                tar_file.extractall("%s/output" % path)
+                tar_file.extractall("%s/output" % recipe_path)
     container.remove()
     return (result, stdout)
 
 
-def run_conda_build_mini_test(name):
+def run_conda_build_mini_test(recipe_path):
     """ Call run_mini_build with the build_only parameter as False """
-    return run_conda_build_mini(name, False)
+    return run_conda_build_mini(recipe_path, False)
 
 
-def mini_iterative_build(name, version, src, hashing):
+def mini_iterative_build(recipe):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tupple with the last standard output and a list of found dependencies.
     
@@ -137,14 +131,14 @@ def mini_iterative_build(name, version, src, hashing):
         src: A link to where the source file can be downloaded
     """
 
-    recipe = mini_build_setup(name, version, src, hashing)
+    mini_build_setup(recipe.path)
     print("mini setup done")
 
     c = 0
     new_recipe = deepcopy(recipe)
     return_code = 1
     while return_code != 0:
-        result, stdout = run_conda_build_mini(name)
+        result, stdout = run_conda_build_mini(recipe.path)
 
         for line in stdout.split("\n"):
             line_normalized = line.lower()
@@ -183,28 +177,17 @@ def mini_iterative_build(name, version, src, hashing):
         print("%s iteration" % c)
 
         if not logging.getLogger().disabled:
-            src = "%s/%s/output" % (os.getcwd(), name)
-            dst = "%s/%s/debug_output_files/build_iter%d" % (os.getcwd(), name, c)
+            src = "%s/output" % recipe.path
+            dst = "%s/debug_output_files/build_iter%d" % recipe.path
             os.mkdir(dst)
             copytree(src, dst)
 
     return ((result, stdout), recipe)
 
 
-def add_tests(name, recipe, test_path):
-    """ Copy test files from test_path to './name' and add test files to the recipe """
-    print("Copying test files")
-    path = "./%s" % name
-    copytree(test_path, path)
-    recipe.add_tests(test_path)
-    recipe.write_recipe_to_meta_file()
-
-
-def mini_iterative_test(name, recipe, test_path):
+def mini_iterative_test(recipe):
     print("mini iterative test started")
-    if test_path is not None:
-        add_tests(name, recipe, test_path)
-    result, stdout = run_conda_build_mini_test(name)
+    result, stdout = run_conda_build_mini_test(recipe.path)
     for line in stdout.split("\n"):
         line_normalized = line.lower()
         if "['zlib'] not in reqs/run" in line_normalized:
@@ -212,8 +195,8 @@ def mini_iterative_test(name, recipe, test_path):
     recipe.write_recipe_to_meta_file()
 
     if not logging.getLogger().disabled:
-        src = "%s/%s/output" % (os.getcwd(), name)
-        dst = "%s/%s/debug_output_files/test_iter1" % (os.getcwd(), name)
+        src = "%s/output" % recipe.path
+        dst = "%s/debug_output_files/test_iter1" % recipe.path
         os.mkdir(dst)
         copytree(src, dst)
 

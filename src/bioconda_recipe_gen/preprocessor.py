@@ -1,10 +1,13 @@
 from .recipe import Recipe
 
+
 def cmake_recipe_factory(name, version):
     recipe = Recipe(name, version)
-    recipe.add_requirement('make', 'build')
-    recipe.add_requirement('cmake', 'build')
+    recipe.add_requirement("make", "build")
+    recipe.add_requirement("cmake", "build")
+    recipe.add_requirement("{{ compiler('cxx') }}", "build")
     return recipe
+
 
 def preprocess(args):
     recipe = cmake_recipe_factory(args.name, args.version)
@@ -15,7 +18,6 @@ def preprocess(args):
         recipe.add_checksum_md5(args.md5)
     if args.tests is not None:
         recipe.add_tests(args.tests[0])
-    if args.test-command is not None:
-        recipe.add_test_command(arg.test-command)
+    if args.command is not None:
+        recipe.add_test_command(arg.command)
     return recipe
-
