@@ -32,16 +32,3 @@ def download_and_unpack_source(src, dir_path):
             "--strip-components=1",
         ]
         subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
-
-
-def map_alpine_pkg_to_conda_pkg(alpine_pkg):
-    resource_package = __name__
-    loaded_map_binary = pkg_resources.resource_string(
-        resource_package, "alpine_to_conda_map.txt"
-    )
-    loaded_map = loaded_map_binary.decode("utf-8")
-    for line in loaded_map.splitlines():
-        if line.startswith(alpine_pkg):
-            _, conda_pkg = line.split("#")
-            return conda_pkg
-    return None
