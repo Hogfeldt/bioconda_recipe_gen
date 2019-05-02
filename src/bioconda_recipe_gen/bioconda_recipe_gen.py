@@ -37,7 +37,9 @@ def main(name, version, src, hashing, bioconda_recipe_path, debug, test_path=Non
 
     try:
         # run conda-build with --build-only flag
-        mini_proc_build, recipe = build.mini_iterative_build(name, version, src, hashing)
+        mini_proc_build, recipe = build.mini_iterative_build(
+            name, version, src, hashing
+        )
         print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
         for line in mini_proc_build[1].split("\n"):
             print(line)
