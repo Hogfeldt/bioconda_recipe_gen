@@ -11,17 +11,10 @@ libs = ["hdf5", "zlib"]
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, path_to_meta_file, name, version, url, hashing):
-        self.path_to_meta_file = path_to_meta_file
-        self.recipe_dict = make_dict.make_dict_from_meta_file(path_to_meta_file)
+    def __init__(self, name, version, hashing):
+        self.recipe_dict = dict()
         self.recipe_dict["package"]["name"] = name
         self.recipe_dict["package"]["version"] = version
-        self.recipe_dict["source"]["url"] = url
-        if hashing[0] == "sha":
-            self.recipe_dict["source"]["sha256"] = hashing[1]
-        else:
-            self.recipe_dict["source"]["md5"] = hashing[1]
-        self.write_recipe_to_meta_file()
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -29,9 +22,21 @@ class Recipe:
             return self.recipe_dict == other.recipe_dict
         return False
 
+    def add_meta_file_path(self, path)
+        self.path_to_meta_file = path_to_meta_file
+
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
         make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
+
+    def add_source_url(self, url)
+        self.recipe_dict["source"]["url"] = url
+
+    def add_checksum_md5(self, checksum):
+        self.recipe_dict["source"]["md5"] = checksum
+
+    def add_checksum_sha256(self, checksum):
+        self.recipe_dict["source"]["sha256"] = checksum
 
     def add_requirement(self, pack_name, type_of_requirement, debug_message = "Not specified"):
         """ Adds a package to the list of requirements in the recipe
