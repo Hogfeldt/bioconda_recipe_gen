@@ -24,9 +24,9 @@ def setup_logging(debug, output_dir_path):
         logging.getLogger().disabled = True
 
 
-def main(name, version, src, hashing, bioconda_recipe_path, debug, test_path=None):
+def main(bioconda_recipe_path, recipe, debug):
     # Create output directory
-    output_dir_path = "./%s" % name
+    output_dir_path = "./%s" % recipe.name
     os.mkdir(output_dir_path)
 
     # Setup debugging

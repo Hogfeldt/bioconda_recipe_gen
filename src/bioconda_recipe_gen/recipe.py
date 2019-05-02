@@ -20,6 +20,10 @@ class Recipe:
             return self.recipe_dict == other.recipe_dict
         return False
 
+    @property
+    def name(self):
+        return self.recipe_dict["package"]["name"] 
+
     def add_meta_file_path(self, path)
         self.path_to_meta_file = path_to_meta_file
 
