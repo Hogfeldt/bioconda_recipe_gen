@@ -11,10 +11,8 @@ libs = ["hdf5", "zlib"]
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version, hashing):
-        self.recipe_dict = dict()
-        self.recipe_dict["package"]["name"] = name
-        self.recipe_dict["package"]["version"] = version
+    def __init__(self, name, version):
+        self.recipe_dict = {"package": {"name": name, "version": version}}
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -30,13 +28,16 @@ class Recipe:
         make_dict.make_meta_file_from_dict(self.recipe_dict, self.path_to_meta_file)
 
     def add_source_url(self, url)
-        self.recipe_dict["source"]["url"] = url
+        source = self.recipe_dict.setdefault("source", dict())
+        source["url"] = url
 
     def add_checksum_md5(self, checksum):
-        self.recipe_dict["source"]["md5"] = checksum
+        source = self.recipe_dict.setdefault("source", dict())
+        source["md5"] = checksum
 
     def add_checksum_sha256(self, checksum):
-        self.recipe_dict["source"]["sha256"] = checksum
+        source = self.recipe_dict.setdefault("source", dict())
+        source["sha256"] = checksum
 
     def add_requirement(self, pack_name, type_of_requirement, debug_message = "Not specified"):
         """ Adds a package to the list of requirements in the recipe
@@ -50,7 +51,8 @@ class Recipe:
             return
         elif type_of_requirement == "host" and pack_name in build_tools:
             return
-        curr_list = self.recipe_dict["requirements"].setdefault(type_of_requirement, [])
+        requirements = self.recipe_dict.setdefault("requirements", dict())
+        curr_list = requirements.setdefault(type_of_requirement, [])
         if pack_name not in curr_list:
             logging.debug("Adding %s to %s. Reason for adding requirement: %s" % (pack_name, type_of_requirement, debug_message))
             curr_list.append(pack_name)
@@ -65,13 +67,15 @@ class Recipe:
                 for f in listdir(test_path)
                 if isfile(join(test_path, f)) and "run_test." not in f
             ]
-            curr_list = self.recipe_dict["test"].setdefault("files", [])
+            test = self.recipe_dict.setdefault("test", dict())
+            curr_list = test.setdefault("files", [])
             for f in files:
                 curr_list.append(f)
 
     def add_test_command(self, command):
         """ Adds a test command to 'test: commands: ... ' in recipe """
-        curr_list = self.recipe_dict["test"].setdefault("commands", [])
+        test = self.recipe_dict.setdefault("test", dict())
+        curr_list = test.setdefault("commands", [])
         if command not in curr_list:
             curr_list.append(command)
 
