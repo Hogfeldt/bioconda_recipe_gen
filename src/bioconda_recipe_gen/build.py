@@ -178,7 +178,7 @@ def mini_iterative_build(recipe):
 
         if not logging.getLogger().disabled:
             src = "%s/output" % recipe.path
-            dst = "%s/debug_output_files/build_iter%d" % recipe.path
+            dst = "%s/debug_output_files/build_iter%d" % (recipe.path, c)
             os.mkdir(dst)
             copytree(src, dst)
 
