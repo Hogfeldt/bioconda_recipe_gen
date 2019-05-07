@@ -19,7 +19,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86
 RUN conda config --add channels conda-forge
 
 RUN conda update conda && \
-    conda install conda-build conda-verify
+    conda install conda-build conda-verify conda-forge-pinning
 
 ENV TINI_VERSION v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
