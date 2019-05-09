@@ -18,6 +18,7 @@ class Recipe:
             self._path = "%s/%s" % (getcwd(), name) 
         else: 
             self._path = path
+        mkdir(self._path)
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -87,10 +88,10 @@ class Recipe:
             for f in files:
                 curr_list.append(f)
 
-    def add_test_command(self, command):
-        """ Adds a test command to 'test: commands: ... ' in recipe """
+    def add_test_commands(self, commands):
+        """ Adds test commands to 'test: commands: ... ' in recipe """
         test = self.recipe_dict.setdefault("test", dict())
         curr_list = test.setdefault("commands", [])
-        if command not in curr_list:
-            curr_list.append(command)
+        if commands not in curr_list:
+            curr_list.extend(commands)
 
