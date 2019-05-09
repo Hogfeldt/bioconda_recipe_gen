@@ -27,6 +27,10 @@ def start():
         nargs=1,
     )
     parser.add_argument(
+        "--patches",
+        help="Add paths to folder with the patch files that should be used for the project",
+    )
+    parser.add_argument(
         "--commands",
         "--test-commands",
         help="Add test command to recipe",

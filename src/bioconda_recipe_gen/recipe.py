@@ -95,3 +95,12 @@ class Recipe:
         if commands not in curr_list:
             curr_list.extend(commands)
 
+    def add_patches(self, patches_path):
+        """ Adds patches to 'source: patches: ... ' in recipe """
+        if exists(self._path) is False:
+            mkdir(self._path)    
+        copytree(patches_path, self._path)
+        test = self.recipe_dict.setdefault("source", dict())
+        curr_list = test.setdefault("patches", [])
+        for f in listdir(patches_path):
+            curr_list.append(f)

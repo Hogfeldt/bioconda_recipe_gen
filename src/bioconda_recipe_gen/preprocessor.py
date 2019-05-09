@@ -20,4 +20,7 @@ def preprocess(args):
         recipe.add_tests(args.tests[0])
     if args.commands is not None:
         recipe.add_test_commands(args.commands)
+    if args.patches is not None:
+        print(args.patches)
+        recipe.add_patches(args.patches) 
     return recipe
