@@ -167,6 +167,10 @@ def mini_iterative_build(recipe):
             if "could not find hdf5" in line_normalized:
                 debug_message = "Because 'could not find hdf5' was in the error message"
                 new_recipe.add_requirement("hdf5", "host", debug_message=debug_message)
+            if "unable to find the requested boost libraries" in line_normalized:
+                debug_message = "Because 'Unable to find the requested Boost libraries' was in the error message"
+                new_recipe.add_requirement("boost", "host", debug_message=debug_message) 
+
         if new_recipe == recipe:
             break
         else:
