@@ -87,11 +87,7 @@ def mini_build_setup(recipe):
     build_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
         fp.write(build_template)
-    # Copy conda-forge-pinning's conda_build_config into the recipe folder
-    resource_path = "/".join(("recipes", "conda_build_config.yaml"))
-    conda_build_config = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (recipe.path, "conda_build_config.yaml"), "wb") as fp:
-        fp.write(conda_build_config)
+
 
 def run_conda_build_mini(recipe_path, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
@@ -101,8 +97,8 @@ def run_conda_build_mini(recipe_path, build_only=True):
     flag = "--build-only" if build_only else ""
     container = client.containers.run(
         'perhogfeldt/conda-build-mini:latest',
-        "conda build %s --output-folder /home/output /mnt/recipe " % flag,
-        volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
+        command=["sh", "-c", "cp /opt/conda/conda_build_config.yaml /mnt/recipe ; conda build %s --output-folder /home/output /mnt/recipe" % flag],        
+        volumes={recipe_path: {"bind": "/mnt/recipe"}},
         detach=True,
     )
     result = container.wait()
