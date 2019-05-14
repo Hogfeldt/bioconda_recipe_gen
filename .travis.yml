@@ -1,0 +1,36 @@
+language: python
+
+services:
+  - docker
+
+before_install:
+
+  # Install Miniconda 
+
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+
+install:
+
+  # Create conda environment with python 3.6 and add channels
+
+  - conda create --yes -n test python=3.6
+  - conda config --add channels conda-forge
+  - conda config --add channels bioconda
+  - source activate test
+
+  # Install dependencies into conda environment
+
+  - conda install --yes bioconda-utils docker-py
+
+before_script:
+
+  # Download Bioconda-recipe repository
+  
+  - git clone https://github.com/bioconda/bioconda-recipes 
+
+script:
+  - ./travis/test.sh
