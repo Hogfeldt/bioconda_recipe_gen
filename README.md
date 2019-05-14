@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Hogfeldt/bioconda_recipe_gen.svg?branch=master)](https://travis-ci.org/Hogfeldt/bioconda_recipe_gen)
+
 # bioconda_recipe_gen
 Recipe generator for Bioconda
 
