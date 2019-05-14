@@ -26,7 +26,16 @@ def start():
         help="Add path to a directory, containing tests for your package. The Directory will have to contain a run_test.[py,pl,sh,bat] file and eventually other files needed for the run_test.[py,pl,sh,bat] file",
         nargs=1,
     )
-    parser.add_argument("--command", "--test-command", help="Add test command to recipe")
+    parser.add_argument(
+        "--patches",
+        help="Add paths to folder with the patch files that should be used for the project",
+    )
+    parser.add_argument(
+        "--commands",
+        "--test-commands",
+        help="Add test command to recipe",
+        nargs="*"
+    )
     parser.add_argument(
         "-d",
         "--debug",

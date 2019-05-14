@@ -18,6 +18,9 @@ def preprocess(args):
         recipe.add_checksum_md5(args.md5)
     if args.tests is not None:
         recipe.add_tests(args.tests[0])
-    if args.command is not None:
-        recipe.add_test_command(args.command)
+    if args.commands is not None:
+        recipe.add_test_commands(args.commands)
+    if args.patches is not None:
+        print(args.patches)
+        recipe.add_patches(args.patches) 
     return recipe

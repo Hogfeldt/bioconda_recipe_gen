@@ -82,6 +82,7 @@ def mini_build_setup(recipe):
     """ Copy build.sh and meta.yaml recipe path. """
     os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
+    # Copy our build.sh into the recipe folder
     resource_path = "/".join(("recipes", "build.sh"))
     build_template = pkg_resources.resource_string(__name__, resource_path)
     with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
@@ -97,7 +98,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
     container = client.containers.run(
         'perhogfeldt/conda-build-mini:latest',
         "conda build %s --output-folder /home/output /mnt/recipe " % flag,
-        volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
+	    volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
@@ -167,6 +168,10 @@ def mini_iterative_build(recipe):
             if "could not find hdf5" in line_normalized:
                 debug_message = "Because 'could not find hdf5' was in the error message"
                 new_recipe.add_requirement("hdf5", "host", debug_message=debug_message)
+            if "unable to find the requested boost libraries" in line_normalized:
+                debug_message = "Because 'Unable to find the requested Boost libraries' was in the error message"
+                new_recipe.add_requirement("boost", "host", debug_message=debug_message) 
+
         if new_recipe == recipe:
             break
         else:
