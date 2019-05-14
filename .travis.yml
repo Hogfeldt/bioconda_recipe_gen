@@ -6,6 +6,13 @@ python:
 services:
   - docker
 
+env:
+  
+  # Packages to build
+
+  - PACKAGE=kallisto
+  - PACKAGE=htstream
+
 before_install:
 
   # Install Miniconda 
@@ -40,4 +47,4 @@ before_script:
   - python setup.py develop
 
 script:
-  - ./travis/test.sh
+  - ./travis/test.sh $PACKAGE
