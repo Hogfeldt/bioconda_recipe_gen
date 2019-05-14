@@ -35,5 +35,9 @@ before_script:
   
   - git clone https://github.com/bioconda/bioconda-recipes 
 
+  # Install bioconda-recipe-gen
+
+  - python setup.py develop
+
 script:
   - ./travis/test.sh
