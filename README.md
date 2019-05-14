@@ -16,7 +16,7 @@ After you have cloned this repo (bioconda_recipe_gen):
 * Set channels:
 	* `conda config --add channels conda-forge`
 	* `conda config --add channels bioconda`
-* Install bioconda-utils: `conda install bioconda-utils`
+* Install bioconda-utils: `conda install bioconda-utils docker-py`
 
 ### How to run the script and tests as developer
 * First, run the following command: `python setup.py develop`
