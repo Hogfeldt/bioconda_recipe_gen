@@ -97,10 +97,8 @@ def run_conda_build_mini(recipe_path, build_only=True):
     flag = "--build-only" if build_only else ""
     container = client.containers.run(
         'perhogfeldt/conda-build-mini:latest',
-        command=["sh", "-c", "cp /opt/conda/conda_build_config.yaml /mnt/recipe ; \
-                    conda build %s --output-folder /home/output /mnt/recipe ; \
-                    rm /mnt/recipe/conda_build_config.yaml" % flag],        
-        volumes={recipe_path: {"bind": "/mnt/recipe"}},
+        "conda build %s --output-folder /home/output /mnt/recipe " % flag,
+	    volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
