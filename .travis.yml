@@ -38,10 +38,6 @@ install:
 
 before_script:
 
-  # Download Bioconda-recipe repository
-  
-  - git clone https://github.com/bioconda/bioconda-recipes 
-
   # Install bioconda-recipe-gen
 
   - python setup.py install
