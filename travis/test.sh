@@ -12,9 +12,9 @@ build_kallisto()
     url=https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz
     sha=b32c74cdc0349c2fe0847b3464a3698da89212a507332a06291b6fc27b4e2305 
     tests=$DATA_PATH/kallisto 
-    versio=0.45.0
+    version=0.45.0
     commands="kallisto version"
-    bioconda-recipe-gen $BR_PATH -n $name -u $url --tests $tests -s $sha -v $version --debug --commands $commands
+    echo bioconda-recipe-gen $BR_PATH -n $name -u $url --tests $tests -s $sha -v $version --debug --commands $commands
 }
 
 build_htstream()
@@ -25,7 +25,7 @@ build_htstream()
     version=1.0.1
     commands="hts_Stats --help" "hts_AdapterTrimmer --help" "hts_CutTrim --help" "hts_NTrimmer --help" "hts_Overlapper --help" "hts_PolyATTrim --help" "hts_QWindowTrim --help" "hts_SeqScreener --help" "hts_SuperDeduper --help" 
     patches=$DATA_PATH/htstream
-    bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands --patches $patches
+    echo bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands --patches $patches
 }
 
 ##### Choose package to build
