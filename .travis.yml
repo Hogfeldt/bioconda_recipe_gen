@@ -44,7 +44,7 @@ before_script:
 
   # Install bioconda-recipe-gen
 
-  - python setup.py develop
+  - python setup.py install
 
 script:
   - ./travis/test.sh $PACKAGE
