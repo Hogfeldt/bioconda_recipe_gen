@@ -21,15 +21,15 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda3/bin:$PATH
+  - conda config --add channels conda-forge
+  - conda config --add channels bioconda
   - conda update --yes conda
 
 install:
 
-  # Create conda environment with python 3.6 and add channels
+  # Create conda environment with python 3.6
 
   - conda create --yes -n test python=3.6
-  - conda config --add channels conda-forge
-  - conda config --add channels bioconda
   - source activate test
 
   # Install dependencies into conda environment
