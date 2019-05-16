@@ -13,11 +13,11 @@ Since we are using bioconda-utils, the program requires mac users to use the mac
 
 ### Setup
 After you have cloned this repo (bioconda_recipe_gen):
-* Create a new conda environement with the following command: `conda create -n bioconda_recipe_gen python=3.6`
-* Open the environment with: `conda activate bioconda_recipe_gen`
 * Set channels:
 	* `conda config --add channels conda-forge`
 	* `conda config --add channels bioconda`
+* Create a new conda environement with the following command: `conda create -n bioconda_recipe_gen python=3.6`
+* Open the environment with: `conda activate bioconda_recipe_gen`
 * Install bioconda-utils: `conda install bioconda-utils docker-py`
 
 ### How to run the script and tests as developer
