@@ -1,4 +1,0 @@
-hdf5#hdf5
-zlib-dev#zlib
-autoconf#autoconf
-hdf5-dev#hdf5

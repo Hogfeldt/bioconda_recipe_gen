@@ -34,50 +34,6 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
     return proc
 
 
-def bioconda_utils_build_setup(bioconda_recipe_path, name):
-    """ Copy build.sh and meta.yaml templates to bioconda-recipes. Return a Recipe object based on the templates. """
-    # SETUP
-    # Make a new dir in 'bioconda-recipe/recipes'
-    path = "%s/recipes/%s" % (bioconda_recipe_path, name)
-    os.mkdir(path)
-    # Copy recipe to into the new dir
-    resource_package = __name__
-    resource_path = "/".join(("recipes", "meta.yaml"))
-    meta_template = pkg_resources.resource_string(resource_package, resource_path)
-    with open("%s/%s" % (path, "meta.yaml"), "wb") as fp:
-        fp.write(meta_template)
-    resource_path = "/".join(("recipes", "build.sh"))
-    build_template = pkg_resources.resource_string(resource_package, resource_path)
-    with open("%s/%s" % (path, "build.sh"), "wb") as fp:
-        fp.write(build_template)
-
-    return Recipe(path + "/meta.yaml")
-
-
-def bioconda_utils_iterative_build(bioconda_recipe_path, name):
-    """ Try to build a package with bioconda-utils """
-    recipe = bioconda_utils_build_setup(bioconda_recipe_path, name)
-    # BUILD
-    # Do the iterative build
-    dependencies = []
-    proc = bioconda_utils_build(name, bioconda_recipe_path)
-
-    if proc.returncode != 0:
-        # Check for dependencies
-        for line in proc.stdout.split("\n"):
-            line_norma = line.lower()
-            if "missing" in line_norma:
-                print(line_norma)
-                if "hdf5" in line_norma:
-                    recipe.add_requirement("hdf5", "host")
-                    dependencies.append("hdf5")
-
-        # after new requirements are added: write new recipe to meta.yaml
-        recipe.write_recipe_to_meta_file()
-    proc = bioconda_utils_build(name, bioconda_recipe_path)
-    return (proc, dependencies)
-
-
 def mini_build_setup(recipe):
     """ Copy build.sh and meta.yaml recipe path. """
     os.mkdir("%s/output" % recipe.path)
