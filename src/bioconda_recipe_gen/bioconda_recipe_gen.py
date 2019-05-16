@@ -9,11 +9,6 @@ from . import utils
 from .recipe import Recipe
 
 
-def return_hello():
-    """ This is a test function for our unittest setup and should be removed when we start using the test setup"""
-    return "hello"
-
-
 def setup_logging(debug, output_dir_path):
     if debug:
         debug_filename = "%s/debug.log" % output_dir_path
