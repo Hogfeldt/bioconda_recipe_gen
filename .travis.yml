@@ -6,6 +6,10 @@ python:
 services:
   - docker
 
+branches:
+  only:
+  - master
+
 env:
   
   # Packages to build
