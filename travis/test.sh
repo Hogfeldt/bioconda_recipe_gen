@@ -28,11 +28,22 @@ build_htstream()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands --patches $patches
 }
 
+build_clever_toolkit()
+{
+    name=clever-toolkit2
+    url=https://bitbucket.org/tobiasmarschall/clever-toolkit/downloads/clever-toolkit-v2.4.tar.gz
+    sha=a8db97fd9c23a4519f63d60955361547fadcc1ece1bc51e4dd3ee224fb2131b7
+    version=2.4
+    commands="clever --help > /dev/null" "laser --help > /dev/null"
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands
+}
+
 ##### Choose package to build
 
 package=$1
 case $package in
     # Cmake and Make packages
-    kallisto)   build_kallisto;;
-    htstream)   build_htstream;;
+    kallisto)           build_kallisto;;
+    htstream)           build_htstream;;
+    clever-toolkit)     build_clever_toolkit;;
 esac
