@@ -28,6 +28,16 @@ build_htstream()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands --patches $patches
 }
 
+build_clever_toolkit()
+{
+    name=clever-toolkit2
+    url=https://bitbucket.org/tobiasmarschall/clever-toolkit/downloads/clever-toolkit-v2.4.tar.gz
+    sha=a8db97fd9c23a4519f63d60955361547fadcc1ece1bc51e4dd3ee224fb2131b7
+    version=2.4
+    commands="clever --help > /dev/null" "laser --help > /dev/null"
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands
+}
+
 build_qfilt()
 {
     name=qfilt2
@@ -67,5 +77,6 @@ case $package in
     htstream)           build_htstream;;
     qfilt)              build_qfilt;;
     libdivsufsort)      build_libdivsufsort;;
+    clever-toolkit)     build_clever_toolkit;;
     tn93)               build_tn93;;
 esac
