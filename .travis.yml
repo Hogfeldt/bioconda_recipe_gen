@@ -16,6 +16,7 @@ env:
 
   - PACKAGE=kallisto
   - PACKAGE=htstream
+  - PACKAGE=clever-toolkit
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
 
@@ -53,4 +54,4 @@ before_script:
   - python setup.py install
 
 script:
-  - ./travis/test.sh $PACKAGE
+  - travis_wait 60 ./travis/test.sh $PACKAGE
