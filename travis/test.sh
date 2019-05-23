@@ -38,6 +38,16 @@ build_clever_toolkit()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands $commands
 }
 
+build_qfilt()
+{
+    name=qfilt2
+    url=https://github.com/veg/qfilt/archive/0.0.1.tar.gz
+    sha=b0ada01c44c98b1a8bebf88c72a845b24f91a7cc63687e228b1ad872681adc09
+    version=0.0.1
+    commands="qfilt -h 2>&1 | grep 'filter sequencing data using some simple heuristics' > /dev/null"
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands "$commands"
+}
+
 build_libdivsufsort()
 {
     name=libdivsufsort2 
@@ -56,5 +66,6 @@ case $package in
     kallisto)           build_kallisto;;
     htstream)           build_htstream;;
     clever-toolkit)     build_clever_toolkit;;
-    libdivsufsort)  build_libdivsufsort;;
+    qfilt)               build_qfilt;;
+    libdivsufsort)      build_libdivsufsort;;
 esac
