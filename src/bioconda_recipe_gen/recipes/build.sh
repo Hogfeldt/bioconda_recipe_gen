@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX ..
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_PREFIX=$PREFIX
 make
 make install
 
