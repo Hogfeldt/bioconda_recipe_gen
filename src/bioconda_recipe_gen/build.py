@@ -127,7 +127,9 @@ def mini_iterative_build(recipe):
             if "unable to find the requested boost libraries" in line_normalized:
                 debug_message = "Because 'Unable to find the requested Boost libraries' was in the error message"
                 new_recipe.add_requirement("boost", "host", debug_message=debug_message) 
-
+            if "no cmake_cxx_compiler could be found" in line_normalized:
+                debug_message = "Because 'no cmake_cxx_compiler could be found' was in the error message"
+                new_recipe.add_requirement("{{ compiler('cxx') }}", "build", debug_message=debug_message) 
         if new_recipe == recipe:
             break
         else:

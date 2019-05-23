@@ -5,7 +5,7 @@ def cmake_recipe_factory(name, version):
     recipe = Recipe(name, version)
     recipe.add_requirement("make", "build")
     recipe.add_requirement("cmake", "build")
-    recipe.add_requirement("{{ compiler('cxx') }}", "build")
+    recipe.add_requirement("{{ compiler('c') }}", "build")
     return recipe
 
 
