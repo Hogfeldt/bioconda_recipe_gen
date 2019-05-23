@@ -50,4 +50,4 @@ before_script:
   - python setup.py install
 
 script:
-  - travis_wait 20 ./travis/test.sh $PACKAGE
+  - travis_wait 60 ./travis/test.sh $PACKAGE
