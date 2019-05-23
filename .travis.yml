@@ -14,6 +14,7 @@ env:
   - PACKAGE=htstream
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
+  - PACKAGE=tn93
 
 before_install:
 
