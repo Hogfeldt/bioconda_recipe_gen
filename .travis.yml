@@ -19,6 +19,7 @@ env:
   - PACKAGE=clever-toolkit
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
+  - PACKAGE=tn93
 
 before_install:
 
