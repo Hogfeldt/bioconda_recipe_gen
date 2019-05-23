@@ -38,6 +38,16 @@ build_qfilt()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -s $sha -v $version --test-commands "$commands"
 }
 
+build_libdivsufsort()
+{
+    name=libdivsufsort2 
+    url=https://github.com/y-256/libdivsufsort/archive/5f60d6f026c30fb4ac296f696b3c8b0eb71bd428.tar.gz
+    md5=209482686af0b9283659637bd6d51297
+    version=2.0.2
+    commands="test -e ${PREFIX}/include/divsufsort.h" "test -e ${PREFIX}/include/divsufsort64.h" 
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -m $md5 -v $version --test-commands $commands
+}
+
 ##### Choose package to build
 
 package=$1
@@ -46,4 +56,5 @@ case $package in
     kallisto)           build_kallisto;;
     htstream)           build_htstream;;
     qfilt)              build_qfilt;;
+    libdivsufsort)  build_libdivsufsort;;
 esac

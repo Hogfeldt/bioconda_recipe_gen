@@ -13,6 +13,7 @@ env:
   - PACKAGE=kallisto
   - PACKAGE=htstream
   - PACKAGE=qfilt
+  - PACKAGE=libdivsufsort
 
 before_install:
 
