@@ -3,6 +3,17 @@ import subprocess
 import os
 import pkg_resources
 import shutil
+import tempfile
+import hashlib
+
+
+def calculate_md5_checksum(url):
+    """ Calculate the md5 checksum of the file found at the url """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        file_path = "%s/file_to_check" % tmpdir
+        urllib.request.urlretrieve(url, file_path)
+        md5_hash = hashlib.md5(open(file_path, "rb").read()).hexdigest()
+    return md5_hash
 
 
 def copytree(src, dst, symlinks=False, ignore=None):

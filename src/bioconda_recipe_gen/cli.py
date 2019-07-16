@@ -53,7 +53,7 @@ def start():
         "-v", "--version", help="The version number of the build", required=True
     )
     # make sure that we either SHA or MD5 (not both of them, not none of them)
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         "-s",
         "--sha",
