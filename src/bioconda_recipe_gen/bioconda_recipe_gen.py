@@ -41,13 +41,15 @@ def main(bioconda_recipe_path, recipe, debug):
 
         # Sanity check
         success = build.mini_sanity_check(bioconda_recipe_path, recipe.name)
-        if success:
-            print("SUCCESS: Package was successfully build")
-        else:
-            print("ERROR: Didn't pass the sanity check!")
-
         # copy the final recipe into the current directory
         copyfile(path + "/meta.yaml", "./meta.yaml")
+        if success:
+            print("SUCCESS: Package was successfully build")
+            sys.exit(0)
+        else:
+            print("ERROR: Didn't pass the sanity check!")
+            sys.exit(1)
+
 
     finally:
         # clean up
