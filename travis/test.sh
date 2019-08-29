@@ -14,6 +14,8 @@ build_kallisto()
     version=0.45.0
     commands="kallisto version"
     bioconda-recipe-gen $BR_PATH -n $name -u $url --tests $tests -v $version --debug --commands $commands
+    status=$?
+    exit $status
 }
 
 build_htstream()
