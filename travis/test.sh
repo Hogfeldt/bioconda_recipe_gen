@@ -49,7 +49,8 @@ build_libdivsufsort()
     url=https://github.com/y-256/libdivsufsort/archive/5f60d6f026c30fb4ac296f696b3c8b0eb71bd428.tar.gz
     version=2.0.2
     commands=("test -e \${PREFIX}/include/divsufsort.h" "test -e \${PREFIX}/include/divsufsort64.h")
-    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}" 
+    cmakeflags=("DCMAKE_INSTALL_PREFIX=\$PREFIX" "DBUILD_DIVSUFSORT64=\"On\"")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}" --cmake-flags "${cmakeflags[@]}"
 }
 
 build_tn93()
