@@ -9,7 +9,7 @@ import docker
 from shutil import rmtree, copy2, copyfile
 from copy import deepcopy
 
-from .utils import download_and_unpack_source, copytree
+from .utils import copytree
 from .recipe import Recipe
 
 
