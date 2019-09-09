@@ -72,8 +72,7 @@ class Recipe:
             if type_of_requirement == "host":
                 self.add_requirement(pack_name, "run")
             if pack_name == "{{ compiler('cxx') }}" and "{{ compiler('c') }}" in curr_list:
-                #curr_list.remove("{{ compiler('c') }}")
-                pass
+                curr_list.remove("{{ compiler('c') }}")
 
     def add_test_files_with_path(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
