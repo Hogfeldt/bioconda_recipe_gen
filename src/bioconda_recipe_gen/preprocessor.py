@@ -24,7 +24,9 @@ def preprocess(args):
     recipe.add_source_url(args.url)
     add_checksum(recipe, args)
     if args.tests is not None:
-        recipe.add_tests(args.tests[0])
+        recipe.add_test_files_with_path(args.tests[0])
+    if args.files is not None:
+        recipe.add_test_files_with_list(args.files)
     if args.commands is not None:
         recipe.add_test_commands(args.commands)
     if args.patches is not None:

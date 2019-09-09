@@ -27,6 +27,12 @@ def start():
         nargs=1,
     )
     parser.add_argument(
+        "--files",
+        "--test-files",
+        help="Add a list of test files that should be added to the recipe. This is just an alternative way to the same as the --tests flags",
+        nargs="*",
+    )
+    parser.add_argument(
         "--patches",
         help="Add paths to folder with the patch files that should be used for the project",
     )
