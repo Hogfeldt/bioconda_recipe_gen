@@ -96,7 +96,6 @@ def mini_iterative_build(recipe):
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini(recipe.path)
-        
         for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)

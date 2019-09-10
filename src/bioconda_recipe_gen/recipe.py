@@ -74,7 +74,7 @@ class Recipe:
             if pack_name == "{{ compiler('cxx') }}" and "{{ compiler('c') }}" in curr_list:
                 curr_list.remove("{{ compiler('c') }}")
 
-    def add_tests(self, test_path):
+    def add_test_files_with_path(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
         if exists(self._path) is False:
             mkdir(self._path)    
@@ -89,6 +89,13 @@ class Recipe:
             curr_list = test.setdefault("files", [])
             for f in files:
                 curr_list.append(f)
+
+    def add_test_files_with_list(self, test_files):
+        """ Adds test files from test_files to the recipe """
+        test = self.recipe_dict.setdefault("test", dict())
+        curr_list = test.setdefault("files", [])
+        for test_file in test_files:
+            curr_list.append(test_file)
 
     def add_test_commands(self, commands):
         """ Adds test commands to 'test: commands: ... ' in recipe """
