@@ -21,11 +21,10 @@ build_kallisto()
 build_htstream()
 {
     name=htstream2
-    url=https://github.com/ibest/HTStream/archive/v1.0.0-release.tar.gz
-    version=1.0.1
-    commands="hts_Stats --help" "hts_AdapterTrimmer --help" "hts_CutTrim --help" "hts_NTrimmer --help" "hts_Overlapper --help" "hts_PolyATTrim --help" "hts_QWindowTrim --help" "hts_SeqScreener --help" "hts_SuperDeduper --help"
-    patches=$DATA_PATH/htstream
-    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands $commands --patches $patches
+    url=https://github.com/ibest/HTStream/archive/v1.1.0-release.tar.gz
+    version=1.1.0
+    commands=("hts_Stats --help" "hts_AdapterTrimmer --help" "hts_CutTrim --help" "hts_NTrimmer --help" "hts_Overlapper --help" "hts_PolyATTrim --help" "hts_QWindowTrim --help" "hts_SeqScreener --help" "hts_SuperDeduper --help")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}"
 }
 
 build_clever_toolkit()
@@ -33,8 +32,8 @@ build_clever_toolkit()
     name=clever-toolkit2
     url=https://bitbucket.org/tobiasmarschall/clever-toolkit/downloads/clever-toolkit-v2.4.tar.gz
     version=2.4
-    commands="clever --help > /dev/null" "laser --help > /dev/null"
-    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands $commands
+    commands=("clever --help > /dev/null" "laser --help > /dev/null")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}"
 }
 
 build_qfilt()
@@ -51,8 +50,9 @@ build_libdivsufsort()
     name=libdivsufsort2
     url=https://github.com/y-256/libdivsufsort/archive/5f60d6f026c30fb4ac296f696b3c8b0eb71bd428.tar.gz
     version=2.0.2
-    commands="test -e ${PREFIX}/include/divsufsort.h" "test -e ${PREFIX}/include/divsufsort64.h"
-    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands $commands
+    commands=("test -e \${PREFIX}/include/divsufsort.h" "test -e \${PREFIX}/include/divsufsort64.h")
+    cmakeflags=("DCMAKE_INSTALL_PREFIX=\$PREFIX" "DBUILD_DIVSUFSORT64=\"On\"")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}" --cmake-flags "${cmakeflags[@]}"
 }
 
 build_tn93()

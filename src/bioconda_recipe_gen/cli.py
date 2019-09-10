@@ -58,6 +58,12 @@ def start():
     parser.add_argument(
         "-v", "--version", help="The version number of the build", required=True
     )
+    parser.add_argument(
+        "--cmake",
+        "--cmake-flags",
+        help="If you don't want to run cmake with our default flags: 'DCMAKE_INSTALL_PREFIX=$PREFIX' and ' DINSTALL_PREFIX=$PREFIX', you can add your own here. Note: do NOT added the dashes in front of the flags.",
+        nargs="*"
+    )
     # make sure that we either SHA or MD5 (not both of them, not none of them)
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
