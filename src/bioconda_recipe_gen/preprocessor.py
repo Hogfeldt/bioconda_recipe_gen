@@ -1,3 +1,4 @@
+import os
 import pkg_resources
 from .recipe import Recipe
 from .utils import calculate_md5_checksum
@@ -15,17 +16,17 @@ def cmake_recipe_factory(name, version, cmake_flags):
             flags = flags + "-{} ".format(flag)
     else:
         flags = "-DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_PREFIX=$PREFIX"
-    _make_build_file(flags)
+    _make_build_file(name, flags)
 
     return recipe
 
 
-def _make_build_file(flags):
+def _make_build_file(name, flags):
     """Function to make the build.sh, which
     depends on which flags should be added to the 
     template file."""
     build_template_file = pkg_resources.resource_filename(__name__, "recipes/template_build.sh")
-    build_file = pkg_resources.resource_filename(__name__, "recipes/build.sh")
+    build_file = "%s/%s/build.sh" % (os.getcwd(), name)  
     with open(build_template_file, "r") as template:
         with open(build_file, "w") as build_file:
             for line in template:
