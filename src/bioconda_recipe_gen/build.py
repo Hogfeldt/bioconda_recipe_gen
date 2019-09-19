@@ -38,11 +38,11 @@ def mini_build_setup(recipe):
     """ Copy build.sh and meta.yaml recipe path. """
     os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
-    # Copy our build.sh into the recipe folder
-    resource_path = "/".join(("recipes", "build.sh"))
-    build_template = pkg_resources.resource_string(__name__, resource_path)
-    with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
-        fp.write(build_template)
+    
+    #resource_path = "/".join(("recipes", "build.sh"))
+    #build_template = pkg_resources.resource_string(__name__, resource_path)
+    #with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
+    #    fp.write(build_template)
 
 
 def run_conda_build_mini(recipe_path, build_only=True):

@@ -1,3 +1,5 @@
+import os
+import pkg_resources
 from .recipe import Recipe
 from .utils import calculate_md5_checksum
 
@@ -14,21 +16,25 @@ def cmake_recipe_factory(name, version, cmake_flags):
             flags = flags + "-{} ".format(flag)
     else:
         flags = "-DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_PREFIX=$PREFIX"
-    _make_build_file(flags)
+    _make_build_file(name, flags)
 
     return recipe
 
-def _make_build_file(flags):
+
+def _make_build_file(name, flags):
     """Function to make the build.sh, which
     depends on which flags should be added to the 
     template file."""
-    
-    with open("src/bioconda_recipe_gen/recipes/template_build.sh", "r") as template:
-        with open("src/bioconda_recipe_gen/recipes/build.sh", "w") as build_file:
+    build_template_file = pkg_resources.resource_filename(__name__, "recipes/template_build.sh")
+    build_file = "%s/%s/build.sh" % (os.getcwd(), name)  
+    with open(build_template_file, "r") as template:
+        with open(build_file, "w") as build_file:
             for line in template:
+                line = str(line)
                 if line.startswith("cmake"):
                     line = "cmake .. {}\n".format(flags)
                 build_file.write(line)
+
 
 def add_checksum(recipe, args):
     if args.sha is not None:
