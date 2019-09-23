@@ -64,6 +64,15 @@ build_tn93()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
 }
 
+build_lambda()
+{
+    name=lambda42
+    url=https://github.com/seqan/lambda/archive/lambda-v2.0.0.tar.gz
+    version=2.0.0
+    commands="lambda2 --help"
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
+}
+
 build_netreg()
 {
     name=netreg2
@@ -72,6 +81,8 @@ build_netreg()
     commands="netReg -h"
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
 }
+
+
 
 ##### Choose package to build
 
@@ -84,5 +95,6 @@ case $package in
     libdivsufsort)      build_libdivsufsort;;
     clever-toolkit)     build_clever_toolkit;;
     tn93)               build_tn93;;
-    netreg)		build_netreg;;
+    netreg)		          build_netreg;;
+    lambda)             build_lambda;;
 esac
