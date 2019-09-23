@@ -129,6 +129,9 @@ def mini_iterative_build(recipe):
             if "no cmake_cxx_compiler could be found" in line_normalized:
                 debug_message = "Because 'no cmake_cxx_compiler could be found' was in the error message"
                 new_recipe.add_requirement("{{ compiler('cxx') }}", "build", debug_message=debug_message) 
+            if "could not find armadillo" in line_normalized:
+                debug_message = "Because 'could not find armadillo' was in the error message"
+                new_recipe.add_requirement("armadillo", "host", debug_message=debug_message)
         if new_recipe == recipe:
             break
         else:
