@@ -134,7 +134,10 @@ def mini_iterative_build(recipe):
                 new_recipe.add_requirement(
                     "{{ compiler('cxx') }}", "build", debug_message=debug_message
                 )
-            if 'could not find a package configuration file provided by "seqan"' in line_normalized:
+            if (
+                'could not find a package configuration file provided by "seqan"'
+                in line_normalized
+            ):
                 debug_message = "Because 'could not find a package configuration file provided by 'seqan'' was in the error message"
                 new_recipe.add_requirement(
                     "seqan-library", "build", debug_message=debug_message
