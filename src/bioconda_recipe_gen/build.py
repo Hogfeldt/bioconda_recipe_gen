@@ -38,10 +38,10 @@ def mini_build_setup(recipe):
     """ Copy build.sh and meta.yaml recipe path. """
     os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
-    
-    #resource_path = "/".join(("recipes", "build.sh"))
-    #build_template = pkg_resources.resource_string(__name__, resource_path)
-    #with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
+
+    # resource_path = "/".join(("recipes", "build.sh"))
+    # build_template = pkg_resources.resource_string(__name__, resource_path)
+    # with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
     #    fp.write(build_template)
 
 
@@ -52,24 +52,24 @@ def run_conda_build_mini(recipe_path, build_only=True):
     # Run docker image
     flag = "--build-only" if build_only else ""
     container = client.containers.run(
-        'perhogfeldt/conda-build-mini:latest',
+        "perhogfeldt/conda-build-mini:latest",
         "conda build %s --output-folder /home/output /mnt/recipe " % flag,
-	    volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
+        volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
     result = container.wait()
-    stdout = container.logs().decode('utf-8')
-    if result['StatusCode'] is 0:
-        for line in stdout.split('\n'):
+    stdout = container.logs().decode("utf-8")
+    if result["StatusCode"] is 0:
+        for line in stdout.split("\n"):
             if "anaconda upload " in line:
                 output_file = line.split()[2]
                 stream, info = container.get_archive(output_file)
-                file_name = info['name']
+                file_name = info["name"]
                 fd = io.BytesIO()
                 for b in stream:
                     fd.write(b)
                 fd.seek(0)
-                tar_file = tarfile.open(mode='r', fileobj=fd)
+                tar_file = tarfile.open(mode="r", fileobj=fd)
                 tar_file.extractall("%s/output" % recipe_path)
     container.remove()
     return (result, stdout)
@@ -123,18 +123,28 @@ def mini_iterative_build(recipe):
             if "could not find hdf5" in line_normalized:
                 debug_message = "Because 'could not find hdf5' was in the error message"
                 new_recipe.add_requirement("hdf5", "host", debug_message=debug_message)
-            if "unable to find the requested boost libraries" in line_normalized or "could not find boost" in line_normalized:
+            if (
+                "unable to find the requested boost libraries" in line_normalized
+                or "could not find boost" in line_normalized
+            ):
                 debug_message = "Because 'Unable to find the requested Boost libraries' was in the error message"
-                new_recipe.add_requirement("boost", "host", debug_message=debug_message) 
+                new_recipe.add_requirement("boost", "host", debug_message=debug_message)
             if "no cmake_cxx_compiler could be found" in line_normalized:
                 debug_message = "Because 'no cmake_cxx_compiler could be found' was in the error message"
-                new_recipe.add_requirement("{{ compiler('cxx') }}", "build", debug_message=debug_message) 
+                new_recipe.add_requirement(
+                    "{{ compiler('cxx') }}", "build", debug_message=debug_message
+                )
+            if 'could not find a package configuration file provided by "seqan"':
+                debug_message = "Because 'could not find a package configuration file provided by 'seqan'' was in the error message"
+                new_recipe.add_requirement(
+                    "seqan-library", "build", debug_message=debug_message
+                )
         if new_recipe == recipe:
             break
         else:
             recipe = deepcopy(new_recipe)
             recipe.write_recipe_to_meta_file()
-        return_code = result['StatusCode']
+        return_code = result["StatusCode"]
         c += 1
         print("%s iteration" % c)
 
