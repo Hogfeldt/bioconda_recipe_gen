@@ -73,6 +73,15 @@ build_lambda()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
 }
 
+build_newick_utils()
+{
+    name=newick-utils42
+    url=https://github.com/tjunier/newick_utils/archive/da121155a977197cab9fbb15953ca1b40b11eb87.tar.gz
+    version=1.6
+    commands=("nw_clade -h" "nw_condense -h" "nw_distance -h" "nw_duration -h" "nw_ed -h" "nw_gen -h" "nw_indent -h" "nw_labels -h" "nw_match -h" "nw_order -h" "nw_prune -h" "nw_rename -h" "nw_reroot -h" "nw_stats -h" "nw_support -h" "nw_topology -h" "nw_trim -h" "nw_display -h")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}"
+}
+
 ##### Choose package to build
 
 package=$1
@@ -85,4 +94,5 @@ case $package in
     clever-toolkit)     build_clever_toolkit;;
     tn93)               build_tn93;;
     lambda)             build_lambda;;
+    newick-utils)       build_newick_utils;;
 esac
