@@ -73,6 +73,17 @@ build_lambda()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
 }
 
+build_netreg()
+{
+    name=netreg2
+    url=https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
+    version=1.8.0
+    commands="netReg -h"
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
+}
+
+
+
 ##### Choose package to build
 
 package=$1
@@ -84,5 +95,6 @@ case $package in
     libdivsufsort)      build_libdivsufsort;;
     clever-toolkit)     build_clever_toolkit;;
     tn93)               build_tn93;;
+    netreg)		          build_netreg;;
     lambda)             build_lambda;;
 esac

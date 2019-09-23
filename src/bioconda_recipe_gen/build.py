@@ -142,6 +142,11 @@ def mini_iterative_build(recipe):
                 new_recipe.add_requirement(
                     "seqan-library", "build", debug_message=debug_message
                 )
+            if "could not find armadillo" in line_normalized:
+                debug_message = "Because 'could not find armadillo' was in the error message"
+                new_recipe.add_requirement(
+                  "armadillo", "host", debug_message=debug_message
+                )
         if new_recipe == recipe:
             break
         else:
