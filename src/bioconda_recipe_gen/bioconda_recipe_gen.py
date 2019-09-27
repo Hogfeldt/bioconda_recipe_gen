@@ -19,7 +19,7 @@ def setup_logging(debug, output_dir_path):
         logging.getLogger().disabled = True
 
 
-def main(bioconda_recipe_path, recipe, debug):
+def main(bioconda_recipe_path, recipe, build_script, debug):
     # Setup debugging
     setup_logging(debug, recipe.path)
 
@@ -28,7 +28,7 @@ def main(bioconda_recipe_path, recipe, debug):
 
     try:
         # run conda-build with --build-only flag
-        mini_proc_build, recipe = build.mini_iterative_build(recipe)
+        mini_proc_build, recipe, build_script = build.mini_iterative_build(recipe, build_script)
         print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
         for line in mini_proc_build[1].split("\n"):
             print(line)
