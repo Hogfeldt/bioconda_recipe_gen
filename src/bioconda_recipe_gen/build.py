@@ -1,3 +1,4 @@
+import hashlib
 import os
 import io
 import tarfile
@@ -183,26 +184,31 @@ def mini_iterative_test(recipe):
     return ((result, stdout), recipe)
 
 
-def mini_sanity_check(bioconda_recipe_path, name):
+def mini_sanity_check(bioconda_recipe_path, recipe):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
-    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, name)
-    os.mkdir(recipes_pkg_path)
-    current_recipe_path = "%s/%s/" % (os.getcwd(), name)
+    recipe.increment_build_number()
+    temp_folder_name = hashlib.md5(recipe.name.encode('utf-8')).hexdigest()
+    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
+    try:
+        os.mkdir(recipes_pkg_path)
+        current_recipe_path = "%s/%s/" % (os.getcwd(), recipe.name)
 
-    for item in os.listdir(current_recipe_path):
-        s = os.path.join(current_recipe_path, item)
-        d = os.path.join(recipes_pkg_path, item)
+        for item in os.listdir(current_recipe_path):
+            s = os.path.join(current_recipe_path, item)
+            d = os.path.join(recipes_pkg_path, item)
 
-        if not os.path.isdir(s):
-            copy2(s, d)
-        elif item != "output":
-            copytree(s, d)
+            if not os.path.isdir(s):
+                copy2(s, d)
+            elif item != "output":
+                copytree(s, d)
 
-    # Try to build the package
-    proc = bioconda_utils_build(name, bioconda_recipe_path)
-    for line in proc.stdout.split("\n"):
-        print(line)
-    if proc.returncode == 0:
-        return True
-    else:
-        return False
+        # Try to build the package
+        proc = bioconda_utils_build(temp_folder_name, bioconda_recipe_path)
+        for line in proc.stdout.split("\n"):
+            print(line)
+        if proc.returncode == 0:
+            return True
+        else:
+            return False
+    finally:
+        rmtree(recipes_pkg_path)

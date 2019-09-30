@@ -5,6 +5,7 @@ import pkg_resources
 import shutil
 import tempfile
 import hashlib
+from bioconda_utils import recipe
 
 
 def calculate_md5_checksum(url):
@@ -25,3 +26,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
+
+
+def get_pkg_build_number(pkg_name, bioconda_recipe_path):
+    """ Returns the build number of an exisitng package in the bioconda-recipe/recipes folder """
+    recipes_path = "%s/recipes" % bioconda_recipe_path
+    meta_yaml_path = "%s/%s" % (recipes_path, pkg_name)
+    try:
+        cur_recipe = recipe.Recipe.from_file(recipes_path, meta_yaml_path)
+        build_number = int(cur_recipe.get("build/number"))
+    except:
+        build_number = 0
+    return build_number
