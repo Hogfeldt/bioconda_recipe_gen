@@ -77,8 +77,8 @@ def start():
         help="The MD5 that matches the project which the url argument points to",
     )
     args = parser.parse_args()
-    recipe = preprocess(args)
+    recipe, build_script = preprocess(args)
     if bioconda_recipes_exists(args.bioconda_recipe_path):
-        main(args.bioconda_recipe_path, recipe, args.debug)
+        main(args.bioconda_recipe_path, recipe, build_script, args.debug)
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")

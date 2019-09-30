@@ -1,38 +1,26 @@
-import os
+from os import getcwd
 import pkg_resources
 from .recipe import Recipe
+from .buildscript import BuildScript
 from .utils import calculate_md5_checksum, get_pkg_build_number
 
-def cmake_recipe_factory(name, version, cmake_flags):
+def cmake_recipe_factory(name, version):
     recipe = Recipe(name, version)
     recipe.add_requirement("make", "build")
     recipe.add_requirement("cmake", "build")
     recipe.add_requirement("{{ compiler('c') }}", "build")
-    
+    return recipe
+
+def cmake_build_script_factory(name, cmake_flags):
     flags = ""
     if cmake_flags:
         for flag in cmake_flags:
             flags = flags + "-{} ".format(flag)
     else:
         flags = "-DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_PREFIX=$PREFIX"
-    _make_build_file(name, flags)
-
-    return recipe
-
-
-def _make_build_file(name, flags):
-    """Function to make the build.sh, which
-    depends on which flags should be added to the 
-    template file."""
-    build_template_file = pkg_resources.resource_filename(__name__, "recipes/template_build.sh")
-    build_file = "%s/%s/build.sh" % (os.getcwd(), name)  
-    with open(build_template_file, "r") as template:
-        with open(build_file, "w") as build_file:
-            for line in template:
-                line = str(line)
-                if line.startswith("cmake"):
-                    line = "cmake .. {}\n".format(flags)
-                build_file.write(line)
+    build_script = BuildScript("%s/%s" % (getcwd(), name))
+    build_script.add_cmake_flags(flags)
+    return build_script
 
 
 def add_checksum(recipe, args):
@@ -45,7 +33,8 @@ def add_checksum(recipe, args):
 
 
 def preprocess(args):
-    recipe = cmake_recipe_factory(args.name, args.version, args.cmake)
+    recipe = cmake_recipe_factory(args.name, args.version)
+    build_script = cmake_build_script_factory(args.name, args.cmake)
     recipe.add_source_url(args.url)
     recipe.add_build_number(get_pkg_build_number(recipe.name, args.bioconda_recipe_path))
     add_checksum(recipe, args)
@@ -58,4 +47,4 @@ def preprocess(args):
     if args.patches is not None:
         print(args.patches)
         recipe.add_patches(args.patches)
-    return recipe
+    return (recipe, build_script)

@@ -32,10 +32,11 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
     return proc
 
 
-def mini_build_setup(recipe):
-    """ Copy build.sh and meta.yaml recipe path. """
+def mini_build_setup(recipe, build_script):
+    """ Write build.sh and meta.yaml recipe path. """
     os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
+    build_script.write_build_script_to_file()
 
 
 def run_conda_build_mini(recipe_path, build_only=True):
@@ -72,7 +73,7 @@ def run_conda_build_mini_test(recipe_path):
     return run_conda_build_mini(recipe_path, False)
 
 
-def mini_iterative_build(recipe):
+def mini_iterative_build(recipe, build_script):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tupple with the last standard output and a list of found dependencies.
     
@@ -80,7 +81,7 @@ def mini_iterative_build(recipe):
         src: A link to where the source file can be downloaded
     """
 
-    mini_build_setup(recipe)
+    mini_build_setup(recipe, build_script)
     print("mini setup done")
 
     c = 0
@@ -154,7 +155,7 @@ def mini_iterative_build(recipe):
             os.mkdir(dst)
             copytree(src, dst)
 
-    return ((result, stdout), recipe)
+    return ((result, stdout), recipe, build_script)
 
 
 def mini_iterative_test(recipe):
