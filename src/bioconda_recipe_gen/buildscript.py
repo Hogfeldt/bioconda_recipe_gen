@@ -20,13 +20,13 @@ class BuildScript:
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
         lines_to_write = ['#!/bin/bash\n'] + self._lines
-        with open("%s/build.sh"%self._path, 'w') as fp:
-           fp.writelines(lines_to_write) 
+        with open("%s/build.sh" % self._path, 'w') as fp:
+            fp.writelines(lines_to_write)
 
     def add_cmake_flags(self, flags):
         """ Add flags to the cmake call """
         for i, line in enumerate(self._lines):
             if line.startswith("cmake .."):
-                self._lines[i] = "cmake .. %s" % flags
+                self._lines[i] = "cmake .. %s\n" % flags
 
 
