@@ -18,7 +18,7 @@ def cmake_build_script_factory(name, cmake_flags):
             flags = flags + "-{} ".format(flag)
     else:
         flags = "-DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_PREFIX=$PREFIX"
-    build_script = BuildScript("%s/%s" % (getcwd(), name))
+    build_script = BuildScript(name, "%s/%s" % (getcwd(), name))
     build_script.add_cmake_flags(flags)
     return build_script
 

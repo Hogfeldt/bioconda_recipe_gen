@@ -4,7 +4,8 @@ import pkg_resources
 class BuildScript:
     """ Represents a build.sh """
 
-    def __init__(self, path):
+    def __init__(self, name, path):
+        self.name = name
         self._path = path
         self._lines = list()
         build_template_file = pkg_resources.resource_filename(
@@ -12,6 +13,12 @@ class BuildScript:
         )
         with open(build_template_file, "r") as template:
             self._lines = template.readlines()
+
+    def __eq__(self, other):
+        """ Overwrite default implementation. Compare _lines instead of id """
+        if isinstance(other, BuildScript):
+            return self._lines == other._lines
+        return False
 
     @property
     def path(self):
@@ -29,4 +36,7 @@ class BuildScript:
             if line.startswith("cmake .."):
                 self._lines[i] = "cmake .. %s\n" % flags
 
-
+    def add_moving_bin_files(self):
+        """ Add lines to make sure the bin files are moved """
+        self._lines.append("mkdir -p $PREFIX/bin\n")
+        self._lines.append("cp bin/%s $PREFIX/bin\n" % self.name)
