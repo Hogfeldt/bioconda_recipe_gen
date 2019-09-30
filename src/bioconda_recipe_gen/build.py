@@ -135,6 +135,21 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                     "seqan-library", "build", debug_message=debug_message
                 )
+            if "could not find bison" in line_normalized:
+                debug_message = "Because '-- Could NOT find BISON (missing: BISON_EXECUTABLE)' was in error message"
+                new_recipe.add_requirement(
+                    "bison", "build", debug_message=debug_message
+                )
+            if "could not find flex" in line_normalized:
+                debug_message = "Because '-- Could NOT find FLEX' was in error message"
+                new_recipe.add_requirement(
+                    "flex", "build", debug_message=debug_message
+                )
+            if "could not find libxml2" in line_normalized:
+                debug_message = "Because '-- Could NOT find LibXml2' was in error message"
+                new_recipe.add_requirement(
+                    "libxml2", "build", debug_message=debug_message
+                )
             if "could not find armadillo" in line_normalized:
                 debug_message = "Because 'could not find armadillo' was in the error message"
                 new_recipe.add_requirement(
