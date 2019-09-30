@@ -2,8 +2,7 @@ from os import getcwd
 import pkg_resources
 from .recipe import Recipe
 from .buildscript import BuildScript
-from .utils import calculate_md5_checksum
-
+from .utils import calculate_md5_checksum, get_pkg_build_number
 
 def cmake_recipe_factory(name, version):
     recipe = Recipe(name, version)
@@ -37,6 +36,7 @@ def preprocess(args):
     recipe = cmake_recipe_factory(args.name, args.version)
     build_script = cmake_build_script_factory(args.name, args.cmake)
     recipe.add_source_url(args.url)
+    recipe.add_build_number(get_pkg_build_number(recipe.name, args.bioconda_recipe_path))
     add_checksum(recipe, args)
     if args.tests is not None:
         recipe.add_test_files_with_path(args.tests[0])

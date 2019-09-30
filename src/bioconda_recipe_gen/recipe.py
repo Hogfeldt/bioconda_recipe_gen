@@ -34,11 +34,20 @@ class Recipe:
     def path(self):
         return self._path
 
+    def increment_build_number(self):
+        build_number = self.recipe_dict["build"]["number"]
+        self.recipe_dict["build"]["number"] = int(build_number) + 1
+        self.write_recipe_to_meta_file()
+
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
         if exists(self._path) is False:
             mkdir(self._path)    
         make_dict.make_meta_file_from_dict(self.recipe_dict, "%s/meta.yaml" % self._path)
+
+    def add_build_number(self, number):
+        build = self.recipe_dict.setdefault("build", dict())
+        build["number"] = number
 
     def add_source_url(self, url):
         source = self.recipe_dict.setdefault("source", dict())

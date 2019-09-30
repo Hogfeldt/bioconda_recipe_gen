@@ -1,16 +1,14 @@
+import hashlib
 import os
 import io
 import tarfile
 import subprocess
 import logging
-import tempfile
-import pkg_resources
 import docker
-from shutil import rmtree, copy2, copyfile
+from shutil import rmtree, copy2
 from copy import deepcopy
 
 from .utils import copytree
-from .recipe import Recipe
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
@@ -41,7 +39,6 @@ def mini_build_setup(recipe, build_script):
     build_script.write_build_script_to_file()
 
 
-
 def run_conda_build_mini(recipe_path, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
     # Setup image
@@ -61,7 +58,6 @@ def run_conda_build_mini(recipe_path, build_only=True):
             if "anaconda upload " in line:
                 output_file = line.split()[2]
                 stream, info = container.get_archive(output_file)
-                file_name = info["name"]
                 fd = io.BytesIO()
                 for b in stream:
                     fd.write(b)
@@ -180,26 +176,31 @@ def mini_iterative_test(recipe):
     return ((result, stdout), recipe)
 
 
-def mini_sanity_check(bioconda_recipe_path, name):
+def mini_sanity_check(bioconda_recipe_path, recipe):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
-    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, name)
-    os.mkdir(recipes_pkg_path)
-    current_recipe_path = "%s/%s/" % (os.getcwd(), name)
+    recipe.increment_build_number()
+    temp_folder_name = hashlib.md5(recipe.name.encode('utf-8')).hexdigest()
+    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
+    try:
+        os.mkdir(recipes_pkg_path)
+        current_recipe_path = "%s/%s/" % (os.getcwd(), recipe.name)
 
-    for item in os.listdir(current_recipe_path):
-        s = os.path.join(current_recipe_path, item)
-        d = os.path.join(recipes_pkg_path, item)
+        for item in os.listdir(current_recipe_path):
+            s = os.path.join(current_recipe_path, item)
+            d = os.path.join(recipes_pkg_path, item)
 
-        if not os.path.isdir(s):
-            copy2(s, d)
-        elif item != "output":
-            copytree(s, d)
+            if not os.path.isdir(s):
+                copy2(s, d)
+            elif item != "output":
+                copytree(s, d)
 
-    # Try to build the package
-    proc = bioconda_utils_build(name, bioconda_recipe_path)
-    for line in proc.stdout.split("\n"):
-        print(line)
-    if proc.returncode == 0:
-        return True
-    else:
-        return False
+        # Try to build the package
+        proc = bioconda_utils_build(temp_folder_name, bioconda_recipe_path)
+        for line in proc.stdout.split("\n"):
+            print(line)
+        if proc.returncode == 0:
+            return True
+        else:
+            return False
+    finally:
+        rmtree(recipes_pkg_path)
