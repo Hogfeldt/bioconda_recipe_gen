@@ -18,6 +18,7 @@ env:
   - PACKAGE=htstream
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
+  - PACKAGE=lambda
 
 before_install:
 
