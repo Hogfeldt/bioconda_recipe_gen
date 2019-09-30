@@ -4,14 +4,11 @@ import io
 import tarfile
 import subprocess
 import logging
-import tempfile
-import pkg_resources
 import docker
-from shutil import rmtree, copy2, copyfile
+from shutil import rmtree, copy2
 from copy import deepcopy
 
 from .utils import copytree
-from .recipe import Recipe
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
@@ -40,11 +37,6 @@ def mini_build_setup(recipe):
     os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
 
-    # resource_path = "/".join(("recipes", "build.sh"))
-    # build_template = pkg_resources.resource_string(__name__, resource_path)
-    # with open("%s/%s" % (recipe.path, "build.sh"), "wb") as fp:
-    #    fp.write(build_template)
-
 
 def run_conda_build_mini(recipe_path, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
@@ -65,7 +57,6 @@ def run_conda_build_mini(recipe_path, build_only=True):
             if "anaconda upload " in line:
                 output_file = line.split()[2]
                 stream, info = container.get_archive(output_file)
-                file_name = info["name"]
                 fd = io.BytesIO()
                 for b in stream:
                     fd.write(b)

@@ -1,12 +1,9 @@
 import os
 import sys
 import logging
-from shutil import copyfile, rmtree
-import pkg_resources
+from shutil import copyfile
 
 from . import build
-from . import utils
-from .recipe import Recipe
 
 
 def setup_logging(debug, output_dir_path):

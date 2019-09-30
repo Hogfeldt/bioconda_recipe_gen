@@ -1,7 +1,5 @@
 import urllib.request
-import subprocess
 import os
-import pkg_resources
 import shutil
 import tempfile
 import hashlib
