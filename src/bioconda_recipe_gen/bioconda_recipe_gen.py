@@ -33,7 +33,7 @@ def main(bioconda_recipe_path, recipe, build_script, debug):
         print(line)
 
     # Sanity check
-    success = build.mini_sanity_check(bioconda_recipe_path, recipe.name)
+    success = build.mini_sanity_check(bioconda_recipe_path, recipe)
     # copy the final recipe into the current directory
     copyfile(path + "/meta.yaml", "./meta.yaml")
     if success:
