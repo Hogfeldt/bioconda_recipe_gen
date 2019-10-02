@@ -27,7 +27,7 @@ def main(bioconda_recipe_path, recipe, build_script, debug):
         print(line)
 
     # run conda-build with tests
-    mini_proc_test, recipe = build.mini_iterative_test(recipe)
+    mini_proc_test, recipe = build.mini_iterative_test(recipe, build_script)
     print("mini_proc_test return code:", mini_proc_test[0]["StatusCode"])
     for line in mini_proc_test[1].split("\n"):
         print(line)

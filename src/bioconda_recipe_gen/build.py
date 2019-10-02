@@ -155,6 +155,7 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                   "armadillo", "host", debug_message=debug_message
                 )
+
         if new_recipe == recipe:
             break
         else:
@@ -173,14 +174,33 @@ def mini_iterative_build(recipe, build_script):
     return ((result, stdout), recipe, build_script)
 
 
-def mini_iterative_test(recipe):
+def mini_iterative_test(recipe, build_script):
     print("mini iterative test started")
-    result, stdout = run_conda_build_mini_test(recipe.path)
-    for line in stdout.split("\n"):
-        line_normalized = line.lower()
-        if "['zlib'] not in reqs/run" in line_normalized:
-            recipe.add_requirement("zlib", "run")
-    recipe.write_recipe_to_meta_file()
+    new_recipe = deepcopy(recipe)
+    new_build_script = deepcopy(build_script)
+    c = 0
+    return_code = 1
+    while return_code != 0:
+        result, stdout = run_conda_build_mini_test(recipe.path)
+        for line in stdout.split("\n"):
+            line_normalized = line.lower()
+            print(line)
+
+            if "['zlib'] not in reqs/run" in line_normalized:
+                new_recipe.add_requirement("zlib", "run")
+            if "command not found" in line_normalized:
+                new_build_script.add_moving_bin_files()
+
+        if new_recipe == recipe and new_build_script == build_script:
+            break
+        else:
+            recipe = deepcopy(new_recipe)
+            recipe.write_recipe_to_meta_file()
+            build_script = deepcopy(new_build_script)
+            build_script.write_build_script_to_file()
+        return_code = result["StatusCode"]
+        c += 1
+        print("%s iteration" % c)
 
     if not logging.getLogger().disabled:
         src = "%s/output" % recipe.path
@@ -188,7 +208,7 @@ def mini_iterative_test(recipe):
         os.mkdir(dst)
         copytree(src, dst)
 
-    return ((result, stdout), recipe)
+    return (result, stdout), recipe
 
 
 def mini_sanity_check(bioconda_recipe_path, recipe):
