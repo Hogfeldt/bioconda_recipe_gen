@@ -91,6 +91,15 @@ build_netreg()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "$commands"
 }
 
+build_simka()
+{
+    name=simka
+    url=https://github.com/GATB/simka/releases/download/v1.5.1/simka-v1.5.1-Source.tar.gz
+    version=1.5.1
+    commands=("simka -h" "simkaMin.py --help")
+    bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}"
+}
+
 ##### Choose package to build
 
 package=$1
@@ -105,4 +114,5 @@ case $package in
     netreg)		          build_netreg;;
     lambda)             build_lambda;;
     newick-utils)       build_newick_utils;;
+    simka)              build_simka;;
 esac
