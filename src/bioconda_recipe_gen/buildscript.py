@@ -1,4 +1,7 @@
 import pkg_resources
+import os
+
+from .utils import is_file_in_folder
 
 
 class BuildScript:
@@ -13,6 +16,9 @@ class BuildScript:
         )
         with open(build_template_file, "r") as template:
             self._lines = template.readlines()
+        source_code_dir = "%s/%s_source" % (os.getcwd(), name)
+        if is_file_in_folder("configure.ac", source_code_dir):
+            self.autoreconf_instead_of_cmake()
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare _lines instead of id """
@@ -40,3 +46,11 @@ class BuildScript:
         """ Add lines to make sure the bin files are moved """
         self._lines.append("mkdir -p $PREFIX/bin\n")
         self._lines.append("cp bin/%s $PREFIX/bin\n" % self.name)
+
+    def autoreconf_instead_of_cmake(self):
+        print(self._lines)
+        self._lines.insert(0, "./configure --prefix=$PREFIX\n")
+        self._lines.insert(0, "autoreconf -fi\n")
+        self._lines.remove("mkdir -p build\n")
+        self._lines.remove("cd build\n")
+        self._lines.remove("cmake ..\n")

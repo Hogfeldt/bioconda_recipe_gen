@@ -1,8 +1,10 @@
 from os import getcwd
-import pkg_resources
+import os
+from shutil import rmtree
+
 from .recipe import Recipe
 from .buildscript import BuildScript
-from .utils import calculate_md5_checksum, get_pkg_build_number
+from .utils import calculate_md5_checksum, get_pkg_build_number, download_and_unpack_source
 
 def cmake_recipe_factory(name, version):
     recipe = Recipe(name, version)
@@ -33,8 +35,17 @@ def add_checksum(recipe, args):
 
 
 def preprocess(args):
+    # download source code for project
+    source_code_dir = "%s/%s_source" % (os.getcwd(), args.name)
+    os.mkdir(source_code_dir)
+    download_and_unpack_source(args.url, source_code_dir)
+
     recipe = cmake_recipe_factory(args.name, args.version)
     build_script = cmake_build_script_factory(args.name, args.cmake)
+
+    # remove source code folder again
+    rmtree(source_code_dir)
+
     recipe.add_source_url(args.url)
     recipe.add_build_number(get_pkg_build_number(recipe.name, args.bioconda_recipe_path))
     add_checksum(recipe, args)

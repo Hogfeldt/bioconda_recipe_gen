@@ -34,6 +34,10 @@ class Recipe:
     def path(self):
         return self._path
 
+    @property
+    def url(self):
+        return self.recipe_dict["source"]["url"]
+
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
         self.recipe_dict["build"]["number"] = int(build_number) + 1
