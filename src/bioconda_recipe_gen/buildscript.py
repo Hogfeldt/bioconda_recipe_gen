@@ -43,16 +43,17 @@ class BuildScript:
         """ Write build script to path/build.sh """
         lines_to_write = ['#!/bin/bash\n'] + self._lines
         with open("%s/build.sh" % self._path, 'w') as fp:
-            fp.writelines(lines_to_write)
+            for line in lines_to_write:
+                fp.write(line + "\n")
 
     def add_cmake_flags(self, flags):
         """ Add flags to the cmake call """
         for i, line in enumerate(self._lines):
             if line.startswith("cmake .."):
-                self._lines[i] = "cmake .. %s\n" % flags
+                self._lines[i] = "cmake .. %s" % flags
 
     def add_moving_bin_files(self):
         """ Add lines to make sure the bin files are moved """
-        self._lines.append("mkdir -p $PREFIX/bin\n")
-        self._lines.append("cp bin/%s $PREFIX/bin\n" % self.name)
+        self._lines.append("mkdir -p $PREFIX/bin")
+        self._lines.append("cp bin/%s $PREFIX/bin" % self.name)
 
