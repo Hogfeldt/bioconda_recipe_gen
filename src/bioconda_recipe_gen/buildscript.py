@@ -11,14 +11,23 @@ class BuildScript:
         self.name = name
         self._path = path
         self._lines = list()
+
+        template = self.choose_template()
         build_template_file = pkg_resources.resource_filename(
-            __name__, "recipes/template_build.sh"
+            __name__, "recipes/%s" % template
         )
         with open(build_template_file, "r") as template:
             self._lines = template.readlines()
-        source_code_dir = "%s/%s_source" % (os.getcwd(), name)
+
+    def choose_template(self):
+        """ Returns autoreconf template if configure.ac is in source code.
+        Else return cmake template. """
+        source_code_dir = "%s/%s_source/source/" % (os.getcwd(), self.name)
+        source_code_dir += os.listdir(source_code_dir)[0]
         if is_file_in_folder("configure.ac", source_code_dir):
-            self.autoreconf_instead_of_cmake()
+            return "template_build_autoreconf.sh"
+        else:
+            return "template_build_cmake.sh"
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare _lines instead of id """
@@ -47,10 +56,3 @@ class BuildScript:
         self._lines.append("mkdir -p $PREFIX/bin\n")
         self._lines.append("cp bin/%s $PREFIX/bin\n" % self.name)
 
-    def autoreconf_instead_of_cmake(self):
-        print(self._lines)
-        self._lines.insert(0, "./configure --prefix=$PREFIX\n")
-        self._lines.insert(0, "autoreconf -fi\n")
-        self._lines.remove("mkdir -p build\n")
-        self._lines.remove("cd build\n")
-        self._lines.remove("cmake ..\n")

@@ -90,11 +90,8 @@ def download_and_unpack_source(src, dir_path):
 
 
 def is_file_in_folder(filename, folder_path):
-    """ Returns True if file is somewhere in the folder. Else False"""
-    for root, dirs, files in os.walk(folder_path):
-        for f in files:
-            if "configure" in f:
-                print(f)
-            if f == filename:
-                return True
+    """ Returns True if file is in the folder (not checking subfolders). Else False"""
+    for f in os.listdir(folder_path):
+        if f == filename:
+            return True
     return False
