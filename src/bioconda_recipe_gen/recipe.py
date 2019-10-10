@@ -37,6 +37,10 @@ class Recipe:
     @property
     def test_commands(self):
         return self.recipe_dict["test"]["commands"]
+    
+    @property
+    def url(self):
+        return self.recipe_dict["source"]["url"]
 
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]

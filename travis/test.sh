@@ -13,7 +13,7 @@ build_kallisto()
     tests=$DATA_PATH/kallisto
     version=0.45.0
     commands="kallisto version"
-    bioconda-recipe-gen $BR_PATH -n $name -u $url --tests $tests -v $version --debug --commands $commands
+    bioconda-recipe-gen $BR_PATH -n $name -u $url --tests $tests -v $version --debug --test-commands "$commands"
     status=$?
     exit $status
 }
@@ -75,7 +75,7 @@ build_lambda()
 
 build_newick_utils()
 {
-    name=newick-utils2
+    name=newick-utils
     url=https://github.com/tjunier/newick_utils/archive/da121155a977197cab9fbb15953ca1b40b11eb87.tar.gz
     version=1.6
     commands=("nw_clade -h" "nw_condense -h" "nw_distance -h" "nw_duration -h" "nw_ed -h" "nw_gen -h" "nw_indent -h" "nw_labels -h" "nw_match -h" "nw_order -h" "nw_prune -h" "nw_rename -h" "nw_reroot -h" "nw_stats -h" "nw_support -h" "nw_topology -h" "nw_trim -h" "nw_display -h")
@@ -111,8 +111,9 @@ case $package in
     libdivsufsort)      build_libdivsufsort;;
     clever-toolkit)     build_clever_toolkit;;
     tn93)               build_tn93;;
-    netreg)		          build_netreg;;
+    netreg)		        build_netreg;;
     lambda)             build_lambda;;
     newick-utils)       build_newick_utils;;
     simka)              build_simka;;
+    denovogear)         build_denovogear;;
 esac

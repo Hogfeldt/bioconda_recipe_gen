@@ -7,7 +7,6 @@ import logging
 import docker
 from shutil import rmtree, copy2
 from copy import deepcopy
-
 from .utils import copytree
 
 
@@ -135,12 +134,12 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                     "seqan-library", "build", debug_message=debug_message
                 )
-            if "could not find bison" in line_normalized:
+            if "could not find bison" in line_normalized or "bison: command not found" in line_normalized:
                 debug_message = "Because '-- Could NOT find BISON (missing: BISON_EXECUTABLE)' was in error message"
                 new_recipe.add_requirement(
                     "bison", "build", debug_message=debug_message
                 )
-            if "could not find flex" in line_normalized:
+            if "could not find flex" in line_normalized or "flex: command not found" in line_normalized:
                 debug_message = "Because '-- Could NOT find FLEX' was in error message"
                 new_recipe.add_requirement(
                     "flex", "build", debug_message=debug_message
@@ -159,6 +158,10 @@ def mini_iterative_build(recipe, build_script):
                 debug_message = "Because 'fatal error: zlib.h: No such file or directory' was in the error message"
                 new_recipe.add_requirement(
                   "zlib", "host", debug_message=debug_message
+            if "error: libtool library used but" in line_normalized:
+                debug_message = "Because 'error: Libtool library used but' was in the error message"
+                new_recipe.add_requirement(
+                    "libtool", "build", debug_message=debug_message
                 )
 
         if new_recipe == recipe:
@@ -193,7 +196,7 @@ def mini_iterative_test(recipe, build_script):
 
             if "['zlib'] not in reqs/run" in line_normalized:
                 new_recipe.add_requirement("zlib", "run")
-            if "command not found" in line_normalized:
+            if "%s: command not found" % recipe.name in line_normalized:
                 new_build_script.add_moving_bin_files()
             if line_normalized[2:] in new_recipe.test_commands and "permission denied" in stdout.split("\n")[line_num+1].lower():
                 for command in new_recipe.test_commands:
