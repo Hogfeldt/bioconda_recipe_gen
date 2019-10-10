@@ -157,7 +157,7 @@ def mini_iterative_build(recipe, build_script):
             if "fatal error: zlib.h: no such file or directory" in line_normalized:
                 debug_message = "Because 'fatal error: zlib.h: No such file or directory' was in the error message"
                 new_recipe.add_requirement(
-                  "zlib", "host", debug_message=debug_message
+                  "zlib", "host", debug_message=debug_message)
             if "error: libtool library used but" in line_normalized:
                 debug_message = "Because 'error: Libtool library used but' was in the error message"
                 new_recipe.add_requirement(
