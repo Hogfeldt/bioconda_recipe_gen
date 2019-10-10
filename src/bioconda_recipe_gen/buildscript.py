@@ -30,6 +30,9 @@ class BuildScript:
         with open("%s/build.sh" % self._path, 'w') as fp:
             fp.writelines(lines_to_write)
 
+    def add_chmodx(self, file_path):
+        self._lines.append("chmod +x %s\n" % file_path)
+
     def add_cmake_flags(self, flags):
         """ Add flags to the cmake call """
         for i, line in enumerate(self._lines):

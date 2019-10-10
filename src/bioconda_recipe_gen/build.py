@@ -155,6 +155,11 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                   "armadillo", "host", debug_message=debug_message
                 )
+            if "fatal error: zlib.h: no such file or directory" in line_normalized:
+                debug_message = "Because 'fatal error: zlib.h: No such file or directory' was in the error message"
+                new_recipe.add_requirement(
+                  "zlib", "host", debug_message=debug_message
+                )
 
         if new_recipe == recipe:
             break
@@ -182,7 +187,7 @@ def mini_iterative_test(recipe, build_script):
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini_test(recipe.path)
-        for line in stdout.split("\n"):
+        for line_num, line in enumerate(stdout.split("\n")):
             line_normalized = line.lower()
             print(line)
 
@@ -190,6 +195,14 @@ def mini_iterative_test(recipe, build_script):
                 new_recipe.add_requirement("zlib", "run")
             if "command not found" in line_normalized:
                 new_build_script.add_moving_bin_files()
+            if line_normalized[2:] in new_recipe.test_commands and "permission denied" in stdout.split("\n")[line_num+1].lower():
+                for command in new_recipe.test_commands:
+                    if line_normalized[2:] in command:
+                        print("######:" +line_normalized[2:])
+                        to_call = command.split()[0]
+                        print("$$$$$$$:" +to_call)
+                        new_build_script.add_chmodx("$PREFIX/bin/%s" % to_call)
+                    
 
         if new_recipe == recipe and new_build_script == build_script:
             break
