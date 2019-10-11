@@ -33,9 +33,9 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
 
 def mini_build_setup(recipe, build_script):
     """ Write build.sh and meta.yaml recipe path. """
-    os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
     build_script.write_build_script_to_file()
+    os.mkdir("%s/output" % recipe.path)
 
 
 def run_conda_build_mini(recipe_path, build_only=True):
@@ -159,6 +159,7 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                     "libtool", "build", debug_message=debug_message
                 )
+
 
         if new_recipe == recipe:
             break

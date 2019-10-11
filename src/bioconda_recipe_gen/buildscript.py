@@ -1,33 +1,20 @@
 import pkg_resources
-import os
-
-from .utils import is_file_in_folder
 
 
 class BuildScript:
     """ Represents a build.sh """
 
-    def __init__(self, name, path):
+    def __init__(self, name, path, template, filesystem):
         self.name = name
         self._path = path
         self._lines = list()
+        self._filesystem = filesystem
 
-        template = self.choose_template()
         build_template_file = pkg_resources.resource_filename(
             __name__, "recipes/%s" % template
         )
         with open(build_template_file, "r") as template:
             self._lines = template.readlines()
-
-    def choose_template(self):
-        """ Returns autoreconf template if configure.ac is in source code.
-        Else return cmake template. """
-        source_code_dir = "%s/%s_source/source/" % (os.getcwd(), self.name)
-        source_code_dir += os.listdir(source_code_dir)[0]
-        if is_file_in_folder("configure.ac", source_code_dir):
-            return "template_build_autoreconf.sh"
-        else:
-            return "template_build_cmake.sh"
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare _lines instead of id """
@@ -38,6 +25,10 @@ class BuildScript:
     @property
     def path(self):
         return self._path
+
+    @property
+    def filesystem(self):
+        return self._filesystem
 
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
