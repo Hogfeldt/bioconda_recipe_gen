@@ -3,6 +3,7 @@ import os
 
 class Filesystem:
     def __init__(self, path):
+        self._root_path = path
         self._root_dir = self.create_directory(path)
         self._files = self._root_dir.files
         self._directories = self._root_dir.directories
@@ -19,7 +20,9 @@ class Filesystem:
                     sub_dir = "%s/%s" % (path, elem)
                     dirs.append(self.create_directory(sub_dir))
         curr_dir_name = path.split("/")[-1]
-        return Directory(curr_dir_name, files, dirs, path)
+        return Directory(
+            curr_dir_name, files, dirs, path.replace(self._root_path, "", 1)
+        )
 
     def is_file_in_root(self, search_file):
         return search_file in [f.name for f in self._files]
