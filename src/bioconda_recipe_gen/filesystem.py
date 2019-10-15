@@ -25,7 +25,7 @@ class Filesystem:
         return search_file in [f.name for f in self._files]
 
     def where_is_file_in_filesystem(self, search_file):
-        return self._root_dir.where_is_file_in_filesystem(search_file)
+        return search_filesystem_for_file(self._root_dir, search_file)
 
     def get_dict_representation(self):
         """ Returns a dictionary representation of the FileSystem.
@@ -56,14 +56,6 @@ class Directory:
     def path(self):
         return self._path
 
-    def where_is_file_in_filesystem(self, search_file):
-        paths = []
-        if search_file in self.files:
-            paths.append("%s/%s" % (self.path, search_file))
-        for curr_dir in self.directories:
-            paths.extend(curr_dir.where_is_file_in_filesystem(search_file))
-        return paths
-
     def get_dict_representation(self):
         dict_representation = dict()
         file_list = []
@@ -82,3 +74,14 @@ class File:
     @property
     def name(self):
         return self._name
+
+
+def search_filesystem_for_file(directory, search_file):
+    paths = []
+    print(directory._files)
+    if search_file in [f.name for f in directory._files]:
+        paths.append("%s/%s" % (directory._path, search_file))
+    for curr_dir in directory._directories:
+        paths.extend(search_filesystem_for_file(curr_dir, search_file))
+    print(paths)
+    return paths
