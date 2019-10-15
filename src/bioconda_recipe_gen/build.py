@@ -33,9 +33,9 @@ def bioconda_utils_build(package_name, bioconda_recipe_path):
 
 def mini_build_setup(recipe, build_script):
     """ Write build.sh and meta.yaml recipe path. """
-    os.mkdir("%s/output" % recipe.path)
     recipe.write_recipe_to_meta_file()
     build_script.write_build_script_to_file()
+    os.mkdir("%s/output" % recipe.path)
 
 
 def run_conda_build_mini(recipe_path, build_only=True):
@@ -134,34 +134,49 @@ def mini_iterative_build(recipe, build_script):
                 new_recipe.add_requirement(
                     "seqan-library", "build", debug_message=debug_message
                 )
-            if "could not find bison" in line_normalized or "bison: command not found" in line_normalized:
+            if (
+                "could not find bison" in line_normalized
+                or "bison: command not found" in line_normalized
+            ):
                 debug_message = "Because '-- Could NOT find BISON (missing: BISON_EXECUTABLE)' was in error message"
                 new_recipe.add_requirement(
                     "bison", "build", debug_message=debug_message
                 )
-            if "could not find flex" in line_normalized or "flex: command not found" in line_normalized:
+            if (
+                "could not find flex" in line_normalized
+                or "flex: command not found" in line_normalized
+            ):
                 debug_message = "Because '-- Could NOT find FLEX' was in error message"
-                new_recipe.add_requirement(
-                    "flex", "build", debug_message=debug_message
-                )
+                new_recipe.add_requirement("flex", "build", debug_message=debug_message)
             if "could not find libxml2" in line_normalized:
-                debug_message = "Because '-- Could NOT find LibXml2' was in error message"
+                debug_message = (
+                    "Because '-- Could NOT find LibXml2' was in error message"
+                )
                 new_recipe.add_requirement(
                     "libxml2", "build", debug_message=debug_message
                 )
             if "could not find armadillo" in line_normalized:
-                debug_message = "Because 'could not find armadillo' was in the error message"
+                debug_message = (
+                    "Because 'could not find armadillo' was in the error message"
+                )
                 new_recipe.add_requirement(
-                  "armadillo", "host", debug_message=debug_message
+                    "armadillo", "host", debug_message=debug_message
                 )
             if "fatal error: zlib.h: no such file or directory" in line_normalized:
                 debug_message = "Because 'fatal error: zlib.h: No such file or directory' was in the error message"
                 new_recipe.add_requirement(
                   "zlib", "host", debug_message=debug_message)
             if "error: libtool library used but" in line_normalized:
-                debug_message = "Because 'error: Libtool library used but' was in the error message"
+                debug_message = (
+                    "Because 'error: Libtool library used but' was in the error message"
+                )
                 new_recipe.add_requirement(
                     "libtool", "build", debug_message=debug_message
+                )
+            if "could not find blas (missing: blas_libraries)" in line_normalized:
+                debug_message = "Because 'Could NOT find BLAS (missing: BLAS_LIBRARIES)' was in the error message"
+                new_recipe.add_requirement(
+                    "openblas", "host", debug_message=debug_message
                 )
 
         if new_recipe == recipe:
@@ -230,7 +245,7 @@ def mini_iterative_test(recipe, build_script):
 def mini_sanity_check(bioconda_recipe_path, recipe):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     recipe.increment_build_number()
-    temp_folder_name = hashlib.md5(recipe.name.encode('utf-8')).hexdigest()
+    temp_folder_name = hashlib.md5(recipe.name.encode("utf-8")).hexdigest()
     recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
     try:
         os.mkdir(recipes_pkg_path)

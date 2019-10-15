@@ -18,7 +18,6 @@ class Recipe:
             self._path = "%s/%s" % (getcwd(), name) 
         else: 
             self._path = path
-        mkdir(self._path)
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
