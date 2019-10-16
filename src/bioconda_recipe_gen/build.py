@@ -8,6 +8,7 @@ import docker
 from shutil import rmtree, copy2
 from copy import deepcopy
 from .utils import copytree
+from .str_to_pkg import str_to_pkg
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
@@ -82,7 +83,6 @@ def mini_iterative_build(recipe, build_script):
 
     mini_build_setup(recipe, build_script)
     print("mini setup done")
-
     c = 0
     new_recipe = deepcopy(recipe)
     return_code = 1
@@ -91,89 +91,9 @@ def mini_iterative_build(recipe, build_script):
         for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
-            if (
-                "autoheader: not found" in line_normalized
-            ):  # only occures when minimal build.sh for kallisto is used
-                debug_message = (
-                    "Because 'autoheader: not found' was in the error message"
-                )
-                new_recipe.add_requirement(
-                    "autoconf", "build", debug_message=debug_message
-                )
-            if "autoreconf: command not found" in line_normalized:
-                debug_message = (
-                    "Because 'autoreconf: command not found' was in the error message"
-                )
-                new_recipe.add_requirement(
-                    "autoconf", "build", debug_message=debug_message
-                )
-            if "autoreconf: failed to run aclocal" in line_normalized:
-                debug_message = "Because 'autoreconf: failed to run aclocal' was in the error message"
-                new_recipe.add_requirement(
-                    "automake", "build", debug_message=debug_message
-                )
-            if "could not find hdf5" in line_normalized:
-                debug_message = "Because 'could not find hdf5' was in the error message"
-                new_recipe.add_requirement("hdf5", "host", debug_message=debug_message)
-            if (
-                "unable to find the requested boost libraries" in line_normalized
-                or "could not find boost" in line_normalized
-            ):
-                debug_message = "Because 'Unable to find the requested Boost libraries' was in the error message"
-                new_recipe.add_requirement("boost", "host", debug_message=debug_message)
-            if "no cmake_cxx_compiler could be found" in line_normalized:
-                debug_message = "Because 'no cmake_cxx_compiler could be found' was in the error message"
-                new_recipe.add_requirement(
-                    "{{ compiler('cxx') }}", "build", debug_message=debug_message
-                )
-            if (
-                'could not find a package configuration file provided by "seqan"'
-                in line_normalized
-            ):
-                debug_message = "Because 'could not find a package configuration file provided by 'seqan'' was in the error message"
-                new_recipe.add_requirement(
-                    "seqan-library", "build", debug_message=debug_message
-                )
-            if (
-                "could not find bison" in line_normalized
-                or "bison: command not found" in line_normalized
-            ):
-                debug_message = "Because '-- Could NOT find BISON (missing: BISON_EXECUTABLE)' was in error message"
-                new_recipe.add_requirement(
-                    "bison", "build", debug_message=debug_message
-                )
-            if (
-                "could not find flex" in line_normalized
-                or "flex: command not found" in line_normalized
-            ):
-                debug_message = "Because '-- Could NOT find FLEX' was in error message"
-                new_recipe.add_requirement("flex", "build", debug_message=debug_message)
-            if "could not find libxml2" in line_normalized:
-                debug_message = (
-                    "Because '-- Could NOT find LibXml2' was in error message"
-                )
-                new_recipe.add_requirement(
-                    "libxml2", "build", debug_message=debug_message
-                )
-            if "could not find armadillo" in line_normalized:
-                debug_message = (
-                    "Because 'could not find armadillo' was in the error message"
-                )
-                new_recipe.add_requirement(
-                    "armadillo", "host", debug_message=debug_message
-                )
-            if "error: libtool library used but" in line_normalized:
-                debug_message = (
-                    "Because 'error: Libtool library used but' was in the error message"
-                )
-                new_recipe.add_requirement(
-                    "libtool", "build", debug_message=debug_message
-                )
-            if "could not find blas (missing: blas_libraries)" in line_normalized:
-                debug_message = "Because 'Could NOT find BLAS (missing: BLAS_LIBRARIES)' was in the error message"
-                new_recipe.add_requirement(
-                    "openblas", "host", debug_message=debug_message
-                )
+            for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
+                if err_msg in line_normalized:
+                    new_recipe.add_requirement(pkg_name, dep_type)
 
         if new_recipe == recipe:
             break
@@ -204,9 +124,10 @@ def mini_iterative_test(recipe, build_script):
         for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
+            for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
+                if err_msg in line_normalized:
+                    new_recipe.add_requirement(pkg_name, dep_type)
 
-            if "['zlib'] not in reqs/run" in line_normalized:
-                new_recipe.add_requirement("zlib", "run")
             if "%s: command not found" % recipe.name in line_normalized:
                 new_build_script.add_moving_bin_files()
 
