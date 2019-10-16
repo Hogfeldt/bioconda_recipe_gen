@@ -28,10 +28,10 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda3/bin:$PATH
-  - conda update --yes -n base -c defaults conda
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
   - conda update --yes conda
+  - conda update -n base -c defaults conda
 
 install:
 
