@@ -4,7 +4,7 @@ import sys
 import logging
 
 from .bioconda_recipe_gen import main
-from .preprocessor.from_args import preprocess as args_preprocess
+from .preprocessors.from_args import preprocess as args_preprocess
 from .preprocessors.from_files import preprocess as files_preprocess
 
 
@@ -105,7 +105,13 @@ def start():
     parser_files = subparser.add_parser(
         "from-files", help="Add recipe informations from build.sh and meta.yaml"
     )
-    parser_files.add_argument("recipe_paths", help="Path to build.sh and meta.yaml")
+    parser_files.add_argument("recipe_path", help="Path to build.sh and meta.yaml")
+    parser_files.add_argument(
+        "-d",
+        "--debug",
+        help="Set this flag if you want to activate the debug mode. This creates an debug.log file that contains all debug prints",
+        action="store_true",
+    )
     parser_files.set_defaults(func=recipe_by_files_handler)
 
     # Evaluate the parsed arguments

@@ -2,10 +2,10 @@ from os import getcwd
 import os
 import tempfile
 
-from .recipe import Recipe
-from .buildscript import BuildScript
-from .utils import calculate_md5_checksum, get_pkg_build_number, download_and_unpack_source
-from .filesystem import Filesystem
+from bioconda_recipe_gen.recipe import Recipe
+from bioconda_recipe_gen.buildscript import BuildScript
+from bioconda_recipe_gen.utils import calculate_md5_checksum, get_pkg_build_number, download_and_unpack_source
+from bioconda_recipe_gen.filesystem import Filesystem
 
 
 def cmake_recipe_factory(name, version):
