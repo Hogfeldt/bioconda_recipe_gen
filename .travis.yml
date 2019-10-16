@@ -11,7 +11,7 @@ branches:
   - master
 
 env:
-  
+
   # Packages to build
 
   - PACKAGE=kallisto
@@ -22,27 +22,26 @@ env:
 
 before_install:
 
-  # Install Miniconda 
+  # Install Miniconda
 
-  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda3/bin:$PATH
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
-  - conda update --yes conda
-  - conda update -n base -c defaults conda
 
 install:
 
   # Create conda environment with python 3.6
-
-  - conda create --yes -n test python=3.6
-  - source activate test
-
   # Install dependencies into conda environment
 
-  - conda install --yes bioconda-utils docker-py
+  - conda create -q -n test python=$TRAVIS_PYTHON_VERSION bioconda-utils docker-py
+  - conda activate test
+
 
 before_script:
 
