@@ -14,5 +14,6 @@ str_to_pkg = {
     "could not find libxml2": ("libxml2", "build"),
     "could not find armadillo": ("armadillo", "host"),
     "error: libtool library used but": ("libtool", "build"),
-    "could not find blas (missing: blas_libraries)": ("openblas", "host")
+    "could not find blas (missing: blas_libraries)": ("openblas", "host"),
+    "['zlib'] not in reqs/run": ("zlib", "run")
 }

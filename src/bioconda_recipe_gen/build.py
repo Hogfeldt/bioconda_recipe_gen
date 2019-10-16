@@ -124,9 +124,10 @@ def mini_iterative_test(recipe, build_script):
         for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
+            for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
+                if err_msg in line_normalized:
+                    new_recipe.add_requirement(pkg_name, dep_type)
 
-            if "['zlib'] not in reqs/run" in line_normalized:
-                new_recipe.add_requirement("zlib", "run")
             if "%s: command not found" % recipe.name in line_normalized:
                 new_build_script.add_moving_bin_files()
 
