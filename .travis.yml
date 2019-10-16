@@ -30,7 +30,7 @@ before_install:
   - source "$HOME/miniconda/etc/profile.d/conda.sh"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda update --force conda
+  - conda update -n base -c defaults conda --force
   - conda info -a
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
