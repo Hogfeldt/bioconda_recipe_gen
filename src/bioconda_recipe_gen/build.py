@@ -85,6 +85,7 @@ def mini_iterative_build(recipe, build_script):
     print("mini setup done")
     c = 0
     new_recipe = deepcopy(recipe)
+    added_packages = []
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini(recipe.path)
@@ -92,8 +93,9 @@ def mini_iterative_build(recipe, build_script):
             line_normalized = line.lower()
             print(line)
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
-                if err_msg in line_normalized:
+                if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)
+                    added_packages.append(pkg_name)
 
         if new_recipe == recipe:
             break
@@ -118,6 +120,7 @@ def mini_iterative_test(recipe, build_script):
     new_recipe = deepcopy(recipe)
     new_build_script = deepcopy(build_script)
     c = 0
+    added_packages = []
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini_test(recipe.path)
@@ -125,9 +128,9 @@ def mini_iterative_test(recipe, build_script):
             line_normalized = line.lower()
             print(line)
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
-                if err_msg in line_normalized:
+                if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)
-
+                    added_packages.append(pkg_name)
             if "%s: command not found" % recipe.name in line_normalized:
                 new_build_script.add_moving_bin_files()
 

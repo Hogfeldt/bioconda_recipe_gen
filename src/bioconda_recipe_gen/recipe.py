@@ -64,7 +64,7 @@ class Recipe:
         source = self.recipe_dict.setdefault("source", dict())
         source["sha256"] = checksum
 
-    def add_requirement(self, pack_name, type_of_requirement, debug_message = "Not specified"):
+    def add_requirement(self, pack_name, type_of_requirement, debug_message="Not specified"):
         """ Adds a package to the list of requirements in the recipe
 
         Args:
