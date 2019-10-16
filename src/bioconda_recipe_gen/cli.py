@@ -4,11 +4,8 @@ import sys
 import logging
 
 from .bioconda_recipe_gen import main
-from .preprocessor import preprocess
-
-
-def recipe_by_files_handler(args):
-    pass
+from .preprocessor.from_args import preprocess as args_preprocess
+from .preprocessors.from_files import preprocess as files_preprocess
 
 
 def bioconda_recipes_exists(path):
@@ -16,13 +13,20 @@ def bioconda_recipes_exists(path):
         "%s/config.yml" % path
     )
 
-
-def recipe_by_args_handler(args):
-    recipes, build_scripts = preprocess(args)
+def call_main(args, recipes, build_scripts):
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         main(args.bioconda_recipe_path, recipes, build_scripts, args.debug)
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")
+
+def recipe_by_files_handler(args):
+    recipes, build_scripts = files_preprocess(args)
+    call_main(args, recipes, build_scripts)
+
+
+def recipe_by_args_handler(args):
+    recipes, build_scripts = args_preprocess(args)
+    call_main(args, recipes, build_scripts)
 
 
 def start():
