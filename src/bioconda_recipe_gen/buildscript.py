@@ -4,14 +4,14 @@ import pkg_resources
 class BuildScript:
     """ Represents a build.sh """
 
-    def __init__(self, name, path, template, filesystem):
+    def __init__(self, name, path, strategy, filesystem):
         self.name = name
         self._path = path
         self._lines = list()
         self._filesystem = filesystem
 
         build_template_file = pkg_resources.resource_filename(
-            __name__, "recipes/%s" % template
+            __name__, "recipes/%s" % self.strategy_to_template(strategy)
         )
         with open(build_template_file, "r") as template:
             self._lines = template.readlines()
@@ -29,6 +29,12 @@ class BuildScript:
     @property
     def filesystem(self):
         return self._filesystem
+
+    def strategy_to_template(self, strategy):
+        if strategy == "autoconf":
+            return "template_build_autoreconf.sh"
+        else:
+            return "template_build_cmake.sh"
 
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
