@@ -81,10 +81,8 @@ class File:
 
 def search_filesystem_for_file(directory, search_file):
     paths = []
-    print(directory._files)
     if search_file in [f.name for f in directory._files]:
         paths.append("%s/%s" % (directory._path, search_file))
     for curr_dir in directory._directories:
         paths.extend(search_filesystem_for_file(curr_dir, search_file))
-    print(paths)
     return paths
