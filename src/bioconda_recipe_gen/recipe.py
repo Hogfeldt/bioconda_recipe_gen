@@ -34,6 +34,10 @@ class Recipe:
         return self._path
 
     @property
+    def test_commands(self):
+        return self.recipe_dict["test"]["commands"]
+    
+    @property
     def url(self):
         return self.recipe_dict["source"]["url"]
 

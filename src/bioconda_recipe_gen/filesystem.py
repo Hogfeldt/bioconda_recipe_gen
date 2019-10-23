@@ -3,6 +3,7 @@ import os
 
 class Filesystem:
     def __init__(self, path):
+        self._root_path = path
         self._root_dir = self.create_directory(path)
         self._files = self._root_dir.files
         self._directories = self._root_dir.directories
@@ -19,13 +20,15 @@ class Filesystem:
                     sub_dir = "%s/%s" % (path, elem)
                     dirs.append(self.create_directory(sub_dir))
         curr_dir_name = path.split("/")[-1]
-        return Directory(curr_dir_name, files, dirs, path)
+        return Directory(
+            curr_dir_name, files, dirs, path.replace(self._root_path, "", 1)
+        )
 
     def is_file_in_root(self, search_file):
         return search_file in [f.name for f in self._files]
 
     def where_is_file_in_filesystem(self, search_file):
-        return self._root_dir.where_is_file_in_filesystem(search_file)
+        return search_filesystem_for_file(self._root_dir, search_file)
 
     def get_dict_representation(self):
         """ Returns a dictionary representation of the FileSystem.
@@ -56,14 +59,6 @@ class Directory:
     def path(self):
         return self._path
 
-    def where_is_file_in_filesystem(self, search_file):
-        paths = []
-        if search_file in self.files:
-            paths.append("%s/%s" % (self.path, search_file))
-        for curr_dir in self.directories:
-            paths.extend(curr_dir.where_is_file_in_filesystem(search_file))
-        return paths
-
     def get_dict_representation(self):
         dict_representation = dict()
         file_list = []
@@ -82,3 +77,12 @@ class File:
     @property
     def name(self):
         return self._name
+
+
+def search_filesystem_for_file(directory, search_file):
+    paths = []
+    if search_file in [f.name for f in directory._files]:
+        paths.append("%s/%s" % (directory._path, search_file))
+    for curr_dir in directory._directories:
+        paths.extend(search_filesystem_for_file(curr_dir, search_file))
+    return paths

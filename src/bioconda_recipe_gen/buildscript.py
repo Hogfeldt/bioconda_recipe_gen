@@ -38,10 +38,13 @@ class BuildScript:
 
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
-        lines_to_write = ['#!/bin/bash\n'] + self._lines
-        with open("%s/build.sh" % self._path, 'w') as fp:
+        lines_to_write = ["#!/bin/bash\n"] + self._lines
+        with open("%s/build.sh" % self._path, "w") as fp:
             for line in lines_to_write:
                 fp.write(line + "\n")
+
+    def add_chmodx(self, file_path):
+        self._lines.append("chmod +x %s\n" % file_path)
 
     def add_cmake_flags(self, flags):
         """ Add flags to the cmake call """
@@ -49,8 +52,11 @@ class BuildScript:
             if line.startswith("cmake .."):
                 self._lines[i] = "cmake .. %s" % flags
 
+    def move_file_from_source_to_bin(self, file_path):
+        """ Use cp to move a file from SRC_DIR to PREFIX/bin """
+        self._lines.append("cp $SRC_DIR/%s $PREFIX/bin/" % file_path)
+
     def add_moving_bin_files(self):
         """ Add lines to make sure the bin files are moved """
         self._lines.append("mkdir -p $PREFIX/bin")
         self._lines.append("cp bin/%s $PREFIX/bin" % self.name)
-

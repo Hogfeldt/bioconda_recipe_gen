@@ -96,7 +96,6 @@ def mini_iterative_build(recipe, build_script):
                 if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)
                     added_packages.append(pkg_name)
-
         if new_recipe == recipe:
             break
         else:
@@ -124,7 +123,7 @@ def mini_iterative_test(recipe, build_script):
     return_code = 1
     while return_code != 0:
         result, stdout = run_conda_build_mini_test(recipe.path)
-        for line in stdout.split("\n"):
+        for line_num, line in enumerate(stdout.split("\n")):
             line_normalized = line.lower()
             print(line)
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
@@ -133,6 +132,41 @@ def mini_iterative_test(recipe, build_script):
                     added_packages.append(pkg_name)
             if "%s: command not found" % recipe.name in line_normalized:
                 new_build_script.add_moving_bin_files()
+            if (
+                line_normalized[2:]
+                in map(lambda c: c.lower(), new_recipe.test_commands)
+                and "permission denied" in stdout.split("\n")[line_num + 1].lower()
+            ):
+                for command in new_recipe.test_commands:
+                    if line_normalized[2:] in command:
+                        to_call = command.split()[0]
+                        new_build_script.add_chmodx("$PREFIX/bin/%s" % to_call)
+            if "ModuleNotFoundError: No module named" in line:
+                package_file = line.split("'")[1] + ".py"
+                files = build_script.filesystem.where_is_file_in_filesystem(
+                    package_file
+                )
+                if files:
+                    new_build_script.move_file_from_source_to_bin(files[0])
+            if (
+                line[2:] in new_recipe.test_commands
+                and "command not found" in stdout.split("\n")[line_num + 1].lower()
+            ):
+                for command in new_recipe.test_commands:
+                    if line[2:] in command:
+                        print("line[2:] in command: %s" % (line[2:] in command))
+                        potential_file = command.split()[0]
+                        if len(potential_file.split(".")) > 1:
+                            print(
+                                "len(potential_file.split('.')) > 1: %s"
+                                % (len(potential_file.split(".")) > 1)
+                            )
+                            files = build_script.filesystem.where_is_file_in_filesystem(
+                                potential_file
+                            )
+                            print(files)
+                            if files:
+                                new_build_script.move_file_from_source_to_bin(files[0])
 
         if new_recipe == recipe and new_build_script == build_script:
             break
