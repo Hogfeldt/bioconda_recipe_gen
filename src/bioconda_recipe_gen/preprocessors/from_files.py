@@ -71,13 +71,19 @@ def create_recipe(bioconda_recipe_path, recipe_path):
     except KeyError:
         pass
     # Conda will not accept the compiler dependency given by bioconda
-    build_requirements = recipe.recipe_dict['requirements']['build']
-    if 'compiler_c' in build_requirements:
-        recipe.recipe_dict['requirements']['build'].remove("compiler_c")
-        recipe.recipe_dict['requirements']['build'].append("{{compiler('c')}}")
-    if 'compiler_cxx' in build_requirements:
-        recipe.recipe_dict['requirements']['build'].remove("compiler_cxx")
-        recipe.recipe_dict['requirements']['build'].append("{{compiler('cxx')}}")
+    try:
+       build_requirements = recipe.recipe_dict['requirements']['build']
+       if 'compiler_c' in build_requirements:
+           recipe.recipe_dict['requirements']['build'].remove("compiler_c")
+           recipe.recipe_dict['requirements']['build'].append("{{compiler('c')}}")
+       if 'compiler_cxx' in build_requirements:
+           recipe.recipe_dict['requirements']['build'].remove("compiler_cxx")
+           recipe.recipe_dict['requirements']['build'].append("{{compiler('cxx')}}")
+    except KeyError:
+           recipe.add_requirement("{{compiler('c')}}", "build")
+           recipe.add_requirement("cmake", "build")
+           recipe.add_requirement("make", "build")
+    recipe.increment_build_number()
     return recipe
 
 

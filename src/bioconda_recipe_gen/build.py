@@ -195,7 +195,7 @@ def mini_sanity_check(bioconda_recipe_path, recipe):
     recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
     try:
         os.mkdir(recipes_pkg_path)
-        current_recipe_path = "%s/%s/" % (os.getcwd(), recipe.name)
+        current_recipe_path = recipe.path
 
         for item in os.listdir(current_recipe_path):
             s = os.path.join(current_recipe_path, item)
