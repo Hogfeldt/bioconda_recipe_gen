@@ -92,9 +92,7 @@ def create_build_script(recipe, args, filesystem):
         recipe.name, args.recipe_path, "cmake", filesystem
     )
     with open(build_script.path+"/build.sh", "r") as fp:
-        build_script._lines = []
-        for line in fp.readlines():
-            build_script._lines.append(line)
+        build_script._lines = fp.readlines()
     return build_script
 
 
