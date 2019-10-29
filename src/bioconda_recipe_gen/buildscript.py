@@ -41,7 +41,10 @@ class BuildScript:
         lines_to_write = ["#!/bin/bash\n"] + self._lines
         with open("%s/build.sh" % self._path, "w") as fp:
             for line in lines_to_write:
-                fp.write(line + "\n")
+                if line[-1] is '\n':
+                    fp.write(line)
+                else:
+                    fp.write(line+'\n')
 
     def add_chmodx(self, file_path):
         self._lines.append("chmod +x %s\n" % file_path)
