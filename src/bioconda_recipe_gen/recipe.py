@@ -39,7 +39,10 @@ class Recipe:
 
     @property
     def test_commands(self):
-        return self.recipe_dict["test"]["commands"]
+        try:
+            return  self.recipe_dict["test"]["commands"]
+        except KeyError:
+            return []
 
     @property
     def url(self):
