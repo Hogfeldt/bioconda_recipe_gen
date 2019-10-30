@@ -193,6 +193,9 @@ def mini_sanity_check(bioconda_recipe_path, recipe):
     recipe.increment_build_number()
     temp_folder_name = hashlib.md5(recipe.name.encode("utf-8")).hexdigest()
     recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
+    real_package_name = recipe.name
+    recipe.name = temp_folder_name
+    recipe.write_recipe_to_meta_file()
     try:
         os.mkdir(recipes_pkg_path)
         current_recipe_path = recipe.path
@@ -216,3 +219,5 @@ def mini_sanity_check(bioconda_recipe_path, recipe):
             return False
     finally:
         rmtree(recipes_pkg_path)
+        recipe.name = real_package_name
+        recipe.write_recipe_to_meta_file()
