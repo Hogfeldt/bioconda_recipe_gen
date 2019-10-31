@@ -10,7 +10,7 @@ from .preprocessors.from_files import preprocess as files_preprocess
 
 def bioconda_recipes_exists(path):
     recipes_path = os.path.join(path, "recipes")
-    config_path = os.path, join(path, "config.yml")
+    config_path = os.path.join(path, "config.yml")
     return os.path.exists(recipes_path) and os.path.exists(config_path)
 
 
