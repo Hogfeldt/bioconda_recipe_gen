@@ -9,13 +9,17 @@ from bioconda_utils.recipe import Recipe as bioconda_utils_Recipe
 from bioconda_recipe_gen.filesystem import Filesystem
 from bioconda_recipe_gen.buildscript import BuildScript
 from bioconda_recipe_gen.recipe import Recipe
-from bioconda_recipe_gen.utils import copytree, calculate_md5_checksum, download_and_unpack_source
+from bioconda_recipe_gen.utils import (
+    copytree,
+    calculate_md5_checksum,
+    download_and_unpack_source,
+)
 
 
 def create_recipe(bioconda_recipe_path, recipe_path):
     # Load meta.yaml file and instantiate Recipe object
     temp_folder_name = hashlib.md5(recipe_path.encode("utf-8")).hexdigest()
-    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
+    recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
     try:
         os.mkdir(recipes_pkg_path)
 
@@ -72,26 +76,25 @@ def create_recipe(bioconda_recipe_path, recipe_path):
         pass
     # Conda will not accept the compiler dependency given by bioconda
     try:
-       build_requirements = recipe.recipe_dict['requirements']['build']
-       if 'compiler_c' in build_requirements:
-           recipe.recipe_dict['requirements']['build'].remove("compiler_c")
-           recipe.recipe_dict['requirements']['build'].append("{{compiler('c')}}")
-       if 'compiler_cxx' in build_requirements:
-           recipe.recipe_dict['requirements']['build'].remove("compiler_cxx")
-           recipe.recipe_dict['requirements']['build'].append("{{compiler('cxx')}}")
+        build_requirements = recipe.recipe_dict["requirements"]["build"]
+        if "compiler_c" in build_requirements:
+            recipe.recipe_dict["requirements"]["build"].remove("compiler_c")
+            recipe.recipe_dict["requirements"]["build"].append("{{compiler('c')}}")
+        if "compiler_cxx" in build_requirements:
+            recipe.recipe_dict["requirements"]["build"].remove("compiler_cxx")
+            recipe.recipe_dict["requirements"]["build"].append("{{compiler('cxx')}}")
     except KeyError:
-           recipe.add_requirement("{{compiler('c')}}", "build")
-           recipe.add_requirement("cmake", "build")
-           recipe.add_requirement("make", "build")
+        recipe.add_requirement("{{compiler('c')}}", "build")
+        recipe.add_requirement("cmake", "build")
+        recipe.add_requirement("make", "build")
     recipe.increment_build_number()
     return recipe
 
 
 def create_build_script(recipe, args, filesystem):
-    build_script = BuildScript(
-        recipe.name, args.recipe_path, "cmake", filesystem
-    )
-    with open(build_script.path+"/build.sh", "r") as fp:
+    build_script = BuildScript(recipe.name, args.recipe_path, "cmake", filesystem)
+    exact_buildscript_path = os.path.join(build_script.path, "build.sh")
+    with open(exact_buildscript_path, "r") as fp:
         build_script._lines = fp.readlines()
     return build_script
 
@@ -100,8 +103,8 @@ def preprocess(args):
     recipe = create_recipe(args.bioconda_recipe_path, args.recipe_path)
     with tempfile.TemporaryDirectory() as tmpdir:
         download_and_unpack_source(recipe.url, tmpdir)
-        source_path = "%s/source" % tmpdir
-        source_code_path = "%s/%s" % (source_path, os.listdir(source_path)[0])
+        source_path = os.path.join(tmpdir, "source")
+        source_code_path = os.path.join(source_path, os.listdir(source_path)[0])
         filesystem = Filesystem(source_code_path)
     build_script = create_build_script(recipe, args, filesystem)
     return ([recipe], [build_script])

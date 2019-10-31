@@ -12,12 +12,12 @@ class Filesystem:
         files = []
         dirs = []
         for elem in os.listdir(path):
-            elem_path = "%s/%s" % (path, elem)
+            elem_path = os.path.join(path, elem)
             if os.path.exists(elem_path):
                 if os.path.isfile(elem_path):
                     files.append(File(elem))
                 else:
-                    sub_dir = "%s/%s" % (path, elem)
+                    sub_dir = os.path.join(path, elem)
                     dirs.append(self.create_directory(sub_dir))
         curr_dir_name = path.split("/")[-1]
         return Directory(
@@ -82,7 +82,7 @@ class File:
 def search_filesystem_for_file(directory, search_file):
     paths = []
     if search_file in [f.name for f in directory._files]:
-        paths.append("%s/%s" % (directory._path, search_file))
+        paths.append(os.path.join(directory._path, search_file))
     for curr_dir in directory._directories:
         paths.extend(search_filesystem_for_file(curr_dir, search_file))
     return paths

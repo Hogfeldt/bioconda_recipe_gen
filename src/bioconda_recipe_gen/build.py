@@ -36,7 +36,7 @@ def mini_build_setup(recipe, build_script):
     """ Write build.sh and meta.yaml recipe path. """
     recipe.write_recipe_to_meta_file()
     build_script.write_build_script_to_file()
-    os.mkdir("%s/output" % recipe.path)
+    os.mkdir(os.path.join(recipe.path, "output"))
 
 
 def run_conda_build_mini(recipe_path, build_only=True):
@@ -63,7 +63,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
                     fd.write(b)
                 fd.seek(0)
                 tar_file = tarfile.open(mode="r", fileobj=fd)
-                tar_file.extractall("%s/output" % recipe_path)
+                tar_file.extractall(os.path.join(recipe_path, "output"))
     container.remove()
     return (result, stdout)
 
@@ -106,8 +106,8 @@ def mini_iterative_build(recipe, build_script):
         print("%s iteration" % c)
 
         if not logging.getLogger().disabled:
-            src = "%s/output" % recipe.path
-            dst = "%s/debug_output_files/build_iter%d" % (recipe.path, c)
+            src = os.path.join(recipe.path, "output")
+            dst = os.path.join(recipe.path, "debug_output_files", "build_iter%d" % c)
             os.mkdir(dst)
             copytree(src, dst)
 
@@ -180,8 +180,8 @@ def mini_iterative_test(recipe, build_script):
         print("%s iteration" % c)
 
     if not logging.getLogger().disabled:
-        src = "%s/output" % recipe.path
-        dst = "%s/debug_output_files/test_iter1" % recipe.path
+        src = os.path.join(recipe.path, "output")
+        dst = os.path.join(recipe.path, "debug_output_files", "test_iter%d" % c)
         os.mkdir(dst)
         copytree(src, dst)
 
@@ -192,7 +192,7 @@ def mini_sanity_check(bioconda_recipe_path, recipe):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     recipe.increment_build_number()
     temp_folder_name = hashlib.md5(recipe.name.encode("utf-8")).hexdigest()
-    recipes_pkg_path = "%s/recipes/%s/" % (bioconda_recipe_path, temp_folder_name)
+    recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
     real_package_name = recipe.name
     recipe.name = temp_folder_name
     recipe.write_recipe_to_meta_file()

@@ -15,7 +15,7 @@ class Recipe:
     def __init__(self, name, version, path=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
         if path is None:
-            self._path = "%s/%s" % (getcwd(), name)
+            self._path = os.path.join(getcwd(), name)
         else:
             self._path = path
 
@@ -40,7 +40,7 @@ class Recipe:
     @property
     def test_commands(self):
         try:
-            return  self.recipe_dict["test"]["commands"]
+            return self.recipe_dict["test"]["commands"]
         except KeyError:
             return []
 
@@ -58,7 +58,7 @@ class Recipe:
         if exists(self._path) is False:
             mkdir(self._path)
         make_dict.make_meta_file_from_dict(
-            self.recipe_dict, "%s/meta.yaml" % self._path
+            self.recipe_dict, os.path.join(self._path, "meta.yaml")
         )
 
     def add_build_number(self, number):

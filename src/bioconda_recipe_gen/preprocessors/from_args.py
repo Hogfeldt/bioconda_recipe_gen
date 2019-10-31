@@ -4,7 +4,11 @@ import tempfile
 
 from bioconda_recipe_gen.recipe import Recipe
 from bioconda_recipe_gen.buildscript import BuildScript
-from bioconda_recipe_gen.utils import calculate_md5_checksum, get_pkg_build_number, download_and_unpack_source
+from bioconda_recipe_gen.utils import (
+    calculate_md5_checksum,
+    get_pkg_build_number,
+    download_and_unpack_source,
+)
 from bioconda_recipe_gen.filesystem import Filesystem
 
 
@@ -36,7 +40,8 @@ def strategies_to_try(filesystem):
 def build_script_factory(strategies, name, cmake_flags, filesystem):
     build_scripts = []
     for strategy in strategies:
-        build_script = BuildScript(name, "%s/%s" % (getcwd(), name), strategy, filesystem)
+        buildscript_path = os.path.join(os.getcwd(), name)
+        build_script = BuildScript(name, buildscript_path, strategy, filesystem)
         flags = ""
         if cmake_flags:
             for flag in cmake_flags:
@@ -49,14 +54,16 @@ def build_script_factory(strategies, name, cmake_flags, filesystem):
 
 
 def recipe_factory(strategies, args):
-    recipes= []
+    recipes = []
     for strategy in strategies:
         if strategy == "autoconf":
             recipe = autoconf_recipe_factory(args.name, args.version)
         else:
             recipe = cmake_recipe_factory(args.name, args.version)
         recipe.add_source_url(args.url)
-        recipe.add_build_number(get_pkg_build_number(recipe.name, args.bioconda_recipe_path))
+        recipe.add_build_number(
+            get_pkg_build_number(recipe.name, args.bioconda_recipe_path)
+        )
         add_checksum(recipe, args)
         if args.tests is not None:
             recipe.add_test_files_with_path(args.tests[0])
@@ -89,9 +96,8 @@ def add_checksum(recipe, args):
 def preprocess(args):
     with tempfile.TemporaryDirectory() as tmpdir:
         download_and_unpack_source(args.url, tmpdir)
-        source_path = "%s/source" % tmpdir
-        source_code_path = "%s/%s" % (source_path, os.listdir(source_path)[0])
+        source_path = os.path.join(tmpdir, "source")
+        source_code_path = os.path.join(source_path, os.listdir(source_path)[0])
         filesystem = Filesystem(source_code_path)
         recipes, build_scripts = make_recipe_and_buildscript_pairs(args, filesystem)
     return recipes, build_scripts
-

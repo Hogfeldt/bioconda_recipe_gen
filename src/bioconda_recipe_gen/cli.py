@@ -9,15 +9,17 @@ from .preprocessors.from_files import preprocess as files_preprocess
 
 
 def bioconda_recipes_exists(path):
-    return os.path.exists("%s/recipes" % path) and os.path.exists(
-        "%s/config.yml" % path
-    )
+    recipes_path = os.path.join(path, "recipes")
+    config_path = os.path, join(path, "config.yml")
+    return os.path.exists(recipes_path) and os.path.exists(config_path)
+
 
 def call_main(args, recipes, build_scripts):
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         main(args.bioconda_recipe_path, recipes, build_scripts, args.debug)
     else:
         sys.exit("ERROR: Wrong path to bioconda-recipes")
+
 
 def recipe_by_files_handler(args):
     recipes, build_scripts = files_preprocess(args)
