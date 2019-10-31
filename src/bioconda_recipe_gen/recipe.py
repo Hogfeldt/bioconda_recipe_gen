@@ -1,6 +1,7 @@
 import logging
 from os import listdir, getcwd, mkdir
 from os.path import isfile, join, exists
+import os
 
 from . import make_dict
 from .utils import copytree
@@ -15,7 +16,7 @@ class Recipe:
     def __init__(self, name, version, path=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
         if path is None:
-            self._path = join(getcwd(), name)
+            self._path = os.path.join(getcwd(), name)
         else:
             self._path = path
 
@@ -58,7 +59,7 @@ class Recipe:
         if exists(self._path) is False:
             mkdir(self._path)
         make_dict.make_meta_file_from_dict(
-            self.recipe_dict, join(self._path, "meta.yaml")
+            self.recipe_dict, os.path.join(self._path, "meta.yaml")
         )
 
     def add_build_number(self, number):
