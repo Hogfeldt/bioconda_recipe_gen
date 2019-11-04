@@ -22,16 +22,7 @@ def create_recipe(bioconda_recipe_path, recipe_path):
     recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
     try:
         os.mkdir(recipes_pkg_path)
-
-        for item in os.listdir(recipe_path):
-            s = os.path.join(recipe_path, item)
-            d = os.path.join(recipes_pkg_path, item)
-
-            if not os.path.isdir(s):
-                copy2(s, d)
-            elif item != "output":
-                copytree(s, d)
-
+        copytree(recipe_path, recipes_pkg_path)
         bioconda_recipe = bioconda_utils_Recipe.from_file(
             bioconda_recipe_path, recipes_pkg_path
         )
