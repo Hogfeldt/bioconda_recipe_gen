@@ -6,7 +6,10 @@ str_to_pkg = {
     "unable to find the requested boost libraries": ("boost", "host"),
     "could not find boost": ("boost", "host"),
     "no cmake_cxx_compiler could be found": ("{{ compiler('cxx') }}", "build"),
-    'could not find a package configuration file provided by "seqan"': ("seqan-library", "build"),
+    'could not find a package configuration file provided by "seqan"': (
+        "seqan-library",
+        "build",
+    ),
     "could not find bison": ("bison", "build"),
     "bison: command not found": ("bison", "build"),
     "could not find flex": ("flex", "build"),
@@ -15,5 +18,8 @@ str_to_pkg = {
     "could not find armadillo": ("armadillo", "host"),
     "error: libtool library used but": ("libtool", "build"),
     "could not find blas (missing: blas_libraries)": ("openblas", "host"),
-    "['zlib'] not in reqs/run": ("zlib", "run")
+    "['zlib'] not in reqs/run": ("zlib", "run"),
+    "fatal error: zlib.h: no such file or directory": ("zlib", "host"),
+    "fatal error: boost": ("boost", "host") #/opt/conda/conda-bld/lorma_1572881017031/work/thirdparty/gatb-core/src/gatb/tools/designpattern/impl/IteratorHelpers.hpp:32:10: fatal error: boost/variant.hpp: No such file or directory
+
 }
