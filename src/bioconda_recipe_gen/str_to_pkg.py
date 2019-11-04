@@ -15,5 +15,6 @@ str_to_pkg = {
     "could not find armadillo": ("armadillo", "host"),
     "error: libtool library used but": ("libtool", "build"),
     "could not find blas (missing: blas_libraries)": ("openblas", "host"),
-    "['zlib'] not in reqs/run": ("zlib", "run")
+    "['zlib'] not in reqs/run": ("zlib", "run"),
+    "cmake error: cmake was unable to find a build program corresponding to \"unix makefiles\"": ("make", "build")
 }
