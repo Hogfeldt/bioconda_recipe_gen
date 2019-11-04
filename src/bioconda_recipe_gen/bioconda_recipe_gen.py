@@ -8,9 +8,9 @@ from . import build
 
 def setup_logging(debug, output_dir_path):
     if debug:
-        debug_filename = "%s/debug.log" % output_dir_path
+        debug_filename = os.path.join(output_dir_path, "debug.log")
         logging.basicConfig(filename=debug_filename, level=logging.DEBUG)
-        debug_folder = "%s/debug_output_files" % output_dir_path
+        debug_folder = os.path.join(output_dir_path, "debug_output_files")
         os.mkdir(debug_folder)
     else:
         logging.getLogger().disabled = True
@@ -29,7 +29,9 @@ def main(bioconda_recipe_path, recipes, build_scripts, debug):
         setup_logging(debug, recipe.path)
 
         # run conda-build with --build-only flag
-        mini_proc_build, recipe, build_script = build.mini_iterative_build(recipe, build_script)
+        mini_proc_build, recipe, build_script = build.mini_iterative_build(
+            recipe, build_script
+        )
         print("mini_proc_build return code:", mini_proc_build[0]["StatusCode"])
         for line in mini_proc_build[1].split("\n"):
             print(line)
@@ -43,7 +45,10 @@ def main(bioconda_recipe_path, recipes, build_scripts, debug):
         # Sanity check
         success = build.mini_sanity_check(bioconda_recipe_path, recipe)
         # copy the final recipe into the current directory
-        copyfile(recipe.path + "/meta.yaml", "./meta.yaml")
+        copyfile(
+            os.path.join(recipe.path, "meta.yaml"),
+            os.path.join(os.getcwd(), "meta.yaml"),
+        )
 
     if success:
         print("SUCCESS: Package was successfully build")

@@ -12,7 +12,7 @@ from bioconda_utils import recipe
 def calculate_md5_checksum(url):
     """ Calculate the md5 checksum of the file found at the url """
     with tempfile.TemporaryDirectory() as tmpdir:
-        file_path = "%s/file_to_check" % tmpdir
+        file_path = os.path.join(tmpdir, "file_to_check")
         urllib.request.urlretrieve(url, file_path)
         md5_hash = hashlib.md5(open(file_path, "rb").read()).hexdigest()
     return md5_hash
@@ -31,8 +31,8 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 def get_pkg_build_number(pkg_name, bioconda_recipe_path):
     """ Returns the build number of an exisitng package in the bioconda-recipe/recipes folder """
-    recipes_path = "%s/recipes" % bioconda_recipe_path
-    meta_yaml_path = "%s/%s" % (recipes_path, pkg_name)
+    recipes_path = os.path.join(bioconda_recipe_path, "recipes")
+    meta_yaml_path = os.path.join(recipes_path, pkg_name)
     try:
         cur_recipe = recipe.Recipe.from_file(recipes_path, meta_yaml_path)
         build_number = int(cur_recipe.get("build/number"))
@@ -43,47 +43,49 @@ def get_pkg_build_number(pkg_name, bioconda_recipe_path):
 
 def download_and_unpack_source(src, dir_path):
     """ Download a source file and unpack it """
+    unpack_path = os.path.join(dir_path, "source")
+    os.mkdir(unpack_path)
     try:
         # .tar
         if src.lower().endswith(".tar"):
-            urllib.request.urlretrieve(src, "%s/source.tar" % dir_path)
-            os.mkdir("%s/source" % dir_path)
-            with tarfile.open("%s/source.tar" % dir_path) as tar_ref:
-                tar_ref.extractall("%s/source" % dir_path)
+            archive_path = os.path.join(dir_path, "source.tar")
+            urllib.request.urlretrieve(src, archive_path)
+            with tarfile.open(archive_path) as tar_ref:
+                tar_ref.extractall(unpack_path)
         # .tar.gz
         if src.lower().endswith(".tar.gz"):
-            urllib.request.urlretrieve(src, "%s/source.tar.gz" % dir_path)
-            os.mkdir("%s/source" % dir_path)
-            with tarfile.open("%s/source.tar.gz" % dir_path, "r:gz") as tar_ref:
-                tar_ref.extractall("%s/source" % dir_path)
+            archive_path = os.path.join(dir_path, "source.tar.gz")
+            urllib.request.urlretrieve(src, archive_path)
+            with tarfile.open(archive_path, "r:gz") as tar_ref:
+                tar_ref.extractall(unpack_path)
         # .tar.bz2
         elif src.lower().endswith(".tar.bz2"):
-            urllib.request.urlretrieve(src, "%s/source.tar.bz2" % dir_path)
-            os.mkdir("%s/source" % dir_path)
-            with tarfile.open("%s/source.tar.bz2" % dir_path, "r:bz2") as tar_ref:
-                tar_ref.extractall("%s/source" % dir_path)
+            archive_path = os.path.join(dir_path, "source.tar.bz2")
+            urllib.request.urlretrieve(src, archive_path)
+            with tarfile.open(archive_path, "r:bz2") as tar_ref:
+                tar_ref.extractall(unpack_path)
         # .tgz
         elif src.lower().endswith(".tgz"):
-            urllib.request.urlretrieve(src, "%s/source.tgz" % dir_path)
-            os.mkdir("%s/source" % dir_path)
-            with tarfile.open("%s/source.tgz" % dir_path, "r:gz") as tar_ref:
-                tar_ref.extractall("%s/source" % dir_path)
+            archive_path = os.path.join(dir_path, "source.tgz")
+            urllib.request.urlretrieve(src, archive_path)
+            with tarfile.open(archive_path, "r:gz") as tar_ref:
+                tar_ref.extractall(unpack_path)
         # .zip
         elif src.lower().endswith(".zip"):
-            urllib.request.urlretrieve(src, "%s/source.zip" % dir_path)
-            os.mkdir("%s/source" % dir_path)
-            with zipfile.ZipFile("%s/source.zip" % dir_path, "r") as zip_ref:
-                zip_ref.extractall("%s/source" % dir_path)
+            archive_path = os.path.join(dir_path, "source.zip")
+            urllib.request.urlretrieve(src, archive_path)
+            with zipfile.ZipFile(archive_path, "r") as zip_ref:
+                zip_ref.extractall(unpack_path)
         else:
             print("Unknown fileformat! Cannot unpack %s" % src)
     except urllib.error.HTTPError as e:
-        print('HTTP error code: ', e.code)
+        print("HTTP error code: ", e.code)
         print(src)
     except urllib.error.URLError as e:
-        print('URL error Reason: ', e.reason)
+        print("URL error Reason: ", e.reason)
         print(src)
     except tarfile.ReadError:
-        print('Tarfile ReadError')
+        print("Tarfile ReadError")
         print(src)
     except:
         print("Unexpected error:", sys.exc_info()[0])
