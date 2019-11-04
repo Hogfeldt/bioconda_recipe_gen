@@ -15,5 +15,7 @@ str_to_pkg = {
     "could not find armadillo": ("armadillo", "host"),
     "error: libtool library used but": ("libtool", "build"),
     "could not find blas (missing: blas_libraries)": ("openblas", "host"),
-    "['zlib'] not in reqs/run": ("zlib", "run")
+    "['zlib'] not in reqs/run": ("zlib", "run"),
+    "could not find gsl (missing: gsl_libraries)": ("gsl", "host"),
+    "fatal error: nlopt.h: no such file or directory": ("nlopt", "host")
 }
