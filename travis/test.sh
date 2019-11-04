@@ -98,6 +98,16 @@ build_simka()
     bioconda-recipe-gen $BR_PATH -n $name -u $url -v $version --test-commands "${commands[@]}"
 }
 
+build_2pg_cartesian()
+{
+    name=2pg_cartesian
+    url=https://github.com/rodrigofaccioli/2pg_cartesian/archive/v1.0.1.tar.gz
+    version=1.0.1
+    commands="protpred-Gromacs-Test_random_number"
+    pfiles=$DATA_PATH/2pg_cartesian
+    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "$commands" --patches $pfiles
+}
+
 ##### Choose package to build
 
 package=$1
@@ -114,4 +124,5 @@ case $package in
     newick-utils)       build_newick_utils;;
     simka)              build_simka;;
     denovogear)         build_denovogear;;
+    2pg-cartesian)      build_2pg_cartesian;;
 esac

@@ -2,6 +2,7 @@ import logging
 from os import listdir, getcwd, mkdir
 from os.path import isfile, join, exists
 import os
+from shutil import copy2, SameFileError
 
 from . import make_dict
 from .utils import copytree
@@ -19,6 +20,7 @@ class Recipe:
             self._path = os.path.join(getcwd(), name)
         else:
             self._path = path
+        self._patch_paths = []
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -61,6 +63,11 @@ class Recipe:
         make_dict.make_meta_file_from_dict(
             self.recipe_dict, os.path.join(self._path, "meta.yaml")
         )
+        for patch_file in self._patch_paths:
+            try:
+                copy2(patch_file, self._path)
+            except SameFileError:
+                pass
 
     def add_build_number(self, number):
         build = self.recipe_dict.setdefault("build", dict())
@@ -147,3 +154,12 @@ class Recipe:
         curr_list = test.setdefault("patches", [])
         for f in listdir(patches_path):
             curr_list.append(f)
+            self._patch_paths.append(join(patches_path, f))
+
+    def add_patches_with_list(self, patch_files, folder_with_patch_files):
+        """ Adds patch files from patch_files to the recipe """
+        source = self.recipe_dict.setdefault("source", dict())
+        curr_list = source.setdefault("patches", [])
+        for patch_file in patch_files:
+            curr_list.append(patch_file)
+            self._patch_paths.append(join(folder_with_patch_files, patch_file))

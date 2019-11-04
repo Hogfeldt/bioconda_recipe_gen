@@ -17,6 +17,7 @@ from bioconda_recipe_gen.utils import (
 
 
 def create_recipe(bioconda_recipe_path, recipe_path):
+    print("recipe_path", recipe_path)
     # Load meta.yaml file and instantiate Recipe object
     temp_folder_name = hashlib.md5(recipe_path.encode("utf-8")).hexdigest()
     recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
@@ -72,6 +73,10 @@ def create_recipe(bioconda_recipe_path, recipe_path):
         pass
     try:
         recipe.add_test_files_with_list(bioconda_recipe.get("test/files"))
+    except KeyError:
+        pass
+    try:
+        recipe.add_patches_with_list(bioconda_recipe.get("source/patches"), recipe_path)
     except KeyError:
         pass
     # Conda will not accept the compiler dependency given by bioconda
