@@ -23,7 +23,10 @@ def main(bioconda_recipe_path, recipes, build_scripts, debug):
         build_script = build_scripts.pop(0)
 
         if os.path.exists(recipe.path):
-            rmtree(recipe.path)
+            # prepare for new build phase
+            output_dir = os.path.join(recipe.path, "output")
+            if os.path.exists(output_dir):
+                rmtree(output_dir)
 
         # Setup debugging
         setup_logging(debug, recipe.path)

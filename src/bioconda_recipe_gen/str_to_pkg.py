@@ -20,6 +20,7 @@ str_to_pkg = {
     "could not find blas (missing: blas_libraries)": ("openblas", "host"),
     "['zlib'] not in reqs/run": ("zlib", "run"),
     "fatal error: zlib.h: no such file or directory": ("zlib", "host"),
-    "fatal error: boost": ("boost", "host") #/opt/conda/conda-bld/lorma_1572881017031/work/thirdparty/gatb-core/src/gatb/tools/designpattern/impl/IteratorHelpers.hpp:32:10: fatal error: boost/variant.hpp: No such file or directory
-
+    "fatal error: boost": ("boost", "host"), #/opt/conda/conda-bld/lorma_1572881017031/work/thirdparty/gatb-core/src/gatb/tools/designpattern/impl/IteratorHelpers.hpp:32:10: fatal error: boost/variant.hpp: No such file or directory
+    "cmake error: cmake was unable to find a build program corresponding to \"unix makefiles\"": ("make", "build")
 }
+
