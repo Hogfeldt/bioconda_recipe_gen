@@ -22,4 +22,5 @@ str_to_pkg = {
     "could not find gsl (missing: gsl_libraries)": ("gsl", "host"),
     "fatal error: nlopt.h: no such file or directory": ("nlopt", "host"),
     "make: command not found": ("make", "build"),
+    "cmake error: cmake was unable to find a build program corresponding to \"unix makefiles\"": ("make", "build")
 }
