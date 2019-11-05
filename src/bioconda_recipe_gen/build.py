@@ -47,7 +47,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
     flag = "--build-only" if build_only else ""
     container = client.containers.run(
         "perhogfeldt/conda-build-mini:latest",
-        "conda build %s --output-folder /home/output /mnt/recipe " % flag,
+        "conda build %s --output-folder /home/output /mnt/recipe -c bioconda -c conda-forge" % flag,
         volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
         detach=True,
     )
