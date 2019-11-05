@@ -6,7 +6,10 @@ str_to_pkg = {
     "unable to find the requested boost libraries": ("boost", "host"),
     "could not find boost": ("boost", "host"),
     "no cmake_cxx_compiler could be found": ("{{ compiler('cxx') }}", "build"),
-    'could not find a package configuration file provided by "seqan"': ("seqan-library", "build"),
+    'could not find a package configuration file provided by "seqan"': (
+        "seqan-library",
+        "build",
+    ),
     "could not find bison": ("bison", "build"),
     "bison: command not found": ("bison", "build"),
     "could not find flex": ("flex", "build"),
@@ -16,5 +19,8 @@ str_to_pkg = {
     "error: libtool library used but": ("libtool", "build"),
     "could not find blas (missing: blas_libraries)": ("openblas", "host"),
     "['zlib'] not in reqs/run": ("zlib", "run"),
+    "could not find gsl (missing: gsl_libraries)": ("gsl", "host"),
+    "fatal error: nlopt.h: no such file or directory": ("nlopt", "host"),
+    "make: command not found": ("make", "build"),
     "cmake error: cmake was unable to find a build program corresponding to \"unix makefiles\"": ("make", "build")
 }
