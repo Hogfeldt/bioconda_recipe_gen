@@ -40,4 +40,8 @@ str_to_pkg = {
         "make",
         "host",
     ),  # CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+    'could not find a package configuration file provided by "bpp-seq"': (
+        "bpp-seq",
+        "build"
+    ), # Could not find a package configuration file provided by "bpp-seq" (requested version 12.0.0) with any of the following names:
 }
