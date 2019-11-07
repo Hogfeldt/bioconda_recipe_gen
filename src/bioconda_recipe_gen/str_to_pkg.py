@@ -56,4 +56,8 @@ str_to_pkg = {
         "curl",
         "host",
     ),  # configure: error: libcurl library not found
+    'could not find a package configuration file provided by "bpp-core"': (
+        "bpp-core",
+        "build",
+    ), # Could not find a package configuration file provided by "bpp-core" (requested version 4.0.0) with any of the following names:
 }
