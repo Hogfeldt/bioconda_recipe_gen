@@ -7,7 +7,7 @@ from shutil import copy2, SameFileError
 from . import make_dict
 from .utils import copytree
 
-build_tools = ["cmake", "make", "autoconf"]
+build_tools = ["cmake", "autoconf"]
 libs = ["hdf5", "zlib"]
 
 
