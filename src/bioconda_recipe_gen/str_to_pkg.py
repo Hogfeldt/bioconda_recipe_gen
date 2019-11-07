@@ -40,4 +40,20 @@ str_to_pkg = {
         "make",
         "host",
     ),  # CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+    "configure: error: zlib development files not found": (
+        "zlib",
+        "host",
+    ),  # configure: error: zlib development files not found
+    "configure: error: libbzip2 development files not found": (
+        "bzip2",
+        "host",
+    ),  # configure: error: libbzip2 development files not found
+    "configure: error: liblzma development files not found": (
+        "xz",
+        "host",
+    ),  # configure: error: liblzma development files not found
+    "configure: error: libcurl library not found": (
+        "curl",
+        "host",
+    ),  # configure: error: libcurl library not found
 }
