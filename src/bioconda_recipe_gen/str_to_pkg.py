@@ -44,4 +44,20 @@ str_to_pkg = {
         "bpp-seq",
         "build"
     ), # Could not find a package configuration file provided by "bpp-seq" (requested version 12.0.0) with any of the following names:
+    "configure: error: zlib development files not found": (
+        "zlib",
+        "host",
+    ),  # configure: error: zlib development files not found
+    "configure: error: libbzip2 development files not found": (
+        "bzip2",
+        "host",
+    ),  # configure: error: libbzip2 development files not found
+    "configure: error: liblzma development files not found": (
+        "xz",
+        "host",
+    ),  # configure: error: liblzma development files not found
+    "configure: error: libcurl library not found": (
+        "curl",
+        "host",
+    ),  # configure: error: libcurl library not found
 }
