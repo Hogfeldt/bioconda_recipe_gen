@@ -36,11 +36,19 @@ str_to_pkg = {
         "curl",
         "host",
     ),  # /opt/conda/conda-bld/hyphy_1573135156244/work/src/utils/hyphyunixutils.cpp:44:14: fatal error: curl/curl.h: No such file or directory
-    # TODO: Consider how to handle the string below wich is a substring of another string adding make to build
+# TODO: Consider how to handle the string below wich is a substring of another string adding make to build
 #    'cmake was unable to find a build program corresponding to "unix makefiles"': (
 #        "make",
 #        "host",
 #    ),  # CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+    'cmake was unable to find a build program corresponding to "unix makefiles"': (
+        "make",
+        "host",
+    ),  # CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+    'could not find a package configuration file provided by "bpp-seq"': (
+        "bpp-seq",
+        "build"
+    ), # Could not find a package configuration file provided by "bpp-seq" (requested version 12.0.0) with any of the following names:
     "configure: error: zlib development files not found": (
         "zlib",
         "host",
