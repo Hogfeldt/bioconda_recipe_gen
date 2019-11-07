@@ -59,4 +59,8 @@ str_to_pkg = {
     ),  # configure: error: libcurl library not found
     "./autogen.sh: autoconf: not found": ("autoconf", "build"), #./autogen.sh: 5: ./autogen.sh: autoconf: not found
     "jemalloc version   : 0.0.0": ("jemalloc  >=5.1.0", "host"), # jemalloc version   : 0.0.0-0-g0000000000000000000000000000000000000000
+    'could not find a package configuration file provided by "bpp-core"': (
+        "bpp-core",
+        "build",
+    ), # Could not find a package configuration file provided by "bpp-core" (requested version 4.0.0) with any of the following names:
 }
