@@ -36,6 +36,11 @@ str_to_pkg = {
         "curl",
         "host",
     ),  # /opt/conda/conda-bld/hyphy_1573135156244/work/src/utils/hyphyunixutils.cpp:44:14: fatal error: curl/curl.h: No such file or directory
+# TODO: Consider how to handle the string below wich is a substring of another string adding make to build
+#    'cmake was unable to find a build program corresponding to "unix makefiles"': (
+#        "make",
+#        "host",
+#    ),  # CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
     'cmake was unable to find a build program corresponding to "unix makefiles"': (
         "make",
         "host",
@@ -60,6 +65,8 @@ str_to_pkg = {
         "curl",
         "host",
     ),  # configure: error: libcurl library not found
+    "./autogen.sh: autoconf: not found": ("autoconf", "build"), #./autogen.sh: 5: ./autogen.sh: autoconf: not found
+    "jemalloc version   : 0.0.0": ("jemalloc  >=5.1.0", "host"), # jemalloc version   : 0.0.0-0-g0000000000000000000000000000000000000000
     'could not find a package configuration file provided by "bpp-core"': (
         "bpp-core",
         "build",
