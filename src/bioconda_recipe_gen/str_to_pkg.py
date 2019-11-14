@@ -71,4 +71,6 @@ str_to_pkg = {
         "bpp-core",
         "build",
     ), # Could not find a package configuration file provided by "bpp-core" (requested version 4.0.0) with any of the following names:
+    "eigen3 library not found": ("eigen", "host"),  # Eigen3 library not found.  Either install it or rerun cmake with
+    "could not find eigen3": ("eigen", "host"),  # Could NOT find Eigen3 (missing: EIGEN3_INCLUDE_DIR EIGEN3_VERSION_OK) (Required is at least version "2.91.0")
 }
