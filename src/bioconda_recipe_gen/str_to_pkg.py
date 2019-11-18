@@ -93,4 +93,8 @@ str_to_pkg = {
         "{{ compiler('cxx') }}",
         "build",
     ),
+    "fatal error: api/bamreader.h: no such file or directory": (
+        "bamtools",
+        "build",
+    ),  # /opt/conda/conda-bld/transrate-tools_1574079281000/work/src/bam-read.h:6:10: fatal error: api/BamReader.h: No such file or directory
 }
