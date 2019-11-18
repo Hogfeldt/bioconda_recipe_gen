@@ -97,4 +97,8 @@ str_to_pkg = {
         "bamtools",
         "build",
     ),  # /opt/conda/conda-bld/transrate-tools_1574079281000/work/src/bam-read.h:6:10: fatal error: api/BamReader.h: No such file or directory
+    "make: wall: command not found": (
+        "{{ compiler('cxx') }}",
+        "build",
+    ),
 }
