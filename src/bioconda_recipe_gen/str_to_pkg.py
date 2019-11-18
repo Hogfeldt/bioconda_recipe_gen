@@ -93,4 +93,8 @@ str_to_pkg = {
         "{{ compiler('cxx') }}",
         "build",
     ),
+    "make: wall: command not found": (
+        "{{ compiler('cxx') }}",
+        "build",
+    ),
 }
