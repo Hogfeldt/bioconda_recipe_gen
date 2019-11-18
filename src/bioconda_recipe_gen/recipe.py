@@ -163,3 +163,10 @@ class Recipe:
         for patch_file in patch_files:
             curr_list.append(patch_file)
             self._patch_paths.append(join(folder_with_patch_files, patch_file))
+
+    def add_command_imports(self, imports):
+        """ Adds imports to test/imports in the recipe """
+        test = self.recipe_dict.setdefault("test", dict())
+        curr_list = test.setdefault("imports", [])
+        if imports not in curr_list:
+            curr_list.extend(imports)
