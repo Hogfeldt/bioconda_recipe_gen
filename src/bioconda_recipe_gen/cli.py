@@ -89,6 +89,19 @@ def start():
         help="If you don't want to run cmake with our default flags: 'DCMAKE_INSTALL_PREFIX=$PREFIX' and ' DINSTALL_PREFIX=$PREFIX', you can add your own here. Note: do NOT added the dashes in front of the flags.",
         nargs="*",
     )
+    parser_args.add_argument(
+        "-t",
+        "--template",
+        help="Specify the template that should be used for the build.sh file",
+        required=True,
+        choices=['cmake', 'python'],
+    )
+    parser_args.add_argument(
+        "--imports",
+        "--command-imports",
+        help="Add a list of packages that should be added to the test/imports segments",
+        nargs="*",
+    )
     # make sure that we either SHA or MD5 (not both of them, not none of them)
     group = parser_args.add_mutually_exclusive_group(required=False)
     group.add_argument(

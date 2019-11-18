@@ -2,3 +2,4 @@ include src/bioconda_recipe_gen/containers/Dockerfile
 include src/bioconda_recipe_gen/recipes/meta.yaml
 include src/bioconda_recipe_gen/recipes/template_build_cmake.sh
 include src/bioconda_recipe_gen/recipes/template_build_autoreconf.sh
+include src/bioconda_recipe_gen/recipes/template_build_python.sh
