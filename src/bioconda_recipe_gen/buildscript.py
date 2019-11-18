@@ -5,17 +5,19 @@ import os
 class BuildScript:
     """ Represents a build.sh """
 
-    def __init__(self, name, path, strategy, filesystem):
+    def __init__(self, name, path, strategy, filesystem, is_none=False):
         self.name = name
         self._path = path
         self._lines = list()
         self._filesystem = filesystem
+        self._is_none = is_none
 
-        build_template_file = pkg_resources.resource_filename(
-            __name__, os.path.join("recipes", self.strategy_to_template(strategy))
-        )
-        with open(build_template_file, "r") as template:
-            self._lines = template.readlines()
+        if not is_none:
+            build_template_file = pkg_resources.resource_filename(
+                __name__, os.path.join("recipes", self.strategy_to_template(strategy))
+            )
+            with open(build_template_file, "r") as template:
+                self._lines = template.readlines()
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare _lines instead of id """
@@ -39,13 +41,14 @@ class BuildScript:
 
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
-        lines_to_write = ["#!/bin/bash\n"] + self._lines
-        with open(os.path.join(self._path, "build.sh"), "w") as fp:
-            for line in lines_to_write:
-                if line[-1] is "\n":
-                    fp.write(line)
-                else:
-                    fp.write(line + "\n")
+        if not self._is_none:
+            lines_to_write = ["#!/bin/bash\n"] + self._lines
+            with open(os.path.join(self._path, "build.sh"), "w") as fp:
+                for line in lines_to_write:
+                    if line[-1] is "\n":
+                        fp.write(line)
+                    else:
+                        fp.write(line + "\n")
 
     def add_chmodx(self, file_path):
         self._lines.append("chmod +x %s\n" % file_path)

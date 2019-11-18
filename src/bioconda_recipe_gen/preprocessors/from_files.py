@@ -17,7 +17,6 @@ from bioconda_recipe_gen.utils import (
 
 
 def create_recipe(bioconda_recipe_path, recipe_path):
-    print("recipe_path", recipe_path)
     # Load meta.yaml file and instantiate Recipe object
     temp_folder_name = hashlib.md5(recipe_path.encode("utf-8")).hexdigest()
     recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
@@ -88,10 +87,13 @@ def create_recipe(bioconda_recipe_path, recipe_path):
 
 
 def create_build_script(recipe, args, filesystem):
-    build_script = BuildScript(recipe.name, args.recipe_path, "cmake", filesystem)
-    exact_buildscript_path = os.path.join(build_script.path, "build.sh")
-    with open(exact_buildscript_path, "r") as fp:
-        build_script._lines = fp.readlines()
+    exact_buildscript_path = os.path.join(recipe.path, "build.sh")
+    if os.path.isfile(exact_buildscript_path):
+        build_script = BuildScript(recipe.name, args.recipe_path, "cmake", filesystem)
+        with open(exact_buildscript_path, "r") as fp:
+            build_script._lines = fp.readlines()
+    else:
+        build_script = BuildScript(recipe.name, args.recipe_path, "none", filesystem, is_none=True)
     return build_script
 
 
