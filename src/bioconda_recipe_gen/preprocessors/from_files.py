@@ -90,18 +90,22 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
             recipe.add_requirement("{{ compiler('c') }}", "build")
         else:
             recipe.add_requirement("python", "host")
+    try:
+        recipe.script = bioconda_recipe.get("build/script")
+    except KeyError:
+        pass
     recipe.increment_build_number()
     return recipe
 
 
 def create_build_script(recipe, args, filesystem):
-    exact_buildscript_path = os.path.join(recipe.path, "build.sh")
-    if os.path.isfile(exact_buildscript_path):
-        build_script = BuildScript(recipe.name, args.recipe_path, "cmake", filesystem)
+    if recipe.script is None:
+        build_script = BuildScript(recipe.name, args.recipe_path, args.strategy, filesystem)
+        exact_buildscript_path = os.path.join(recipe.path, "build.sh")
         with open(exact_buildscript_path, "r") as fp:
             build_script._lines = fp.readlines()
     else:
-        build_script = BuildScript(recipe.name, args.recipe_path, "none", filesystem, is_none=True)
+        build_script = BuildScript(recipe.name, args.recipe_path, args.strategy, filesystem, recipe.script)
     return build_script
 
 
