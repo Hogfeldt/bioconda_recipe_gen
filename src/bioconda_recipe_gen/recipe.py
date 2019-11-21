@@ -21,6 +21,7 @@ class Recipe:
         else:
             self._path = path
         self._patch_paths = []
+        self._script = None
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -50,6 +51,14 @@ class Recipe:
     @property
     def url(self):
         return self.recipe_dict["source"]["url"]
+
+    @property
+    def script(self):
+        return self._script
+
+    @script.setter
+    def script(self, script):
+        self._script = script
 
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
