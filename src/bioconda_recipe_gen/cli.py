@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import logging
 
 from .bioconda_recipe_gen import main
 from .preprocessors.from_args import preprocess as args_preprocess
@@ -126,6 +125,12 @@ def start():
         "--debug",
         help="Set this flag if you want to activate the debug mode. This creates an debug.log file that contains all debug prints",
         action="store_true",
+    )
+    parser_files.add_argument(
+        "--strategy",
+        help="The strategy that should be used",
+        choices=["cmake", "autoconf", "python"],
+        required=True,
     )
     parser_files.set_defaults(func=recipe_by_files_handler)
 

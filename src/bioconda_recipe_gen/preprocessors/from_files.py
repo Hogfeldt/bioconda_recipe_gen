@@ -16,7 +16,7 @@ from bioconda_recipe_gen.utils import (
 )
 
 
-def create_recipe(bioconda_recipe_path, recipe_path):
+def create_recipe(bioconda_recipe_path, recipe_path, strategy):
     # Load meta.yaml file and instantiate Recipe object
     temp_folder_name = hashlib.md5(recipe_path.encode("utf-8")).hexdigest()
     recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
@@ -79,9 +79,17 @@ def create_recipe(bioconda_recipe_path, recipe_path):
             recipe.recipe_dict["requirements"]["build"].remove("compiler_cxx")
             recipe.recipe_dict["requirements"]["build"].append("{{compiler('cxx')}}")
     except KeyError:
-        recipe.add_requirement("{{compiler('c')}}", "build")
-        recipe.add_requirement("cmake", "build")
-        recipe.add_requirement("make", "build")
+        if strategy == "cmake":
+            recipe.add_requirement("{{compiler('c')}}", "build")
+            recipe.add_requirement("cmake", "build")
+            recipe.add_requirement("make", "build")
+        elif strategy == "autoconf":
+            recipe.add_requirement("make", "build")
+            recipe.add_requirement("autoconf", "build")
+            recipe.add_requirement("automake", "build")
+            recipe.add_requirement("{{ compiler('c') }}", "build")
+        else:
+            recipe.add_requirement("python", "host")
     recipe.increment_build_number()
     return recipe
 
@@ -98,7 +106,7 @@ def create_build_script(recipe, args, filesystem):
 
 
 def preprocess(args):
-    recipe = create_recipe(args.bioconda_recipe_path, args.recipe_path)
+    recipe = create_recipe(args.bioconda_recipe_path, args.recipe_path, args.strategy)
     with tempfile.TemporaryDirectory() as tmpdir:
         download_and_unpack_source(recipe.url, tmpdir)
         source_path = os.path.join(tmpdir, "source")
