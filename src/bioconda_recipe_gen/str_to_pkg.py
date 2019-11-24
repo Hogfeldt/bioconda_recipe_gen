@@ -125,8 +125,24 @@ str_to_pkg = {
         "tabulate",
         "run",
     ),
-    #"importerror: no module named git": (
-    #    "git",
-    #    "run",
-    #),
+    "modulenotfounderror: no module named 'requests_cache'": (
+        "requests-cache",
+        "run",
+    ),
+    "importerror: no module named requests_cache": (
+        "requests-cache",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'jsonschema'": (
+        "jsonschema",
+        "run",
+    ),
+    "importerror: no module named jsonschema": (
+        "jsonschema",
+        "run",
+    ),
+    "importerror: no module named yaml": (
+        "pyyaml",
+        "run",
+    ),
 }
