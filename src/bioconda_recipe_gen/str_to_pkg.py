@@ -122,5 +122,9 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'colormap'": ("colormap", "run"),
     "importerror: no module named colormap": ("colormap", "run"),
     "importerror: no module named pandas": ("pandas", "run"),
+    "modulenotfounderror: no module named 'pandas'": ("pandas", "run"),
     "modulenotfounderror: no module named 'ont_fast5_api'": ("ont-fast5-api", "run"),
+    "modulenotfounderror: no module named 'ete3'": ("ete3", 'run'),
+    "modulenotfounderror: no module named 'statsmodels'": ("statsmodels", "run"),
+    "modulenotfounderror: no module named 'goatools'": ('goatools', 'run'),
 }
