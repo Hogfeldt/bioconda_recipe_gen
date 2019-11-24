@@ -101,4 +101,48 @@ str_to_pkg = {
         "{{ compiler('cxx') }}",
         "build",
     ),
+
+    ##############################################
+    ################### PYTHON ###################
+    ##############################################
+    "be sure to add all dependencies in the meta.yaml  url=https://pypi.org/simple/twine/": (
+        "twine",
+        "host",
+    ),  # RuntimeError: Setuptools downloading is disabled in conda build. Be sure to add all dependencies in the meta.yaml  url=https://pypi.org/simple/twine/
+    "modulenotfounderror: no module named 'click'": (
+        "click",
+        "run",
+    ),
+    "importerror: no module named cookiecutter.main": (
+        "cookiecutter",
+        "run",
+    ),  # import cookiecutter.main, cookiecutter.exceptions ImportError: No module named cookiecutter.main
+    "modulenotfounderror: no module named 'git'": (
+        "gitpython",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'tabulate'": (
+        "tabulate",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'requests_cache'": (
+        "requests-cache",
+        "run",
+    ),
+    "importerror: no module named requests_cache": (
+        "requests-cache",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'jsonschema'": (
+        "jsonschema",
+        "run",
+    ),
+    "importerror: no module named jsonschema": (
+        "jsonschema",
+        "run",
+    ),
+    "importerror: no module named yaml": (
+        "pyyaml",
+        "run",
+    ),
 }
