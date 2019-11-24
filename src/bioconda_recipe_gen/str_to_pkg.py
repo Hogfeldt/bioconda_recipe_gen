@@ -113,6 +113,10 @@ str_to_pkg = {
         "click",
         "run",
     ),
+    "importerror: no module named click": (
+        "click",
+        "run",
+    ),
     "importerror: no module named cookiecutter.main": (
         "cookiecutter",
         "run",
@@ -143,6 +147,50 @@ str_to_pkg = {
     ),
     "importerror: no module named yaml": (
         "pyyaml",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'jinja2'": (
+        "jinja2",
+        "run",
+    ),
+    "importerror: no module named jinja2": (
+        "jinja2",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'yaml'": (
+        "pyyaml",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'lzstring'": (
+        "lzstring",
+        "run",
+    ),
+    "importerror: no module named markdown": (
+        "markdown",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'markdown'": (
+        "markdown",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'spectra'": (
+        "spectra",
+        "run",
+    ),
+    "importerror: no module named spectra": (
+        "spectra",
+        "run",
+    ),
+    "modulenotfounderror: no module named 'requests'": (
+        "requests",
+        "run",
+    ),
+    "importerror: no module named requests": (
+        "requests",
+        "run",
+    ),
+    "no module named 'matplotlib'": (
+        "matplotlib",
         "run",
     ),
 }
