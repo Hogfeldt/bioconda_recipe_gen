@@ -127,4 +127,6 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'ete3'": ("ete3", 'run'),
     "modulenotfounderror: no module named 'statsmodels'": ("statsmodels", "run"),
     "modulenotfounderror: no module named 'goatools'": ('goatools', 'run'),
+    "modulenotfounderror: no module named 'scipy'": ("scipy", "run"),
+    "modulenotfounderror: no module named 'bioservices'": ("bioservices", "run"),
 }
