@@ -94,6 +94,11 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
         recipe.script = bioconda_recipe.get("build/script")
     except KeyError:
         pass
+    try:
+        recipe.add_command_imports(bioconda_recipe.get("test/imports"))
+    except KeyError:
+        pass
+
     recipe.increment_build_number()
     return recipe
 
