@@ -109,6 +109,7 @@ str_to_pkg = {
     "importerror: no module named click": ("click", "run"),
     "modulenotfounderror: no module named 'click'": ("click", "run"),
     "importerror: no module named cookiecutter.main": ("cookiecutter", "run"),
+    "modulenotfounderror: no module named 'cookiecutter'": ("cookiecutter", "run"),
     "modulenotfounderror: no module named 'git'": ("gitpython", "run"),
     "modulenotfounderror: no module named 'tabulate'": ("tabulate", "run"),
     "modulenotfounderror: no module named 'requests_cache'": ("requests-cache", "run"),
