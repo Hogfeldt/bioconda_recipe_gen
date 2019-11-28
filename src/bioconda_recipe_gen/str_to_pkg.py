@@ -97,11 +97,7 @@ str_to_pkg = {
         "bamtools",
         "build",
     ),  # /opt/conda/conda-bld/transrate-tools_1574079281000/work/src/bam-read.h:6:10: fatal error: api/BamReader.h: No such file or directory
-    "make: wall: command not found": (
-        "{{ compiler('cxx') }}",
-        "build",
-    ),
-
+    "make: wall: command not found": ("{{ compiler('cxx') }}", "build"),
     ##############################################
     ################### PYTHON ###################
     ##############################################
@@ -109,88 +105,37 @@ str_to_pkg = {
         "twine",
         "host",
     ),  # RuntimeError: Setuptools downloading is disabled in conda build. Be sure to add all dependencies in the meta.yaml  url=https://pypi.org/simple/twine/
-    "modulenotfounderror: no module named 'click'": (
-        "click",
-        "run",
-    ),
-    "importerror: no module named click": (
-        "click",
-        "run",
-    ),
-    "importerror: no module named cookiecutter.main": (
-        "cookiecutter",
-        "run",
-    ),  # import cookiecutter.main, cookiecutter.exceptions ImportError: No module named cookiecutter.main
-    "modulenotfounderror: no module named 'git'": (
-        "gitpython",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'tabulate'": (
-        "tabulate",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'requests_cache'": (
-        "requests-cache",
-        "run",
-    ),
-    "importerror: no module named requests_cache": (
-        "requests-cache",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'jsonschema'": (
-        "jsonschema",
-        "run",
-    ),
-    "importerror: no module named jsonschema": (
-        "jsonschema",
-        "run",
-    ),
-    "importerror: no module named yaml": (
-        "pyyaml",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'jinja2'": (
-        "jinja2",
-        "run",
-    ),
-    "importerror: no module named jinja2": (
-        "jinja2",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'yaml'": (
-        "pyyaml",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'lzstring'": (
-        "lzstring",
-        "run",
-    ),
-    "importerror: no module named markdown": (
-        "markdown",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'markdown'": (
-        "markdown",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'spectra'": (
-        "spectra",
-        "run",
-    ),
-    "importerror: no module named spectra": (
-        "spectra",
-        "run",
-    ),
-    "modulenotfounderror: no module named 'requests'": (
-        "requests",
-        "run",
-    ),
-    "importerror: no module named requests": (
-        "requests",
-        "run",
-    ),
-    "no module named 'matplotlib'": (
-        "matplotlib",
-        "run",
-    ),
+    "importerror: no module named click": ("click", "run"),
+    "modulenotfounderror: no module named 'click'": ("click", "run"),
+    "importerror: no module named cookiecutter.main": ("cookiecutter", "run"),
+    "modulenotfounderror: no module named 'git'": ("gitpython", "run"),
+    "modulenotfounderror: no module named 'tabulate'": ("tabulate", "run"),
+    "modulenotfounderror: no module named 'requests_cache'": ("requests-cache", "run"),
+    "importerror: no module named requests_cache": ("requests-cache", "run"),
+    "modulenotfounderror: no module named 'jsonschema'": ("jsonschema", "run"),
+    "importerror: no module named jsonschema": ("jsonschema", "run"),
+    "importerror: no module named yaml": ("pyyaml", "run"),
+    "modulenotfounderror: no module named 'jinja2'": ("jinja2", "run"),
+    "importerror: no module named jinja2": ("jinja2", "run"),
+    "modulenotfounderror: no module named 'yaml'": ("pyyaml", "run"),
+    "modulenotfounderror: no module named 'lzstring'": ("lzstring", "run"),
+    "importerror: no module named markdown": ("markdown", "run"),
+    "modulenotfounderror: no module named 'markdown'": ("markdown", "run"),
+    "modulenotfounderror: no module named 'spectra'": ("spectra", "run"),
+    "importerror: no module named spectra": ("spectra", "run"),
+    "modulenotfounderror: no module named 'requests'": ("requests", "run"),
+    "importerror: no module named requests": ("requests", "run"),
+    "no module named 'matplotlib'": ("matplotlib", "run"),
+    "importerror: no module named easydev": ("easydev", "run"),
+    "modulenotfounderror: no module named 'easydev'": ("easydev", "run"),
+    "modulenotfounderror: no module named 'colormap'": ("colormap", "run"),
+    "importerror: no module named colormap": ("colormap", "run"),
+    "importerror: no module named pandas": ("pandas", "run"),
+    "modulenotfounderror: no module named 'pandas'": ("pandas", "run"),
+    "modulenotfounderror: no module named 'ont_fast5_api'": ("ont-fast5-api", "run"),
+    "modulenotfounderror: no module named 'ete3'": ("ete3", "run"),
+    "modulenotfounderror: no module named 'statsmodels'": ("statsmodels", "run"),
+    "modulenotfounderror: no module named 'goatools'": ("goatools", "run"),
+    "modulenotfounderror: no module named 'scipy'": ("scipy", "run"),
+    "modulenotfounderror: no module named 'bioservices'": ("bioservices", "run"),
 }

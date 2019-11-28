@@ -53,7 +53,7 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
         recipe.add_requirement(requirement, "build")
     host_requirements = bioconda_recipe.get("requirements/host", [])
     for requirement in host_requirements:
-        recipe.add_requirement(requirement, "host")
+        recipe.add_requirement(requirement, "host", host_only=True)
     run_requirements = bioconda_recipe.get("requirements/run", [])
     for requirement in run_requirements:
         recipe.add_requirement(requirement, "run")
@@ -88,7 +88,12 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
             recipe.add_requirement("autoconf", "build")
             recipe.add_requirement("automake", "build")
             recipe.add_requirement("{{ compiler('c') }}", "build")
-        else:
+    if strategy == "python":
+        try:
+            host_environment = recipe.recipe_dict["requirements"]["host"]
+            if not any(map(lambda req:"python" in req, host_environment)):
+                recipe.add_requirement("python", "host")
+        except KeyError:
             recipe.add_requirement("python", "host")
     try:
         recipe.script = bioconda_recipe.get("build/script")
@@ -98,7 +103,14 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
         recipe.add_command_imports(bioconda_recipe.get("test/imports"))
     except KeyError:
         pass
-
+    try:
+        recipe.add_entry_point(bioconda_recipe.get("build/entry_points"))
+    except KeyError:
+        pass
+    try:
+        recipe.add_noarch(bioconda_recipe.get("build/noarch"))
+    except KeyError:
+        pass
     recipe.increment_build_number()
     return recipe
 

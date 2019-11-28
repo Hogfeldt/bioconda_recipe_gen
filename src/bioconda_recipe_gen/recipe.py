@@ -95,7 +95,7 @@ class Recipe:
         source["sha256"] = checksum
 
     def add_requirement(
-        self, pack_name, type_of_requirement, debug_message="Not specified"
+        self, pack_name, type_of_requirement, debug_message="Not specified", host_only=False
     ):
         """ Adds a package to the list of requirements in the recipe
 
@@ -116,7 +116,7 @@ class Recipe:
                 % (pack_name, type_of_requirement, debug_message)
             )
             curr_list.append(pack_name)
-            if type_of_requirement == "host":
+            if type_of_requirement == "host" and not host_only:
                 self.add_requirement(pack_name, "run")
             if (
                 pack_name == "{{ compiler('cxx') }}"
@@ -179,3 +179,13 @@ class Recipe:
         curr_list = test.setdefault("imports", [])
         if imports not in curr_list:
             curr_list.extend(imports)
+
+    def add_entry_point(self, entry_point):
+        """ Adds entry-point to build/entry_points in the recipe """
+        build = self.recipe_dict.setdefault("build", dict())
+        build["entry_points"] = entry_point
+
+    def add_noarch(self, argument):
+        """ Adds entry-point to build/entry_points in the recipe """
+        build = self.recipe_dict.setdefault("build", dict())
+        build["noarch"] = argument
