@@ -189,3 +189,8 @@ class Recipe:
         """ Adds entry-point to build/entry_points in the recipe """
         build = self.recipe_dict.setdefault("build", dict())
         build["noarch"] = argument
+
+    def add_test_requires(self, argument):
+        """ Adds requires to test/requires in the recipe """
+        test = self.recipe_dict.setdefault("test", dict())
+        test["requires"] = argument
