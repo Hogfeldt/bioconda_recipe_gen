@@ -145,4 +145,5 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'bio'": ("biopython", "run"),
     "modulenotfounderror: no module named 'vcf'": ("pyvcf", "run"),
     "modulenotfounderror: no module named 'jobrunner'": ("jobrunner", "run"),
+    "modulenotfounderror: no module named 'pysam'": ("pysam", "run"),
 }
