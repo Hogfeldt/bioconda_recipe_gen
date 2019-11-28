@@ -105,6 +105,7 @@ str_to_pkg = {
         "twine",
         "host",
     ),  # RuntimeError: Setuptools downloading is disabled in conda build. Be sure to add all dependencies in the meta.yaml  url=https://pypi.org/simple/twine/
+    "error: could not find a version that satisfies the requirement twine": ("twine", "host"),
     "importerror: no module named click": ("click", "run"),
     "modulenotfounderror: no module named 'click'": ("click", "run"),
     "importerror: no module named cookiecutter.main": ("cookiecutter", "run"),

@@ -12,7 +12,11 @@ class BuildScript:
         self._filesystem = filesystem
 
         if script_content is not None and strategy == "python":
-            self._lines = [script_content.replace("$PYTHON", "python")]
+            if "python" in script_content:
+                self._lines = [script_content.replace("$PYTHON", "python")]
+            else:
+                python_build_script = "$PYTHON %s" % script_content
+                self._lines = [python_build_script]
 
         else:
             build_template_file = pkg_resources.resource_filename(
