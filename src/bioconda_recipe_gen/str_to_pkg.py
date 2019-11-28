@@ -138,4 +138,5 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'goatools'": ("goatools", "run"),
     "modulenotfounderror: no module named 'scipy'": ("scipy", "run"),
     "modulenotfounderror: no module named 'bioservices'": ("bioservices", "run"),
+    "pkg_resources.distributionnotfound: the 'simplejson'": ("simplejson", "run"),
 }
