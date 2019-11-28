@@ -141,4 +141,8 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'scipy'": ("scipy", "run"),
     "modulenotfounderror: no module named 'bioservices'": ("bioservices", "run"),
     "pkg_resources.distributionnotfound: the 'simplejson'": ("simplejson", "run"),
+    "modulenotfounderror: no module named 'psutil'": ("psutil", "run"),
+    "modulenotfounderror: no module named 'bio'": ("biopython", "run"),
+    "modulenotfounderror: no module named 'vcf'": ("pyvcf", "run"),
+    "modulenotfounderror: no module named 'jobrunner'": ("jobrunner", "run"),
 }
