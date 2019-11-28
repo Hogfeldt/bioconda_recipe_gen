@@ -111,6 +111,10 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
         recipe.add_noarch(bioconda_recipe.get("build/noarch"))
     except KeyError:
         pass
+    try:
+        recipe.add_test_requires(bioconda_recipe.get("test/requires"))
+    except KeyError:
+        pass
     recipe.increment_build_number()
     return recipe
 
