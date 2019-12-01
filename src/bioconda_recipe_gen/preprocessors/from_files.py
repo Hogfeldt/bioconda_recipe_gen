@@ -88,13 +88,19 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
             recipe.add_requirement("autoconf", "build")
             recipe.add_requirement("automake", "build")
             recipe.add_requirement("{{ compiler('c') }}", "build")
-    if strategy == "python":
+    if strategy.startswith("python"):
         try:
             host_environment = recipe.recipe_dict["requirements"]["host"]
-            if not any(map(lambda req:"python" in req, host_environment)):
-                recipe.add_requirement("python", "host")
+            if not any(map(lambda req: req.startswith("python"), host_environment)):
+                if strategy == "python2":
+                    recipe.add_requirement("python =2.7", "host")
+                else:
+                    recipe.add_requirement("python >=3")
         except KeyError:
-            recipe.add_requirement("python", "host")
+            if strategy == "python2":
+                    recipe.add_requirement("python =2.7", "host")
+            else:
+                recipe.add_requirement("python >=3", "host")
     try:
         recipe.script = bioconda_recipe.get("build/script")
     except KeyError:

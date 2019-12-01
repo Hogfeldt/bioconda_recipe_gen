@@ -129,7 +129,7 @@ def start():
     parser_files.add_argument(
         "--strategy",
         help="The strategy that should be used",
-        choices=["cmake", "autoconf", "python"],
+        choices=["cmake", "autoconf", "python2", "python3"],
         required=True,
     )
     parser_files.set_defaults(func=recipe_by_files_handler)

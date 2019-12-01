@@ -11,7 +11,7 @@ class BuildScript:
         self._lines = list()
         self._filesystem = filesystem
 
-        if script_content is not None and strategy == "python":
+        if script_content is not None and strategy.startswith("python"):
             if "python" in script_content:
                 self._lines = [script_content.replace("$PYTHON", "python")]
             else:
