@@ -47,27 +47,29 @@ def run_conda_build_mini(recipe_path, build_only=True):
     client = docker.from_env()
     # Run docker image
     flag = "--build-only" if build_only else ""
-    container = client.containers.run(
-        "perhogfeldt/conda-build-mini:latest",
-        "conda build %s --output-folder /home/output /mnt/recipe -c bioconda -c conda-forge"
-        % flag,
-        volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
-        detach=True,
-    )
-    result = container.wait()
-    stdout = container.logs().decode("utf-8")
-    if result["StatusCode"] is 0:
-        for line in stdout.split("\n"):
-            if "anaconda upload " in line:
-                output_file = line.split()[2]
-                stream, info = container.get_archive(output_file)
-                fd = io.BytesIO()
-                for b in stream:
-                    fd.write(b)
-                fd.seek(0)
-                tar_file = tarfile.open(mode="r", fileobj=fd)
-                tar_file.extractall(os.path.join(recipe_path, "output"))
-    container.remove()
+    try:
+        container = client.containers.run(
+            "perhogfeldt/conda-build-mini:latest",
+            "conda build %s --output-folder /home/output /mnt/recipe -c bioconda -c conda-forge"
+            % flag,
+            volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
+            detach=True,
+        )
+        result = container.wait()
+        stdout = container.logs().decode("utf-8")
+        if result["StatusCode"] is 0:
+            for line in stdout.split("\n"):
+                if "anaconda upload " in line:
+                    output_file = line.split()[2]
+                    stream, info = container.get_archive(output_file)
+                    fd = io.BytesIO()
+                    for b in stream:
+                        fd.write(b)
+                    fd.seek(0)
+                    tar_file = tarfile.open(mode="r", fileobj=fd)
+                    tar_file.extractall(os.path.join(recipe_path, "output"))
+    finally:
+        container.remove()
     return (result, stdout)
 
 
