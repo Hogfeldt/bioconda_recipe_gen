@@ -5,6 +5,7 @@ import sys
 from .bioconda_recipe_gen import main
 from .preprocessors.from_args import preprocess as args_preprocess
 from .preprocessors.from_files import preprocess as files_preprocess
+from .preprocessors.sdist_optimization import sdist_optimization
 
 
 def bioconda_recipes_exists(path):
@@ -14,6 +15,9 @@ def bioconda_recipes_exists(path):
 
 
 def call_main(args, recipes, build_scripts):
+    if args.strategy == "python3" or args.strategy == "python2":
+        for recipe in recipes:
+            sdist_optimization(recipe)
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         main(args.bioconda_recipe_path, recipes, build_scripts, args.debug)
     else:
