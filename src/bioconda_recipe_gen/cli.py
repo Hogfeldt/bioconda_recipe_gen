@@ -15,9 +15,6 @@ def bioconda_recipes_exists(path):
 
 
 def call_main(args, recipes, build_scripts):
-    if args.strategy == "python3" or args.strategy == "python2":
-        for recipe in recipes:
-            sdist_optimization(recipe)
     if bioconda_recipes_exists(args.bioconda_recipe_path):
         main(args.bioconda_recipe_path, recipes, build_scripts, args.debug)
     else:
@@ -26,6 +23,9 @@ def call_main(args, recipes, build_scripts):
 
 def recipe_by_files_handler(args):
     recipes, build_scripts = files_preprocess(args)
+    if args.strategy == "python3" or args.strategy == "python2":
+        for recipe in recipes:
+            sdist_optimization(recipe)
     call_main(args, recipes, build_scripts)
 
 
