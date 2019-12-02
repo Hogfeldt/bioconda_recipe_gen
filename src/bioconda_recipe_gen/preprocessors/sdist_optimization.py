@@ -48,6 +48,7 @@ def find_python_requirement_file(root_path):
 
 
 def add_requirements_from_file(recipe, requires_path):
+    # TODO: Use conda to search if package exists
     requirements = list()
     with open(requires_path) as f:
         requirements = [req.replace("\n", "") for req in f.readlines()]
