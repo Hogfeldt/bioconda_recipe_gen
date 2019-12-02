@@ -78,6 +78,7 @@ def download_and_unpack_source(src, dir_path):
                 zip_ref.extractall(unpack_path)
         else:
             print("Unknown fileformat! Cannot unpack %s" % src)
+            return None
     except urllib.error.HTTPError as e:
         print("HTTP error code: ", e.code)
         print(src)
@@ -89,6 +90,7 @@ def download_and_unpack_source(src, dir_path):
         print(src)
     except:
         print("Unexpected error:", sys.exc_info()[0])
+    return unpack_path
 
 
 def is_file_in_folder(filename, folder_path):
