@@ -5,6 +5,8 @@ import tarfile
 import subprocess
 import logging
 import docker
+import re
+import json
 from shutil import rmtree, copy2
 from copy import deepcopy
 from .utils import copytree
@@ -76,6 +78,50 @@ def run_conda_build_mini_test(recipe_path):
     return run_conda_build_mini(recipe_path, False)
 
 
+def pkg_is_on_bioconda_channel(pkg_name, conda_search_json):
+    versions = conda_search_json[pkg_name]
+    for ver in versions:
+        if "bioconda" in ver["channel"]:
+            return True
+    return False
+
+
+def get_correct_pkg_name(pkg_name, extensions):
+    """ Takes a pkg name as input and returns the name of the most
+    likely corresponding conda pkg with regard to the 'extension'
+    you specify, e.g. docker-py is chosen over a packaged called
+    docker, if you specify on of the extensions as py.
+    The order of the extensions in the list 'extensions' is the
+    priority of which they are used (first being highest priority).
+    Returns None if no match was found. """
+    normalised_pkg_name = pkg_name.replace("-", "*").replace("_", "*")
+    cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
+    proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
+    json_dict = json.loads(proc.stdout)
+    if len(json_dict) == 1:
+        best_pkg_match = list(json_dict.keys())[0]
+        return best_pkg_match
+    elif len(json_dict) > 1:
+        normalised_pkg_name = normalised_pkg_name.replace("*", "")
+        best_pkg_match = None
+        best_pkg_idx = len(extensions)
+        for cur_pkg in json_dict.keys():
+            normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
+            extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "")
+
+            if extra_content_in_name == "" and best_pkg_idx == len(extensions):
+                best_pkg_match = cur_pkg
+            else:
+                for idx, ext in enumerate(extensions):
+                    if extra_content_in_name == ext and idx < best_pkg_idx:
+                        best_pkg_match = cur_pkg
+                        best_pkg_idx = idx
+                        if best_pkg_idx == 0:
+                            # we found the best case
+                            break
+        return best_pkg_match
+
+
 def mini_iterative_build(recipe, build_script):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tupple with the last standard output and a list of found dependencies.
@@ -95,6 +141,19 @@ def mini_iterative_build(recipe, build_script):
         for line in stdout.split("\n"):
             line_normalized = line.lower()
             print(line)
+
+            # Look for python packages
+            potential_python_pkg = re.search(
+                r"modulenotfounderror: no module named '(.*?)'", line_normalized
+            )
+            if potential_python_pkg is not None:
+                pkg_name = potential_python_pkg.group(1)
+                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"])
+                if best_pkg_match is not None:
+                    new_recipe.add_requirement(best_pkg_match, "host")
+                    added_packages.append(best_pkg_match)
+                    print("ADDED with our new feature")
+
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)
@@ -129,6 +188,19 @@ def mini_iterative_test(recipe, build_script):
         for line_num, line in enumerate(stdout.split("\n")):
             line_normalized = line.lower()
             print(line)
+
+            # Look for python packages
+            potential_python_pkg = re.search(
+                r"modulenotfounderror: no module named '(.*?)'", line_normalized
+            )
+            if potential_python_pkg is not None:
+                pkg_name = potential_python_pkg.group(1)
+                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"])
+                if best_pkg_match is not None:
+                    new_recipe.add_requirement(best_pkg_match, "run")
+                    added_packages.append(best_pkg_match)
+                    print("ADDED with our new feature")
+
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)

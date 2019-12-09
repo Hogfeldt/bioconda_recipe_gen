@@ -4,6 +4,7 @@ import os
 
 from bioconda_recipe_gen.utils import download_and_unpack_source
 from bioconda_recipe_gen.filesystem import Filesystem
+from bioconda_recipe_gen.build import get_correct_pkg_name
 
 
 def run_setup_sdist(source_path, python_version, setup_filepath):
@@ -41,6 +42,7 @@ def find_python_requirement_file(root_path):
         return None
     # TODO: Consider if there could be more than one requires.txt and how to
     #       choose the correct one.
+    #       We could probably create a shortest path to project root function
     requires_path = requires_file_paths[0]
     if requires_path.startswith("/"):
         requires_path = requires_path[1:]
@@ -53,6 +55,7 @@ def add_requirements_from_file(recipe, requires_path):
     with open(requires_path) as f:
         requirements = [req.replace("\n", "") for req in f.readlines()]
     print(requirements)
+    requirements = [get_correct_pkg_name(pkg, ["py", "python"]) for pkg in requirements]
     for req in requirements:
         recipe.add_requirement(req, "run")
     recipe.write_recipe_to_meta_file()
