@@ -146,4 +146,5 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'vcf'": ("pyvcf", "run"),
     "modulenotfounderror: no module named 'jobrunner'": ("jobrunner", "run"),
     "modulenotfounderror: no module named 'pysam'": ("pysam", "run"),
+    "error: could not find a version that satisfies the requirement numpy (from versions: none)": ("numpy", "host"),
 }
