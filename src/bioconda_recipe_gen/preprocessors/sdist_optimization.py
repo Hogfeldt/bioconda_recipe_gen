@@ -53,7 +53,13 @@ def add_requirements_from_file(recipe, requires_path):
     # TODO: Use conda to search if package exists
     requirements = list()
     with open(requires_path) as f:
-        requirements = [req.replace("\n", "") for req in f.readlines()]
+        lines = [req.replace("\n", "") for req in f.readlines()]
+        for req in lines:
+            # this check makes sure that we don't get requirements for [dev], [docs] or similar
+            if req == "" or req.startswith("["):
+                break
+            else:
+                requirements.append(req)
     print(requirements)
     requirements = [get_correct_pkg_name(pkg, ["py", "python"]) for pkg in requirements]
     for req in requirements:
