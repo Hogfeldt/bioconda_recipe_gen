@@ -105,7 +105,10 @@ str_to_pkg = {
         "twine",
         "host",
     ),  # RuntimeError: Setuptools downloading is disabled in conda build. Be sure to add all dependencies in the meta.yaml  url=https://pypi.org/simple/twine/
-    "error: could not find a version that satisfies the requirement twine": ("twine", "host"),
+    "error: could not find a version that satisfies the requirement twine": (
+        "twine",
+        "host",
+    ),
     "importerror: no module named click": ("click", "run"),
     "modulenotfounderror: no module named 'click'": ("click", "run"),
     "importerror: no module named cookiecutter.main": ("cookiecutter", "run"),
@@ -146,5 +149,16 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'vcf'": ("pyvcf", "run"),
     "modulenotfounderror: no module named 'jobrunner'": ("jobrunner", "run"),
     "modulenotfounderror: no module named 'pysam'": ("pysam", "run"),
-    "error: could not find a version that satisfies the requirement numpy (from versions: none)": ("numpy", "host"),
+    "error: could not find a version that satisfies the requirement numpy (from versions: none)": (
+        "numpy",
+        "host",
+    ),
+    "error: could not find a version that satisfies the requirement cython>=0.12 (from versions: none)": (
+        "cython>=0.12",
+        "host",
+    ),
+    "error: could not find a version that satisfies the requirement nose>=0.10.4 (from versions: none)": (
+        "nose>=0.10.4",
+        "host",
+    ),
 }
