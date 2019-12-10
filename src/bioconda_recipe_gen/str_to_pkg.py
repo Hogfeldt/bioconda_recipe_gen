@@ -161,4 +161,5 @@ str_to_pkg = {
         "nose>=0.10.4",
         "host",
     ),
+    "modulenotfounderror: no module named 'skbio'": ("scikit-bio", "run"),
 }
