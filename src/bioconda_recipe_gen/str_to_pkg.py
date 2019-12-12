@@ -164,4 +164,5 @@ str_to_pkg = {
     "modulenotfounderror: no module named 'skbio'": ("scikit-bio", "run"),
     "please install pysam and then try again.": ("pysam", "host"),
     "please install matplotlib and then try again.": ("matplotlib", "host"),
+    "error: no matching distribution found for pytest-runner": ("pytest-runner", "host"),
 }
