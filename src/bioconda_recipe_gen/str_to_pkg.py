@@ -162,4 +162,6 @@ str_to_pkg = {
         "host",
     ),
     "modulenotfounderror: no module named 'skbio'": ("scikit-bio", "run"),
+    "please install pysam and then try again.": ("pysam", "host"),
+    "please install matplotlib and then try again.": ("matplotlib", "host"),
 }
