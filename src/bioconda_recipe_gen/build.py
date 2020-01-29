@@ -107,7 +107,7 @@ def get_correct_pkg_name(pkg_name, extensions):
         best_pkg_idx = len(extensions)
         for cur_pkg in json_dict.keys():
             normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
-            extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "")
+            extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "", 1)
 
             if extra_content_in_name == "" and best_pkg_idx == len(extensions):
                 best_pkg_match = cur_pkg
