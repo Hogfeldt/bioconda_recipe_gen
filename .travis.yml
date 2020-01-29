@@ -19,6 +19,7 @@ env:
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
   - PACKAGE=lambda
+  - PACKAGE=fuma
 
 before_install:
 

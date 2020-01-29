@@ -128,8 +128,14 @@ build_nanomath()
     template="python"
     bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --imports "$command_imports"  --template $template
 }
-##### Choose package to build
 
+build_fuma()
+{
+    data=$DATA_PATH/fuma
+    bioconda-recipe-gen $BR_PATH from-files $data --strategy python2
+}
+
+##### Choose package to build
 package=$1
 case $package in
     # Cmake and Make packages
@@ -146,4 +152,5 @@ case $package in
     denovogear)         build_denovogear;;
     2pg-cartesian)      build_2pg_cartesian;;
     nanomath)           build_nanomath;;
+    fuma)               build_fuma;;
 esac
