@@ -63,7 +63,6 @@ class Recipe:
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
         self.recipe_dict["build"]["number"] = int(build_number) + 1
-        self.write_recipe_to_meta_file()
 
     def write_recipe_to_meta_file(self):
         """ Writes the current recipe_dict into the meta.yaml file """
