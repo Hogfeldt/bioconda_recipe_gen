@@ -86,6 +86,17 @@ def pkg_is_on_bioconda_channel(pkg_name, conda_search_json):
     return False
 
 
+def remove_version_from_pkg(normalised_pkg_name):
+    if ">" in normalised_pkg_name:
+        return normalised_pkg_name.split(">")[0]
+    elif "<" in normalised_pkg_name:
+        return normalised_pkg_name.split("<")[0]
+    elif "=" in normalised_pkg_name:
+        return normalised_pkg_name.split("=")[0]
+    else:
+        return normalised_pkg_name
+
+
 def get_correct_pkg_name(pkg_name, extensions):
     """ Takes a pkg name as input and returns the name of the most
     likely corresponding conda pkg with regard to the 'extension'
@@ -103,12 +114,12 @@ def get_correct_pkg_name(pkg_name, extensions):
         return best_pkg_match
     elif len(json_dict) > 1:
         normalised_pkg_name = normalised_pkg_name.replace("*", "")
+        normalised_pkg_name = remove_version_from_pkg(normalised_pkg_name)
         best_pkg_match = None
         best_pkg_idx = len(extensions)
         for cur_pkg in json_dict.keys():
             normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
             extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "")
-
             if extra_content_in_name == "" and best_pkg_idx == len(extensions):
                 best_pkg_match = cur_pkg
             else:
