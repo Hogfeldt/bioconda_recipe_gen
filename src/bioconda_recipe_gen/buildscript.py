@@ -13,7 +13,7 @@ class BuildScript:
 
         if script_content is not None and strategy.startswith("python"):
             if "python" in script_content:
-                self._lines = [script_content.replace("$PYTHON", "python")]
+                self._lines = [script_content.replace("python", "$PYTHON")]
             else:
                 python_build_script = "$PYTHON %s" % script_content
                 self._lines = [python_build_script]
