@@ -1,8 +1,8 @@
 #!/bin/bash
 ##### Constants
-
-BR_PATH=./bioconda-recipes
-DATA_PATH=./travis/data
+# The TRAVIS_BUILD_DIR is specified by travis itself
+BR_PATH=$TRAVIS_BUILD_DIR/bioconda-recipes
+DATA_PATH=$TRAVIS_BUILD_DIR/travis/data
 
 ##### functions
 
