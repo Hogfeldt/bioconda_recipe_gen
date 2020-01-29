@@ -20,6 +20,7 @@ env:
   - PACKAGE=libdivsufsort
   - PACKAGE=lambda
   - PACKAGE=fuma
+  - PACKAGE=crossmap
 
 before_install:
 

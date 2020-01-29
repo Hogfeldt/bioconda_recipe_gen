@@ -135,6 +135,13 @@ build_fuma()
     bioconda-recipe-gen $BR_PATH from-files $data --strategy python2
 }
 
+build_crossmap()
+{
+    data=$DATA_PATH/crossmap
+    bioconda-recipe-gen $BR_PATH from-files $data --strategy python3
+}
+
+
 ##### Choose package to build
 package=$1
 case $package in
@@ -153,4 +160,5 @@ case $package in
     2pg-cartesian)      build_2pg_cartesian;;
     nanomath)           build_nanomath;;
     fuma)               build_fuma;;
+    crossmap)           build_crossmap;;
 esac
