@@ -266,6 +266,7 @@ def mini_iterative_test(recipe, build_script):
 def mini_sanity_check(bioconda_recipe_path, recipe):
     """ Copy build.sh and meta.yaml templates to cwd. Return a Recipe object based on the templates. """
     recipe.increment_build_number()
+    recipe.write_recipe_to_meta_file()
     temp_folder_name = hashlib.md5(recipe.name.encode("utf-8")).hexdigest()
     recipes_pkg_path = os.path.join(bioconda_recipe_path, "recipes", temp_folder_name)
     real_package_name = recipe.name
