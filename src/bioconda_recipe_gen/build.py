@@ -114,11 +114,15 @@ def choose_version(pkg_name, version_list, py_version):
             if "py2" in entry["build"]:
                 potential_version.add(entry["version"])
     potential_version = list(potential_version)
+
+    if not potential_version:
+        return None
+
     potential_version = sorted(potential_version, key=LooseVersion, reverse=True)
     # Ask the user
     print("#" * 40)
-    print("We found the following potential versions for:", pkg_name)
-    print("Write y to accept or recommended version (applied as >=). Else type the number of the wanted package:")
+    print("We found the following potential versions for", pkg_name)
+    print("Type y to accept our recommended version (applied as >=). Else type the number of the wanted package:")
     for i, ver in enumerate(potential_version):
         print("%d: %s" % (i, ver))
     answer = input()
@@ -164,11 +168,14 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
                             break
     if best_pkg_match is None:
         return None
-    else:
-        version_list = json_dict[best_pkg_match]
-        choosen_version = choose_version(best_pkg_match, version_list, strategy)
-        best_pkg_match = "%s>=%s" % (best_pkg_match, choosen_version)
-        return best_pkg_match
+
+    version_list = json_dict[best_pkg_match]
+    chosen_version = choose_version(best_pkg_match, version_list, strategy)
+    if chosen_version is None:
+        return None
+
+    best_pkg_match = "%s>=%s" % (best_pkg_match, chosen_version)
+    return best_pkg_match
 
 
 def mini_iterative_build(recipe, build_script):
