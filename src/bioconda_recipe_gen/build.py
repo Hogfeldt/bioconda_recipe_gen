@@ -113,8 +113,6 @@ def choose_version(pkg_name, version_list, py_version):
         else:
             if "py2" in entry["build"]:
                 potential_version.add(entry["version"])
-    #potential_version = sorted(potential_version, reverse=True)
-    print(potential_version)
     potential_version = list(potential_version)
     potential_version = sorted(potential_version, key=LooseVersion, reverse=True)
     # Ask the user
@@ -152,6 +150,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
         best_pkg_idx = len(extensions)
         for cur_pkg in json_dict.keys():
             normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
+            normalised_pkg_name = normalised_pkg_name.lower()
             extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "", 1)
             if extra_content_in_name == "" and best_pkg_idx == len(extensions):
                 best_pkg_match = cur_pkg
