@@ -11,6 +11,7 @@ from shutil import rmtree, copy2
 from copy import deepcopy
 from .utils import copytree
 from .str_to_pkg import str_to_pkg
+from distutils.version import LooseVersion
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
@@ -86,18 +87,49 @@ def pkg_is_on_bioconda_channel(pkg_name, conda_search_json):
     return False
 
 
-def remove_version_from_pkg(normalised_pkg_name):
-    if ">" in normalised_pkg_name:
-        return normalised_pkg_name.split(">")[0]
-    elif "<" in normalised_pkg_name:
-        return normalised_pkg_name.split("<")[0]
-    elif "=" in normalised_pkg_name:
-        return normalised_pkg_name.split("=")[0]
+def remove_version_from_pkg(pkg_name):
+    if ">" in pkg_name:
+        return pkg_name.split(">")[0]
+    elif "<" in pkg_name:
+        return pkg_name.split("<")[0]
+    elif "=" in pkg_name:
+        return pkg_name.split("=")[0]
     else:
-        return normalised_pkg_name
+        return pkg_name
 
 
-def get_correct_pkg_name(pkg_name, extensions):
+def choose_version(pkg_name, version_list, py_version):
+    """ Assumes that the input is the list of different dictionaries
+    that conda search returns for each pkg it finds.
+    Returns the version that the user chooses. """
+    # TODO: right now it assumes python packages as this is the
+    # only time that we call it, BUT check if there is some way to end up
+    # here that would make it crash (e.g. build cmake that makes use of python)
+    potential_version = set()
+    for entry in version_list:
+        if py_version == "python3":
+            if "py3" in entry["build"]:
+                potential_version.add(entry["version"])
+        else:
+            if "py2" in entry["build"]:
+                potential_version.add(entry["version"])
+    potential_version = list(potential_version)
+    potential_version = sorted(potential_version, key=LooseVersion, reverse=True)
+    # Ask the user
+    print("#" * 40)
+    print("We found the following potential versions for:", pkg_name)
+    print("Write y to accept or recommended version (applied as >=). Else type the number of the wanted package:")
+    for i, ver in enumerate(potential_version):
+        print("%d: %s" % (i, ver))
+    answer = input()
+    # TODO: add some defensive programming here to avoid 'wrong' user input
+    if answer == "y":
+        return potential_version[0]
+    else:
+        return potential_version[int(answer)]
+
+
+def get_correct_pkg_name(pkg_name, extensions, strategy):
     """ Takes a pkg name as input and returns the name of the most
     likely corresponding conda pkg with regard to the 'extension'
     you specify, e.g. docker-py is chosen over a packaged called
@@ -105,20 +137,20 @@ def get_correct_pkg_name(pkg_name, extensions):
     The order of the extensions in the list 'extensions' is the
     priority of which they are used (first being highest priority).
     Returns None if no match was found. """
-    normalised_pkg_name = pkg_name.replace("-", "*").replace("_", "*")
+    normalised_pkg_name = remove_version_from_pkg(pkg_name)
+    normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*")
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     json_dict = json.loads(proc.stdout)
+    best_pkg_match = None
     if len(json_dict) == 1:
         best_pkg_match = list(json_dict.keys())[0]
-        return best_pkg_match
     elif len(json_dict) > 1:
         normalised_pkg_name = normalised_pkg_name.replace("*", "")
-        normalised_pkg_name = remove_version_from_pkg(normalised_pkg_name)
-        best_pkg_match = None
         best_pkg_idx = len(extensions)
         for cur_pkg in json_dict.keys():
             normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
+            normalised_pkg_name = normalised_pkg_name.lower()
             extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "", 1)
             if extra_content_in_name == "" and best_pkg_idx == len(extensions):
                 best_pkg_match = cur_pkg
@@ -130,6 +162,12 @@ def get_correct_pkg_name(pkg_name, extensions):
                         if best_pkg_idx == 0:
                             # we found the best case
                             break
+    if best_pkg_match is None:
+        return None
+    else:
+        version_list = json_dict[best_pkg_match]
+        choosen_version = choose_version(best_pkg_match, version_list, strategy)
+        best_pkg_match = "%s>=%s" % (best_pkg_match, choosen_version)
         return best_pkg_match
 
 
@@ -159,11 +197,10 @@ def mini_iterative_build(recipe, build_script):
             )
             if potential_python_pkg is not None:
                 pkg_name = potential_python_pkg.group(1)
-                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"])
+                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "host")
                     added_packages.append(best_pkg_match)
-                    print("ADDED with our new feature")
 
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:

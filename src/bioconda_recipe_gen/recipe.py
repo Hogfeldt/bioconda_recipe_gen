@@ -14,7 +14,7 @@ libs = ["hdf5", "zlib"]
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version, path=None):
+    def __init__(self, name, version, path=None, strategy=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
         if path is None:
             self._path = os.path.join(getcwd(), name)
@@ -22,6 +22,7 @@ class Recipe:
             self._path = path
         self._patch_paths = []
         self._script = None
+        self._strategy = strategy
 
     def __eq__(self, other):
         """ Overwrite default implementation. Compare recipe_dict instead of id """
@@ -59,6 +60,11 @@ class Recipe:
     @script.setter
     def script(self, script):
         self._script = script
+
+    @property
+    def strategy(self):
+        return self._strategy
+
 
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
