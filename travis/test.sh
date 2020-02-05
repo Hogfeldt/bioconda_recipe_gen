@@ -132,13 +132,13 @@ build_nanomath()
 build_fuma()
 {
     data=$DATA_PATH/fuma
-    bioconda-recipe-gen $BR_PATH from-files $data --strategy python2
+    yes | bioconda-recipe-gen $BR_PATH from-files $data --strategy python2
 }
 
 build_crossmap()
 {
     data=$DATA_PATH/crossmap
-    bioconda-recipe-gen $BR_PATH from-files $data --strategy python3
+    yes | bioconda-recipe-gen $BR_PATH from-files $data --strategy python3
 }
 
 
