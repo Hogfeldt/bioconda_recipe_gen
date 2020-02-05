@@ -140,7 +140,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     json_dict = json.loads(proc.stdout)
-    best_pkg_match = "" # TODO: Better error handling if best_pkg_match ends up empty
+    best_pkg_match = None
     if len(json_dict) == 1:
         best_pkg_match = list(json_dict.keys())[0]
     elif len(json_dict) > 1:
@@ -159,10 +159,13 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
                         if best_pkg_idx == 0:
                             # we found the best case
                             break
-    version_list = json_dict[best_pkg_match]
-    choosen_version = choose_version(best_pkg_match, version_list, strategy)
-    best_pkg_match = "%s>=%s" % (best_pkg_match, choosen_version)
-    return best_pkg_match
+    if best_pkg_match is None:
+        return None
+    else:
+        version_list = json_dict[best_pkg_match]
+        choosen_version = choose_version(best_pkg_match, version_list, strategy)
+        best_pkg_match = "%s>=%s" % (best_pkg_match, choosen_version)
+        return best_pkg_match
 
 
 def mini_iterative_build(recipe, build_script):
@@ -195,7 +198,6 @@ def mini_iterative_build(recipe, build_script):
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "host")
                     added_packages.append(best_pkg_match)
-                    print("ADDED with our new feature")
 
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:
