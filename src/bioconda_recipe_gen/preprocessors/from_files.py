@@ -30,7 +30,7 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
         rmtree(recipes_pkg_path)
     name = bioconda_recipe.get("package/name")
     version = bioconda_recipe.get("package/version")
-    recipe = Recipe(name, version, recipe_path)
+    recipe = Recipe(name, version, recipe_path, strategy)
 
     # Parse values from file to Recipe object
     try:
