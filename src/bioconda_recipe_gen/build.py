@@ -121,8 +121,8 @@ def choose_version(pkg_name, version_list, py_version):
     potential_version = sorted(potential_version, key=LooseVersion, reverse=True)
     # Ask the user
     print("#" * 40)
-    print("We found the following potential versions for:", pkg_name)
-    print("Write y to accept or recommended version (applied as >=). Else type the number of the wanted package:")
+    print("We found the following potential versions for", pkg_name)
+    print("Type y to accept our recommended version (applied as >=). Else type the number of the wanted package:")
     for i, ver in enumerate(potential_version):
         print("%d: %s" % (i, ver))
     answer = input()
