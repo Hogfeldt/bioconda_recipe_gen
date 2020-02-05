@@ -11,6 +11,7 @@ from shutil import rmtree, copy2
 from copy import deepcopy
 from .utils import copytree
 from .str_to_pkg import str_to_pkg
+from distutils.version import LooseVersion
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
@@ -112,7 +113,10 @@ def choose_version(pkg_name, version_list, py_version):
         else:
             if "py2" in entry["build"]:
                 potential_version.add(entry["version"])
-    potential_version = sorted(potential_version, reverse=True)
+    #potential_version = sorted(potential_version, reverse=True)
+    print(potential_version)
+    potential_version = list(potential_version)
+    potential_version = sorted(potential_version, key=LooseVersion, reverse=True)
     # Ask the user
     print("#" * 40)
     print("We found the following potential versions for:", pkg_name)
