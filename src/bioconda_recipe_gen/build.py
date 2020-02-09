@@ -108,10 +108,10 @@ def choose_version(pkg_name, version_list, py_version):
     potential_version = set()
     for entry in version_list:
         if py_version == "python3":
-            if "py3" in entry["build"]:
+            if "py2" not in entry["build"]:
                 potential_version.add(entry["version"])
         else:
-            if "py2" in entry["build"]:
+            if "py3" not in entry["build"]:
                 potential_version.add(entry["version"])
     potential_version = list(potential_version)
 
