@@ -250,7 +250,7 @@ def mini_iterative_test(recipe, build_script):
             )
             if potential_python_pkg is not None:
                 pkg_name = potential_python_pkg.group(1)
-                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"])
+                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "run")
                     added_packages.append(best_pkg_match)
