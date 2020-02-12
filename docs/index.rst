@@ -6,10 +6,12 @@
 Welcome to BiRG's documentation!
 ================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+What is BiRG? BiRG is automation tool for generating Conda recipes. 
 
+.. toctree::
+    :maxdepth: 2
+
+    usage/index
 
 
 Indices and tables
