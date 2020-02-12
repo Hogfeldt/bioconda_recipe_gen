@@ -122,13 +122,13 @@ def choose_version(pkg_name, version_list, py_version):
     # Ask the user
     print("#" * 40)
     print("We found the following potential versions for", pkg_name)
-    print("Type y to accept our recommended version (applied as >=). Else type the number of the wanted package:")
+    print("Type y to add without version. Else type the number of the wanted package (applied as >=):")
     for i, ver in enumerate(potential_version):
         print("%d: %s" % (i, ver))
     answer = input()
     # TODO: add some defensive programming here to avoid 'wrong' user input
     if answer == "y":
-        return potential_version[0]
+        return None
     else:
         return potential_version[int(answer)]
 
@@ -172,7 +172,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     version_list = json_dict[best_pkg_match]
     chosen_version = choose_version(best_pkg_match, version_list, strategy)
     if chosen_version is None:
-        return None
+        return best_pkg_match
 
     best_pkg_match = "%s>=%s" % (best_pkg_match, chosen_version)
     return best_pkg_match
