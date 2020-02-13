@@ -142,7 +142,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     priority of which they are used (first being highest priority).
     Returns None if no match was found. """
     normalised_pkg_name = remove_version_from_pkg(pkg_name)
-    normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*")
+    normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     json_dict = json.loads(proc.stdout)
@@ -200,9 +200,13 @@ def mini_iterative_build(recipe, build_script):
 
             # Look for python packages
             potential_python_pkg = re.search(
-                r"modulenotfounderror: no module named '(.*?)'", line_normalized
+                r"modulenotfounderror: no module named '(.*)'", line_normalized
             )
-            if potential_python_pkg is not None:
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"importerror: no module named (.*)", line_normalized
+                )
+            if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
                 best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
                 if best_pkg_match is not None:
@@ -246,15 +250,18 @@ def mini_iterative_test(recipe, build_script):
 
             # Look for python packages
             potential_python_pkg = re.search(
-                r"modulenotfounderror: no module named '(.*?)'", line_normalized
+                r"modulenotfounderror: no module named '(.*)'", line_normalized
             )
-            if potential_python_pkg is not None:
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"importerror: no module named (.*)", line_normalized
+                )
+            if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
                 best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "run")
                     added_packages.append(best_pkg_match)
-                    print("ADDED with our new feature")
 
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:

@@ -165,4 +165,6 @@ str_to_pkg = {
     "please install pysam and then try again.": ("pysam", "host"),
     "please install matplotlib and then try again.": ("matplotlib", "host"),
     "error: no matching distribution found for pytest-runner": ("pytest-runner", "host"),
+    "modulenotfounderror: no module named 'sklearn'": ("scikit-learn", "run"),
+    "importerror: no module named cython.build": ("cython", "host")
 }
