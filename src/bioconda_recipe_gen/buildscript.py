@@ -69,7 +69,9 @@ class BuildScript:
 
     def move_file_from_source_to_bin(self, file_path):
         """ Use cp to move a file from SRC_DIR to PREFIX/bin """
-        self._lines.append("cp $SRC_DIR/%s $PREFIX/bin/" % file_path)
+        line_to_add = "cp $SRC_DIR/%s $PREFIX/bin/" % file_path
+        if line_to_add not in self._lines:
+            self._lines.append(line_to_add)
 
     def add_moving_bin_files(self):
         """ Add lines to make sure the bin files are moved """
