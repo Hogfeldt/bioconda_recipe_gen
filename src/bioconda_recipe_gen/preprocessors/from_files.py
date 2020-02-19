@@ -95,7 +95,7 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
                 if strategy == "python2":
                     recipe.add_requirement("python =2.7", "host")
                 else:
-                    recipe.add_requirement("python >=3")
+                    recipe.add_requirement("python >=3", "host")
         except KeyError:
             if strategy == "python2":
                     recipe.add_requirement("python =2.7", "host")
