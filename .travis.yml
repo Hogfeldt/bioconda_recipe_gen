@@ -44,7 +44,7 @@ install:
   # Create conda environment with python 3.6
   # Install dependencies into conda environment
 
-  - conda create -q -n test python=$TRAVIS_PYTHON_VERSION bioconda-utils docker-py
+  - conda create -q -n test python=$TRAVIS_PYTHON_VERSION bioconda-utils docker-py gitdb2==2.0.5
   - conda activate test
 
 
