@@ -9,7 +9,7 @@ import re
 import json
 from shutil import rmtree, copy2
 from copy import deepcopy
-from .utils import copytree
+from .utils import copytree, remove_version_from_pkg
 from .str_to_pkg import str_to_pkg
 from distutils.version import LooseVersion
 
@@ -85,17 +85,6 @@ def pkg_is_on_bioconda_channel(pkg_name, conda_search_json):
         if "bioconda" in ver["channel"]:
             return True
     return False
-
-
-def remove_version_from_pkg(pkg_name):
-    if ">" in pkg_name:
-        return pkg_name.split(">")[0]
-    elif "<" in pkg_name:
-        return pkg_name.split("<")[0]
-    elif "=" in pkg_name:
-        return pkg_name.split("=")[0]
-    else:
-        return pkg_name
 
 
 def choose_version(pkg_name, version_list, py_version):
