@@ -103,11 +103,11 @@ def is_file_in_folder(filename, folder_path):
 
 def remove_version_from_pkg(pkg_name):
     if ">" in pkg_name:
-        return pkg_name.split(">")[0].strip()
+        return pkg_name.split(">")[0].strip(), True
     elif "<" in pkg_name:
-        return pkg_name.split("<")[0].strip()
+        return pkg_name.split("<")[0].strip(), True
     elif "=" in pkg_name:
-        return pkg_name.split("=")[0].strip()
+        return pkg_name.split("=")[0].strip(), True
     else:
-        return pkg_name
+        return pkg_name, False
 

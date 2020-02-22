@@ -130,7 +130,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     The order of the extensions in the list 'extensions' is the
     priority of which they are used (first being highest priority).
     Returns None if no match was found. """
-    normalised_pkg_name = remove_version_from_pkg(pkg_name)
+    normalised_pkg_name, _ = remove_version_from_pkg(pkg_name)
     normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
@@ -251,6 +251,14 @@ def mini_iterative_test(recipe, build_script):
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "run")
                     added_packages.append(best_pkg_match)
+
+            if "pkg_resources.versionconflict:" in line_normalized:
+                pkg_with_correct_version = re.search(
+                    r"requirement.parse\('(.*)'\)", line_normalized
+                )
+                if pkg_with_correct_version:
+                    pkg_name = pkg_with_correct_version.group(1)
+                    new_recipe.add_requirement(pkg_name, "run")
 
             for err_msg, (pkg_name, dep_type) in str_to_pkg.items():
                 if err_msg in line_normalized and pkg_name not in added_packages:
