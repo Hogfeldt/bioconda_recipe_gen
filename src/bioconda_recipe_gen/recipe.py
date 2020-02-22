@@ -131,7 +131,7 @@ class Recipe:
             ):
                 curr_list.remove("{{ compiler('c') }}")
         elif pkg_had_version:
-            curr_list.remove(cleaned_curr_list)
+            curr_list.remove(cleaned_pack_name)
             curr_list.append(pack_name)
 
     def add_test_files_with_path(self, test_path):
