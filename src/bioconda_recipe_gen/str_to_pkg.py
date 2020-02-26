@@ -166,5 +166,6 @@ str_to_pkg = {
     "please install matplotlib and then try again.": ("matplotlib", "host"),
     "error: no matching distribution found for pytest-runner": ("pytest-runner", "host"),
     "modulenotfounderror: no module named 'sklearn'": ("scikit-learn", "run"),
-    "importerror: no module named cython.build": ("cython", "host")
+    "importerror: no module named cython.build": ("cython", "host"),
+    "‘rscript’: no such file or directory": ("r-base", "run")
 }

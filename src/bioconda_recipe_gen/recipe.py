@@ -109,6 +109,8 @@ class Recipe:
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
             debug_message: A message explaining why the package was added as a requirement
         """
+        if pack_name == self.name:
+            return
         if type_of_requirement == "build" and pack_name in libs:
             return
         elif type_of_requirement == "host" and pack_name in build_tools:
