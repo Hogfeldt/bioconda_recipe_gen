@@ -9,12 +9,11 @@ DATA_PATH=$TRAVIS_BUILD_DIR/travis/data
 build_kallisto()
 {
     name=kallisto
-    url=https://github.com/pachterlab/kallisto/archive/v0.45.0.tar.gz
-    tests=$DATA_PATH/kallisto
-    version=0.45.0
-    commands="kallisto version"
+    url=https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
+    version=0.46.2
+    commands="kallisto cite"
     template="cmake"
-    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url --tests $tests -v $version --test-commands "$commands" --template $template
+    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "$commands" --template $template
 }
 
 build_htstream()

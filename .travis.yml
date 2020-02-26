@@ -14,7 +14,6 @@ env:
 
   # Packages to build
 
-  - PACKAGE=kallisto
   - PACKAGE=htstream
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
