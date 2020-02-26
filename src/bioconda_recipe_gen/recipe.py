@@ -5,7 +5,7 @@ import os
 from shutil import copy2, SameFileError
 
 from . import make_dict
-from .utils import copytree
+from .utils import copytree, remove_version_from_pkg
 
 build_tools = ["cmake", "autoconf"]
 libs = ["hdf5", "zlib"]
@@ -115,7 +115,9 @@ class Recipe:
             return
         requirements = self.recipe_dict.setdefault("requirements", dict())
         curr_list = requirements.setdefault(type_of_requirement, [])
-        if pack_name not in curr_list:
+        cleaned_pack_name, pkg_had_version = remove_version_from_pkg(pack_name)
+        cleaned_curr_list = [remove_version_from_pkg(pkg)[0] for pkg in curr_list]
+        if cleaned_pack_name not in cleaned_curr_list:
             logging.debug(
                 "Adding %s to %s. Reason for adding requirement: %s"
                 % (pack_name, type_of_requirement, debug_message)
@@ -128,6 +130,9 @@ class Recipe:
                 and "{{ compiler('c') }}" in curr_list
             ):
                 curr_list.remove("{{ compiler('c') }}")
+        elif pkg_had_version:
+            curr_list.remove(cleaned_pack_name)
+            curr_list.append(pack_name)
 
     def add_test_files_with_path(self, test_path):
         """ Adds test files from test_path to 'test: files: ... ' in recipe """
