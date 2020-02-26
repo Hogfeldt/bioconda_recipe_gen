@@ -167,5 +167,6 @@ str_to_pkg = {
     "error: no matching distribution found for pytest-runner": ("pytest-runner", "host"),
     "modulenotfounderror: no module named 'sklearn'": ("scikit-learn", "run"),
     "importerror: no module named cython.build": ("cython", "host"),
-    "‘rscript’: no such file or directory": ("r-base", "run")
+    "‘rscript’: no such file or directory": ("r-base", "run"),
+    "cannot find the path for the command `hmmsearch`": ("hmmer", "host")
 }

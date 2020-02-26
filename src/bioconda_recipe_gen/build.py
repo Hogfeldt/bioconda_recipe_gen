@@ -183,6 +183,10 @@ def mini_iterative_build(recipe, build_script):
                 potential_python_pkg = re.search(
                     r"importerror: no module named (.*)", line_normalized
                 )
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"cannot find the path for the command `(.*)`", line_normalized
+                )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
                 best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
@@ -236,6 +240,10 @@ def mini_iterative_test(recipe, build_script):
             if not potential_python_pkg:
                 potential_python_pkg = re.search(
                     r"pkg_resources.distributionnotfound: the '(.*)' distribution was not found", line_normalized
+                )
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"cannot find the path for the command `(.*)`", line_normalized
                 )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
