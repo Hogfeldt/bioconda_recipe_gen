@@ -162,6 +162,7 @@ def start():
         setup_logging(args.debug, args.recipe_path)
     else:
         recipe_path = os.path.join(os.getcwd(), args.name)
+        print("recipe_path", recipe_path)
         args.recipe_path = recipe_path
         setup_logging(args.debug, recipe_path)
 
