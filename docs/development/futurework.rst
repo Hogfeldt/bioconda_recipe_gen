@@ -1,7 +1,7 @@
 Suggetions for future work
 ==========================
 
-This pages is a compilation of suggestions for improvements that we haven't had the time to make.
+This page is a compilation of suggestions for improvements that we haven't had the time to make.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Generalizing how to find binaries/libraries in packages
@@ -16,6 +16,6 @@ But it dosn't scale well, since we have to observe and add new signatures manual
 By doing this we could generalize finding binaries/library files by extracting the file name with a regular expression and search for the packages containing this file. 
 If more than one result comes up, it would be easy to implement some kind of heuristic for choosing the right package or simply ask the user for help. 
 As a part of the priliminary study for this project we downloaded, unpacked and made a primitive index of all files in all packages from Bioconda, so we was able to answer questions like "How many packages on Bioconda have a Makefile in it's project root dir?" or "How many packages have a setup.py file?". This was quite fast and could probably be automated a lot with a good CI setup.
-Creating such a search engine for Bioconda would not only benefit this tool, but would also benefit develepos trying to create a recipe for their software by hand. 
-We therefore suggest that such a tool could be developed as a sperat piece of software, which we then could integrate in this tool. 
+Creating such a search engine for Bioconda would not only benefit this tool, but would also benefit developers trying to create a recipe for their software by hand. 
+We therefore suggest that such a tool could be developed as a separate piece of software, which we then could integrate in this tool. 
 
