@@ -158,7 +158,12 @@ def start():
     args = parser.parse_args()
 
     # Setup debugging
-    setup_logging(args.debug, args.recipe_path)  # TODO: make this work for from-args too
+    if hasattr(args, "recipe_path"):
+        setup_logging(args.debug, args.recipe_path)
+    else:
+        recipe_path = os.path.join(os.getcwd(), args.name)
+        args.recipe_path = recipe_path
+        setup_logging(args.debug, recipe_path)
 
     # Call specified function
     args.func(args)

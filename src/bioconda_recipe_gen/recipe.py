@@ -15,12 +15,9 @@ logger = logging.getLogger(__name__)
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version, path=None, strategy=None):
+    def __init__(self, name, version, path, strategy=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
-        if path is None:
-            self._path = os.path.join(getcwd(), name)
-        else:
-            self._path = path
+        self._path = path
         self._patch_paths = []
         self._script = None
         self._strategy = strategy
