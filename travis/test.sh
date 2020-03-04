@@ -23,7 +23,7 @@ build_htstream()
     version=1.1.0
     commands=("hts_Stats --help" "hts_AdapterTrimmer --help" "hts_CutTrim --help" "hts_NTrimmer --help" "hts_Overlapper --help" "hts_PolyATTrim --help" "hts_QWindowTrim --help" "hts_SeqScreener --help" "hts_SuperDeduper --help")
     template="cmake"
-    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "${commands[@]}" --template $template
+    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "${commands[@]}" --template $template -d
 }
 
 build_clever_toolkit()
@@ -54,7 +54,7 @@ build_libdivsufsort()
     commands=("test -e \${PREFIX}/include/divsufsort.h" "test -e \${PREFIX}/include/divsufsort64.h")
     cmakeflags=("DCMAKE_INSTALL_PREFIX=\$PREFIX" "DBUILD_DIVSUFSORT64=\"On\"")
     template="cmake"
-    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "${commands[@]}" --cmake-flags "${cmakeflags[@]}" --template $template
+    bioconda-recipe-gen $BR_PATH from-args -n $name -u $url -v $version --test-commands "${commands[@]}" --cmake-flags "${cmakeflags[@]}" --template $template -d
 }
 
 build_tn93()
@@ -137,7 +137,7 @@ build_fuma()
 build_crossmap()
 {
     data=$DATA_PATH/crossmap
-    yes | bioconda-recipe-gen $BR_PATH from-files $data --strategy python3
+    yes | bioconda-recipe-gen $BR_PATH from-files $data --strategy python3 -d
 }
 
 
