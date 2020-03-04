@@ -50,7 +50,6 @@ def find_python_requirement_file(root_path):
 
 
 def add_requirements_from_file(recipe, requires_path):
-    # TODO: Use conda to search if package exists
     requirements = list()
     with open(requires_path) as f:
         lines = [req.replace("\n", "") for req in f.readlines()]
@@ -64,6 +63,7 @@ def add_requirements_from_file(recipe, requires_path):
     requirements = [get_correct_pkg_name(pkg, ["py", "python"], recipe.strategy) for pkg in requirements]
     for req in requirements:
         if req is not None:
+            print("ADDING PACKAGE")
             recipe.add_requirement(req, "run")
     recipe.write_recipe_to_meta_file()
 

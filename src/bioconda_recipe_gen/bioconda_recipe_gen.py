@@ -6,16 +6,6 @@ from shutil import copyfile, rmtree
 from . import build
 
 
-def setup_logging(debug, output_dir_path):
-    if debug:
-        debug_filename = os.path.join(output_dir_path, "debug.log")
-        logging.basicConfig(filename=debug_filename, level=logging.DEBUG)
-        debug_folder = os.path.join(output_dir_path, "debug_output_files")
-        os.mkdir(debug_folder)
-    else:
-        logging.getLogger().disabled = True
-
-
 def main(bioconda_recipe_path, recipes, build_scripts, debug):
     success = False
     while not success and build_scripts:
@@ -27,9 +17,6 @@ def main(bioconda_recipe_path, recipes, build_scripts, debug):
             output_dir = os.path.join(recipe.path, "output")
             if os.path.exists(output_dir):
                 rmtree(output_dir)
-
-        # Setup debugging
-        setup_logging(debug, recipe.path)
 
         # run conda-build with --build-only flag
         mini_proc_build, recipe, build_script = build.mini_iterative_build(
