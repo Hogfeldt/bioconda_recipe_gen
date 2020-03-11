@@ -63,7 +63,6 @@ class Recipe:
     def strategy(self):
         return self._strategy
 
-
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
         self.recipe_dict["build"]["number"] = int(build_number) + 1
