@@ -166,7 +166,7 @@ class Recipe:
 
     def add_patches(self, patches_path):
         """ Adds patches to 'source: patches: ... ' in recipe """
-        if exists(self._path) is False:
+        if not exists(self._path):
             mkdir(self._path)
         copytree(patches_path, self._path)
         test = self.recipe_dict.setdefault("source", dict())
