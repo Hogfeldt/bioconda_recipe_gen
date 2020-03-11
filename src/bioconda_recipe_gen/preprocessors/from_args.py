@@ -1,4 +1,3 @@
-from os import getcwd
 import os
 import tempfile
 
@@ -12,16 +11,16 @@ from bioconda_recipe_gen.utils import (
 from bioconda_recipe_gen.filesystem import Filesystem
 
 
-def cmake_recipe_factory(name, version):
-    recipe = Recipe(name, version)
+def cmake_recipe_factory(name, version, recipe_path):
+    recipe = Recipe(name, version, recipe_path)
     recipe.add_requirement("make", "build")
     recipe.add_requirement("cmake", "build")
     recipe.add_requirement("{{ compiler('c') }}", "build")
     return recipe
 
 
-def autoconf_recipe_factory(name, version):
-    recipe = Recipe(name, version)
+def autoconf_recipe_factory(name, version, recipe_path):
+    recipe = Recipe(name, version, recipe_path)
     recipe.add_requirement("make", "build")
     recipe.add_requirement("autoconf", "build")
     recipe.add_requirement("automake", "build")
@@ -29,8 +28,8 @@ def autoconf_recipe_factory(name, version):
     return recipe
 
 
-def python_recipe_factory(name, version):
-    recipe = Recipe(name, version)
+def python_recipe_factory(name, version, recipe_path):
+    recipe = Recipe(name, version, recipe_path)
     recipe.add_requirement("python", "host")
     return recipe
 
@@ -69,11 +68,11 @@ def recipe_factory(strategies, args):
     recipes = []
     for strategy in strategies:
         if strategy == "python":
-            recipe = python_recipe_factory(args.name, args.version)
+            recipe = python_recipe_factory(args.name, args.version, args.recipe_path)
         elif strategy == "autoconf":
-            recipe = autoconf_recipe_factory(args.name, args.version)
+            recipe = autoconf_recipe_factory(args.name, args.version, args.recipe_path)
         else:
-            recipe = cmake_recipe_factory(args.name, args.version)
+            recipe = cmake_recipe_factory(args.name, args.version, args.recipe_path)
         recipe.add_source_url(args.url)
         recipe.add_build_number(
             get_pkg_build_number(recipe.name, args.bioconda_recipe_path)

@@ -9,17 +9,15 @@ from .utils import copytree, remove_version_from_pkg
 
 build_tools = ["cmake", "autoconf"]
 libs = ["hdf5", "zlib"]
+logger = logging.getLogger(__name__)
 
 
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version, path=None, strategy=None):
+    def __init__(self, name, version, path, strategy=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
-        if path is None:
-            self._path = os.path.join(getcwd(), name)
-        else:
-            self._path = path
+        self._path = path
         self._patch_paths = []
         self._script = None
         self._strategy = strategy
@@ -119,8 +117,9 @@ class Recipe:
         curr_list = requirements.setdefault(type_of_requirement, [])
         cleaned_pack_name, pkg_had_version = remove_version_from_pkg(pack_name)
         cleaned_curr_list = [remove_version_from_pkg(pkg)[0] for pkg in curr_list]
+
         if cleaned_pack_name not in cleaned_curr_list:
-            logging.debug(
+            logger.debug(
                 "Adding %s to %s. Reason for adding requirement: %s"
                 % (pack_name, type_of_requirement, debug_message)
             )

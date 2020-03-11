@@ -44,6 +44,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
     client = docker.from_env()
     # Run docker image
     flag = "--build-only" if build_only else ""
+    container = None
     try:
         container = client.containers.run(
             "perhogfeldt/conda-build-mini:latest",
@@ -66,7 +67,8 @@ def run_conda_build_mini(recipe_path, build_only=True):
                     tar_file = tarfile.open(mode="r", fileobj=fd)
                     tar_file.extractall(os.path.join(recipe_path, "output"))
     finally:
-        container.remove()
+        if container is not None:
+            container.remove()
     return (result, stdout)
 
 
@@ -162,7 +164,6 @@ def mini_iterative_build(recipe, build_script):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tuple with the last standard output and a list of found dependencies.
     """
-
     mini_build_setup(recipe, build_script)
     print("mini setup done")
     c = 0

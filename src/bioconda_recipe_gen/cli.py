@@ -1,6 +1,8 @@
 import argparse
 import os
 import sys
+import logging
+from shutil import rmtree
 
 from .bioconda_recipe_gen import main
 from .preprocessors.from_args import preprocess as args_preprocess
@@ -32,6 +34,22 @@ def recipe_by_files_handler(args):
 def recipe_by_args_handler(args):
     recipes, build_scripts = args_preprocess(args)
     call_main(args, recipes, build_scripts)
+
+
+def setup_logging(debug, output_dir_path):
+    if debug:
+        if not os.path.exists(output_dir_path):
+            os.mkdir(output_dir_path)
+        debug_filename = os.path.join(output_dir_path, "debug.log")
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+        logging.basicConfig(filename=debug_filename, filemode="w", level=logging.DEBUG)
+        debug_folder = os.path.join(output_dir_path, "debug_output_files")
+        if os.path.exists(debug_folder):
+            rmtree(debug_folder)
+        os.mkdir(debug_folder)
+    else:
+        logging.getLogger().disabled = True
 
 
 def start():
@@ -140,4 +158,14 @@ def start():
 
     # Evaluate the parsed arguments
     args = parser.parse_args()
+
+    # Setup debugging
+    if hasattr(args, "recipe_path"):
+        setup_logging(args.debug, args.recipe_path)
+    else:
+        recipe_path = os.path.join(os.getcwd(), args.name)
+        args.recipe_path = recipe_path
+        setup_logging(args.debug, recipe_path)
+
+    # Call specified function
     args.func(args)
