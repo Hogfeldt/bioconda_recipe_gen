@@ -14,13 +14,12 @@ env:
 
   # Packages to build
 
-  - PACKAGE=kallisto
   - PACKAGE=htstream
   - PACKAGE=qfilt
   - PACKAGE=libdivsufsort
   - PACKAGE=lambda
   - PACKAGE=fuma
-  - PACKAGE=crossmap
+  #- PACKAGE=crossmap
 
 before_install:
 

@@ -15,11 +15,7 @@ from distutils.version import LooseVersion
 
 
 def bioconda_utils_build(package_name, bioconda_recipe_path):
-    """ Build a bioconda package with bioconda-utils and return the standard output
-    
-    Args:
-        package_name: Name of the package to build
-    """
+    """ Build a bioconda package with bioconda-utils and return the standard output. """
     wd = os.getcwd()
     os.chdir(bioconda_recipe_path)
     cmd = [
@@ -48,6 +44,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
     client = docker.from_env()
     # Run docker image
     flag = "--build-only" if build_only else ""
+    container = None
     try:
         container = client.containers.run(
             "perhogfeldt/conda-build-mini:latest",
@@ -70,21 +67,14 @@ def run_conda_build_mini(recipe_path, build_only=True):
                     tar_file = tarfile.open(mode="r", fileobj=fd)
                     tar_file.extractall(os.path.join(recipe_path, "output"))
     finally:
-        container.remove()
+        if container is not None:
+            container.remove()
     return (result, stdout)
 
 
 def run_conda_build_mini_test(recipe_path):
     """ Call run_mini_build with the build_only parameter as False """
     return run_conda_build_mini(recipe_path, False)
-
-
-def pkg_is_on_bioconda_channel(pkg_name, conda_search_json):
-    versions = conda_search_json[pkg_name]
-    for ver in versions:
-        if "bioconda" in ver["channel"]:
-            return True
-    return False
 
 
 def choose_version(pkg_name, version_list, py_version):
@@ -125,10 +115,13 @@ def choose_version(pkg_name, version_list, py_version):
 def get_correct_pkg_name(pkg_name, extensions, strategy):
     """ Takes a pkg name as input and returns the name of the most
     likely corresponding conda pkg with regard to the 'extension'
-    you specify, e.g. docker-py is chosen over a packaged called
+    you specify.
+    E.g. docker-py is chosen over a packaged called
     docker, if you specify on of the extensions as py.
+
     The order of the extensions in the list 'extensions' is the
     priority of which they are used (first being highest priority).
+
     Returns None if no match was found. """
     normalised_pkg_name, _ = remove_version_from_pkg(pkg_name)
     normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
@@ -169,12 +162,8 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
 
 def mini_iterative_build(recipe, build_script):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
-        return a tupple with the last standard output and a list of found dependencies.
-    
-    Args:
-        src: A link to where the source file can be downloaded
+        return a tuple with the last standard output and a list of found dependencies.
     """
-
     mini_build_setup(recipe, build_script)
     print("mini setup done")
     c = 0
@@ -194,6 +183,10 @@ def mini_iterative_build(recipe, build_script):
             if not potential_python_pkg:
                 potential_python_pkg = re.search(
                     r"importerror: no module named (.*)", line_normalized
+                )
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"cannot find the path for the command `(.*)`", line_normalized
                 )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
@@ -249,6 +242,10 @@ def mini_iterative_test(recipe, build_script):
                 potential_python_pkg = re.search(
                     r"pkg_resources.distributionnotfound: the '(.*)' distribution was not found", line_normalized
                 )
+            if not potential_python_pkg:
+                potential_python_pkg = re.search(
+                    r"cannot find the path for the command `(.*)`", line_normalized
+                )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
                 best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
@@ -256,7 +253,7 @@ def mini_iterative_test(recipe, build_script):
                     new_recipe.add_requirement(best_pkg_match, "run")
                     added_packages.append(best_pkg_match)
 
-            if "pkg_resources.versionconflict:" in line_normalized:
+            if "versionconflict:" in line_normalized:
                 pkg_with_correct_version = re.search(
                     r"requirement.parse\('(.*)'\)", line_normalized
                 )

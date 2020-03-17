@@ -80,7 +80,7 @@ def create_recipe(bioconda_recipe_path, recipe_path, strategy):
             recipe.recipe_dict["requirements"]["build"].append("{{compiler('cxx')}}")
     except KeyError:
         if strategy == "cmake":
-            recipe.add_requirement("{{compiler('c')}}", "build")
+            recipe.add_requirement("{{ compiler('c') }}", "build")
             recipe.add_requirement("cmake", "build")
             recipe.add_requirement("make", "build")
         elif strategy == "autoconf":

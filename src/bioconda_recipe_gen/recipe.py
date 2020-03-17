@@ -9,17 +9,15 @@ from .utils import copytree, remove_version_from_pkg
 
 build_tools = ["cmake", "autoconf"]
 libs = ["hdf5", "zlib"]
+logger = logging.getLogger(__name__)
 
 
 class Recipe:
     """ Represents a meta.yaml recipe file """
 
-    def __init__(self, name, version, path=None, strategy=None):
+    def __init__(self, name, version, path, strategy=None):
         self.recipe_dict = {"package": {"name": name, "version": version}}
-        if path is None:
-            self._path = os.path.join(getcwd(), name)
-        else:
-            self._path = path
+        self._path = path
         self._patch_paths = []
         self._script = None
         self._strategy = strategy
@@ -65,7 +63,6 @@ class Recipe:
     def strategy(self):
         return self._strategy
 
-
     def increment_build_number(self):
         build_number = self.recipe_dict["build"]["number"]
         self.recipe_dict["build"]["number"] = int(build_number) + 1
@@ -109,6 +106,8 @@ class Recipe:
             type_of_requirement: Specify were you want to add the package "host", "build" or "run"
             debug_message: A message explaining why the package was added as a requirement
         """
+        if pack_name == self.name:
+            return
         if type_of_requirement == "build" and pack_name in libs:
             return
         elif type_of_requirement == "host" and pack_name in build_tools:
@@ -117,8 +116,9 @@ class Recipe:
         curr_list = requirements.setdefault(type_of_requirement, [])
         cleaned_pack_name, pkg_had_version = remove_version_from_pkg(pack_name)
         cleaned_curr_list = [remove_version_from_pkg(pkg)[0] for pkg in curr_list]
+
         if cleaned_pack_name not in cleaned_curr_list:
-            logging.debug(
+            logger.debug(
                 "Adding %s to %s. Reason for adding requirement: %s"
                 % (pack_name, type_of_requirement, debug_message)
             )
@@ -166,7 +166,7 @@ class Recipe:
 
     def add_patches(self, patches_path):
         """ Adds patches to 'source: patches: ... ' in recipe """
-        if exists(self._path) is False:
+        if not exists(self._path):
             mkdir(self._path)
         copytree(patches_path, self._path)
         test = self.recipe_dict.setdefault("source", dict())
