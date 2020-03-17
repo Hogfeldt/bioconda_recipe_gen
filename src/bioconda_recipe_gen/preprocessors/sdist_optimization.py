@@ -63,7 +63,6 @@ def add_requirements_from_file(recipe, requires_path):
     requirements = [get_correct_pkg_name(pkg, ["py", "python"], recipe.strategy) for pkg in requirements]
     for req in requirements:
         if req is not None:
-            print("ADDING PACKAGE")
             recipe.add_requirement(req, "run")
     recipe.write_recipe_to_meta_file()
 
