@@ -30,4 +30,6 @@ environment, which we are building and testing in is clean an reproducible.
 We recommend that you follow the Docker installation guide which can be found at the following link:
 `Docker installation guide <https://docs.docker.com/install/>`_
 
+When Docker is installed, we recommend following the post-installation step "Manage Docker as a non-root user", the linux guide kan be found `here <https://docs.docker.com/install/linux/linux-postinstall/>`_ .
+Setting up Docker to be used as non-root, will make it possible to run BiRG without escalated privileges.
 
