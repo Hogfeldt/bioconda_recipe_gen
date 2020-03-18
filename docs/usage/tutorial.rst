@@ -94,4 +94,39 @@ Before using the recipe for fuma as input to BiRG we make some alterations to th
 Recipe Build
 ++++++++++++
 
+We are now ready to give our inital recipe as input to BiRG. The build command takes three required arguments as shown below:
 
+.. code-block:: console
+    
+    $ bioconda-recipe-gen build --help
+    usage: bioconda-recipe-gen build [-h] [-d]
+                                     bioconda_recipe_path recipe_path
+                                     {cmake,python2,python3}
+
+    positional arguments:
+      bioconda_recipe_path  Path to your local copy of the bioconda-recipe
+                              repository
+      recipe_path           Path to folder with meta.yaml and build.sh templates
+      {cmake,python2,python3}
+                            The ? that you used when creating the template with
+                            'init'
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --debug           Set this flag if you want to activate the debug mode.
+                            This creates an debug.log file that contains all debug
+                            prints
+
+bioconda_recipe_path: Is the path to you local version of the bioconda-recipes repository, which can be found `here <https://github.com/bioconda/bioconda-recipes>`_ .
+
+recipe_path: Is the path to the recipe directory which was created by running `bioconda-recipe-gen init`.
+
+Strategy: Here you must tell BiRG which building strategy to use, we currently supports three strategies cmake, python2 or python3.
+
+Here is an example on how BiRG is called for building fuma:
+
+.. code-block:: console
+    
+    $ bioconda-recipe-gen build bioconda-recipes/ fuma/ python3
+
+When BiRG is running it will print out a lot of tekst, this is the output from it's building process
