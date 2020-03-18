@@ -1,7 +1,7 @@
 # Install dependencies
 
 The documentation is build using the following dependencies: 
-- Sphinx 
+- sphinx 
 - sphinx_press_theme. 
 
 To install these dependecies use `pip` or `pipenv`, the necessary versions can be found in the `requirements.txt`.
