@@ -5,13 +5,42 @@ Installation
 ============
 
 This is a quick guide on how to start generating recipes with BiRG.
-BiRG is simply installed using the following conda commands:
+
+First clone the BiRG recipe from github with the following command:
 
 .. code-block:: console
 
-    $ conda config --add channels ???
-    $ conda create -n myproject python=3.5 ???
-    $ source activate myproject
+    $ git clone https://github.com/Hogfeldt/bioconda_recipe_gen.git
+
+
+
+Next up is to create a conda environment from the environment.yml file in the BiRG repo folder:
+
+.. code-block:: console
+
+    $ cd bioconda_recipe_gen
+    $ conda env create -f environment.yml
+    $ conda activate bioconda-recipe-gen
+
+.. note::
+
+    There might be problems with creating an environment from the environment.yml file, if you are on a mac.
+    A solution is to run the following commands instead:
+
+    .. code-block::
+
+        conda create -n bioconda-recipe-gen python=3.6
+        conda install bioconda-utils docker-py gitdb2=2.0.5
+
+
+
+Install it with the setup.py and check if BiRG is installed correctly by running -h:
+
+.. code-block:: console
+
+    $ python setup.py install
+    $ bioconda-recipe-gen -h
+
 
 .. note::
 
@@ -21,10 +50,13 @@ BiRG is simply installed using the following conda commands:
 Dependencies
 ++++++++++++
 
-BiRG depends on a various set of packages, which will be installed alongside BiRG, 
-if you install it with conda. With one exception! 
+BiRG needs the bioconda-recipe repo which should also be cloned from git:
 
-To run BiRG you will need to have Docker installed and working. We use Docker to ensure that the
+.. code-block:: console
+
+    $ git clone https://github.com/bioconda/bioconda-recipes.git
+
+To run BiRG you also need to have Docker installed and working. We use Docker to ensure that the
 environment, which we are building and testing in is clean an reproducible.
 
 We recommend that you follow the Docker installation guide which can be found at the following link:

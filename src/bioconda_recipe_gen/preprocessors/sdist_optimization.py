@@ -68,7 +68,7 @@ def add_requirements_from_file(recipe, requires_path):
 
 
 def sdist_optimization(recipe):
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(dir="/tmp") as tmpdir:
         source_path = download_and_unpack_source(recipe.url, tmpdir)
         setup_dir = find_python_setup_directory(source_path)
         if setup_dir != None:
