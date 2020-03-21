@@ -1,0 +1,24 @@
+package:
+  name: airr
+  version: 1.2.1
+source:
+  url: https://pypi.io/packages/source/a/airr/airr-1.2.1.tar.gz
+  md5: 66f13422ea75f9b40b86acf6fd521fdd
+build:
+  number: 4
+test:
+  commands:
+  - airr-tools --help
+  imports:
+  - airr
+  - airr.specs
+  - tests
+requirements:
+  host:
+  - python >=3
+  run:
+  - python >=3
+  - pandas
+  - pyyaml
+  - yamlordereddictloader
+  - setuptools
