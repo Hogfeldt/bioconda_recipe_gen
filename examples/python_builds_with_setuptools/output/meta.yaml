@@ -1,0 +1,25 @@
+ package:
+   name: rapclust
+   version: 0.1.2
+ source:
+   url: https://pypi.python.org/packages/3b/ad/7dcaf6c6507d7b8703fde76aba730f83d7dc6d04c5ef88f22e10f19e9d53/rapclust-0.1.2.tar.gz
+   md5: 7e13cecfe0ec6f12211d61888d7e6cf6
+ build:
+   number: 2
+ test:
+   commands:
+   - RapClust --help
+   imports:
+   - rapclust
+ requirements:
+   host:
+   - python >=3
+   run:
+   - python >=3
+   - pyyaml
+   - coloredlogs
+   - click
+   - networkx
+   - numpy
+   - pandas
+   - tqdm
