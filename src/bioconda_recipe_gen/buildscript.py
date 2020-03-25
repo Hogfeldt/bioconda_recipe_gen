@@ -10,6 +10,7 @@ class BuildScript:
         self._path = path
         self._lines = list()
         self._filesystem = filesystem
+        self.strategy = strategy
 
         if script_content is not None and strategy.startswith("python"):
             if "python" in script_content:
@@ -50,7 +51,10 @@ class BuildScript:
 
     def write_build_script_to_file(self):
         """ Write build script to path/build.sh """
-        lines_to_write = ["#!/bin/bash\n"] + self._lines
+        if self.strategy == "cmake" and "#!/bin/bash\n" not in self._lines:
+            lines_to_write = ["#!/bin/bash\n"] + self._lines
+        else:
+            lines_to_write = self._lines
         with open(os.path.join(self._path, "build.sh"), "w") as fp:
             for line in lines_to_write:
                 if line[-1] is "\n":
