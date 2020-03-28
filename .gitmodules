@@ -1,0 +1,3 @@
+[submodule "bioconda-utils"]
+	path = bioconda-utils
+	url = https://github.com/bioconda/bioconda-utils.git
