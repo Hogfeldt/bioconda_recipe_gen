@@ -1,6 +1,8 @@
 import os
 import tempfile
 from shutil import rmtree
+import validators
+import requests
 
 from .buildscript import BuildScript
 from .filesystem import Filesystem
@@ -17,11 +19,36 @@ def get_strategy():
     return strategy
 
 
+def ask_user_for_url():
+    url = input("Url to download the code: ")
+    while not validators.url(url):
+        print("{} is not a valid url. Please try again.".format(url))
+        url = input("Url to download the code: ")
+    return url
+
+
+def check_url(url):
+    try:
+        req = requests.get(url)
+    except requests.exceptions.RequestException as error: 
+        return "Could not connect to url. Check if the url is correct and try again."
+    return str(req.status_code)
+
+
+def get_url():
+    url = ask_user_for_url()    
+    res = check_url(url)
+    while res != "200":
+        print("Error:", res)
+        url = ask_user_for_url()
+        res = check_url(url)
+    return url
+
 def get_user_input():
     name = input("Package name: ")
     version = input("Version: ")
-    url = input("Url to download the code: ")
-    print("Choose the ? that you use to run your code")
+    url = get_url()
+    print("Choose the strategy that you use to run your code")
     strategy = get_strategy()
     return name, version, url, strategy
 

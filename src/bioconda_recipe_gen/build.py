@@ -45,6 +45,15 @@ def run_conda_build_mini(recipe_path, build_only=True):
     # Run docker image
     flag = "--build-only" if build_only else ""
     container = None
+
+    if not (
+        recipe_path.startswith("/")
+        or recipe_path.startswith("~/")
+        or recipe_path.startswith("$HOME")
+    ):
+        # Create the full path from the relative path given
+        recipe_path = os.path.join(os.getcwd(), recipe_path)
+
     try:
         container = client.containers.run(
             "perhogfeldt/conda-build-mini:latest",
