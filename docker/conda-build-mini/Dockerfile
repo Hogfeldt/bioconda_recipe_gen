@@ -1,4 +1,4 @@
-FROM perhogfeldt/conda-base:base
+FROM perhogfeldt/conda-base:latest
 
 RUN conda install conda-build conda-verify conda-forge-pinning
 
