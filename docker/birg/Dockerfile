@@ -6,7 +6,7 @@ RUN conda create --yes -n birg python=3.6 bioconda-utils
 ENV PATH="/opt/conda/envs/birg/bin:${PATH}"
 
 # Install Bioconda_Recipe_Gen
-RUN git clone https://github.com/Hogfeldt/bioconda_recipe_gen.git 
+RUN git clone https://github.com/birgorg/bioconda_recipe_gen.git 
 RUN pip install bioconda_recipe_gen/
 
 # TEST
