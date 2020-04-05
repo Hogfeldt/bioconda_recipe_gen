@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-from tempfile import TemporaryDirectory
 from shutil import copyfile, rmtree
 from git import Repo
 
@@ -9,7 +8,7 @@ from . import build
 
 BIOCONDA_RECIPES = 'https://github.com/birgorg/bioconda-recipes'
 
-def main(recipes, build_scripts, debug):
+def main(bioconda_recipe_path, recipes, build_scripts, debug):
     success = False
     while not success and build_scripts:
         recipe = recipes.pop(0)
@@ -35,11 +34,8 @@ def main(recipes, build_scripts, debug):
         for line in mini_proc_test[1].split("\n"):
             print(line)
 
-        # fetch biocoda-recipes
-        with TemporaryDirectory() as bioconda_recipe_path:
-            _ = Repo.clone_from(BIOCONDA_RECIPES, bioconda_recipe_path)
-            # Sanity check
-            success = build.mini_sanity_check(bioconda_recipe_path, recipe)
+        # Sanity check
+        success = build.mini_sanity_check(bioconda_recipe_path, recipe)
 
         # copy the final recipe into the current directory
         copyfile(
