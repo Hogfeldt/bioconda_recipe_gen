@@ -11,6 +11,8 @@ from .preprocessors.from_files import preprocess as files_preprocess
 from .preprocessors.sdist_optimization import sdist_optimization
 from .template_generation import init
 
+BIOCONDA_RECIPES = 'https://github.com/birgorg/bioconda-recipes'
+
 def build(args):
     with TemporaryDirectory() as bioconda_recipe_path:
         _ = Repo.clone_from(BIOCONDA_RECIPES, bioconda_recipe_path)

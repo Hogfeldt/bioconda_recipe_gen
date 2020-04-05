@@ -5,8 +5,6 @@ from shutil import copyfile, rmtree
 
 from . import build
 
-BIOCONDA_RECIPES = 'https://github.com/birgorg/bioconda-recipes'
-
 def main(bioconda_recipe_path, recipes, build_scripts, debug):
     success = False
     while not success and build_scripts:
