@@ -4,6 +4,7 @@ import sys
 import logging
 from shutil import rmtree
 from tempfile import TemporaryDirectory
+from git import Repo
 
 from .bioconda_recipe_gen import main
 from .preprocessors.from_files import preprocess as files_preprocess

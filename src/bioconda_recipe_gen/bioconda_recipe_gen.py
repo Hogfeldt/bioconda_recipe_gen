@@ -2,7 +2,6 @@ import os
 import sys
 import logging
 from shutil import copyfile, rmtree
-from git import Repo
 
 from . import build
 
