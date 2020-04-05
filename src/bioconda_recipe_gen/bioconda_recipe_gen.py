@@ -5,7 +5,6 @@ from shutil import copyfile, rmtree
 
 from . import build
 
-
 def main(bioconda_recipe_path, recipes, build_scripts, debug):
     success = False
     while not success and build_scripts:
@@ -34,6 +33,7 @@ def main(bioconda_recipe_path, recipes, build_scripts, debug):
 
         # Sanity check
         success = build.mini_sanity_check(bioconda_recipe_path, recipe)
+
         # copy the final recipe into the current directory
         copyfile(
             os.path.join(recipe.path, "meta.yaml"),

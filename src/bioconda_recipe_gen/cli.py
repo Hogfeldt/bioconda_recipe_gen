@@ -3,32 +3,24 @@ import os
 import sys
 import logging
 from shutil import rmtree
+from tempfile import TemporaryDirectory
+from git import Repo
 
 from .bioconda_recipe_gen import main
 from .preprocessors.from_files import preprocess as files_preprocess
 from .preprocessors.sdist_optimization import sdist_optimization
 from .template_generation import init
 
-def bioconda_recipes_exists(path):
-    recipes_path = os.path.join(path, "recipes")
-    config_path = os.path.join(path, "config.yml")
-    return os.path.exists(recipes_path) and os.path.exists(config_path)
-
-
-def call_main(args, recipes, build_scripts):
-    if bioconda_recipes_exists(args.bioconda_recipe_path):
-        main(args.bioconda_recipe_path, recipes, build_scripts, args.debug)
-    else:
-        sys.exit("ERROR: Wrong path to bioconda-recipes")
-
+BIOCONDA_RECIPES = 'https://github.com/birgorg/bioconda-recipes'
 
 def build(args):
-    recipes, build_scripts = files_preprocess(args)
-    if args.strategy == "python3" or args.strategy == "python2":
-        for recipe in recipes:
-            sdist_optimization(recipe)
-    call_main(args, recipes, build_scripts)
-
+    with TemporaryDirectory() as bioconda_recipe_path:
+        _ = Repo.clone_from(BIOCONDA_RECIPES, bioconda_recipe_path)
+        recipes, build_scripts = files_preprocess(args, bioconda_recipe_path)
+        if args.strategy == "python3" or args.strategy == "python2":
+            for recipe in recipes:
+                sdist_optimization(recipe)
+        main(bioconda_recipe_path, recipes, build_scripts, args.debug)
 
 def setup_logging(debug, output_dir_path):
     if debug:
@@ -68,10 +60,6 @@ def start():
     parser_files = subparser.add_parser(
         "build",
         help="Build the recipe from the template generate by 'init'"
-    )
-    parser_files.add_argument(
-        "bioconda_recipe_path",
-        help="Path to your local copy of the bioconda-recipe repository",
     )
     parser_files.add_argument(
         "recipe_path",

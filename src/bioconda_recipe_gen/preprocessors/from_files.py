@@ -136,8 +136,8 @@ def create_build_script(recipe, args, filesystem):
     return build_script
 
 
-def preprocess(args):
-    recipe = create_recipe(args.bioconda_recipe_path, args.recipe_path, args.strategy)
+def preprocess(args, bioconda_recipe_path):
+    recipe = create_recipe(bioconda_recipe_path, args.recipe_path, args.strategy)
     with tempfile.TemporaryDirectory() as tmpdir:
         download_and_unpack_source(recipe.url, tmpdir)
         source_path = os.path.join(tmpdir, "source")
