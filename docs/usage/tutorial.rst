@@ -104,7 +104,7 @@ We will also edit the the `build.sh`, as netReg requires us to set some flags fo
 Recipe Build
 ++++++++++++
 
-We are now ready to give our inital recipe as input to BiRG. The build command takes three required arguments as shown below:
+We are now ready to give our inital recipe as input to BiRG. The build command takes two required arguments as shown below:
 
 .. code-block:: console
     
@@ -114,8 +114,6 @@ We are now ready to give our inital recipe as input to BiRG. The build command t
                                      {cmake,python2,python3}
 
     positional arguments:
-      bioconda_recipe_path  Path to your local copy of the bioconda-recipe
-                              repository
       recipe_path           Path to folder with meta.yaml and build.sh templates
       {cmake,python2,python3}
                             The ? that you used when creating the template with
@@ -127,17 +125,15 @@ We are now ready to give our inital recipe as input to BiRG. The build command t
                             This creates an debug.log file that contains all debug
                             prints
 
-bioconda_recipe_path: Is the path to you local version of the bioconda-recipes repository, which can be found `here <https://github.com/bioconda/bioconda-recipes>`_ .
-
 recipe_path: Is the path to the recipe directory which was created by running `bioconda-recipe-gen init`.
 
 Strategy: Here you must tell BiRG which building strategy to use, we currently supports three strategies cmake, python2 or python3.
 
-Here is an example on how BiRG is called for building fuma:
+Here is an example on how BiRG is called for building netreg:
 
 .. code-block:: console
     
-    $ bioconda-recipe-gen build bioconda-recipes/ netreg/ cmake
+    $ bioconda-recipe-gen build netreg/ cmake
 
 When BiRG is running it will print out a lot of text, this is the output from it's building process.
 BiRG will also some times ask for your help, to determine which version of a dependency it should use.

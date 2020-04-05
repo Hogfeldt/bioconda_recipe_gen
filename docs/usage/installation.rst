@@ -50,13 +50,7 @@ Install it with the setup.py and check if BiRG is installed correctly by running
 Dependencies
 ++++++++++++
 
-BiRG needs the bioconda-recipe repo which should also be cloned from git:
-
-.. code-block:: console
-
-    $ git clone https://github.com/bioconda/bioconda-recipes.git
-
-To run BiRG you also need to have Docker installed and working. We use Docker to ensure that the
+To run BiRG you also to have Docker installed and working. We use Docker to ensure that the
 environment, which we are building and testing in is clean an reproducible.
 
 We recommend that you follow the Docker installation guide which can be found at the following link:
