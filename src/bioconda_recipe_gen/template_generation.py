@@ -79,7 +79,7 @@ def create_path(name):
     return path
 
 
-def init(args):
+def init(_):
     name, version, url, strategy = get_user_input()
     path = create_path(name)
     recipe = make_recipe(name, version, url, path, strategy)
