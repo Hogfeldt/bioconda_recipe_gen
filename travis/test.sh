@@ -1,7 +1,6 @@
 #!/bin/bash
 ##### Constants
 # The TRAVIS_BUILD_DIR is specified by travis itself
-BR_PATH=$TRAVIS_BUILD_DIR/bioconda-recipes
 DATA_PATH=$TRAVIS_BUILD_DIR/travis/data
 
 ##### functions
@@ -9,37 +8,37 @@ DATA_PATH=$TRAVIS_BUILD_DIR/travis/data
 build_htstream()
 {
     data=$DATA_PATH/htstream
-    bioconda-recipe-gen build $BR_PATH $data cmake
+    bioconda-recipe-gen build $data cmake
 }
 
 build_qfilt()
 {
     data=$DATA_PATH/qfilt
-    bioconda-recipe-gen build $BR_PATH $data cmake
+    bioconda-recipe-gen build $data cmake
 }
 
 build_libdivsufsort()
 {
     data=$DATA_PATH/libdivsufsort
-    bioconda-recipe-gen build $BR_PATH $data cmake
+    bioconda-recipe-gen build $data cmake
 }
 
 build_lambda()
 {
     data=$DATA_PATH/lambda
-    bioconda-recipe-gen build $BR_PATH $data cmake
+    bioconda-recipe-gen build $data cmake
 }
 
 build_fuma()
 {
     data=$DATA_PATH/fuma
-    yes | bioconda-recipe-gen build $BR_PATH $data python2
+    yes | bioconda-recipe-gen build $data python2
 }
 
 build_crossmap()
 {
     data=$DATA_PATH/crossmap
-    yes | bioconda-recipe-gen build $BR_PATH $data python3
+    yes | bioconda-recipe-gen build $data python3
 }
 
 
