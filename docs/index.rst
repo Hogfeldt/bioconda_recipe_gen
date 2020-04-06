@@ -9,11 +9,14 @@ Welcome to BiRG
 
 What is BiRG? BiRG is automation tool for generating Conda recipes for the Bioconda channel.
 
-.. toctree::
-    :maxdepth: 3
+Table of Contents
+=================
 
-    usage/index
-    development/index
+.. toctree::
+  :maxdepth: 3
+
+  usage/index
+  development/index
 
 
 Indices and tables
