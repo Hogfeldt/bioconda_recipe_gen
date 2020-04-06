@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to BiRG
-================================
+===============
 
 What is BiRG? BiRG is automation tool for generating Conda recipes for the Bioconda channel.
 
