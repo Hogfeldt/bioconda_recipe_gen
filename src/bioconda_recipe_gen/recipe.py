@@ -96,6 +96,14 @@ class Recipe:
         source = self.recipe_dict.setdefault("source", dict())
         source["sha256"] = checksum
 
+    def _remove_pkg_from_cur_list(self, cur_list, cleaned_pkg_name):
+        """ Removes a pkg (with or without version) from a cur_list based on name without version """
+        for cur_pkg in cur_list:
+            cleaned_cur_pkg, _ = remove_version_from_pkg(cur_pkg)
+            if cleaned_pkg_name == cleaned_cur_pkg:
+                cur_list.remove(cur_pkg)
+                return
+
     def add_requirement(
         self, pack_name, type_of_requirement, debug_message="Not specified", host_only=False
     ):
@@ -130,8 +138,8 @@ class Recipe:
                 and "{{ compiler('c') }}" in curr_list
             ):
                 curr_list.remove("{{ compiler('c') }}")
-        elif pkg_had_version:
-            curr_list.remove(cleaned_pack_name)
+        else:
+            self._remove_pkg_from_cur_list(curr_list, cleaned_pack_name)
             curr_list.append(pack_name)
 
     def add_test_files_with_path(self, test_path):
