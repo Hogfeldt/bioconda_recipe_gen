@@ -57,7 +57,7 @@ class BuildScript:
             lines_to_write = self._lines
         with open(os.path.join(self._path, "build.sh"), "w") as fp:
             for line in lines_to_write:
-                if line[-1] is "\n":
+                if line[-1] == "\n":
                     fp.write(line)
                 else:
                     fp.write(line + "\n")

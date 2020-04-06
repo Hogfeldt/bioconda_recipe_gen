@@ -64,7 +64,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
         )
         result = container.wait()
         stdout = container.logs().decode("utf-8")
-        if result["StatusCode"] is 0:
+        if result["StatusCode"] == 0:
             for line in stdout.split("\n"):
                 if "anaconda upload " in line:
                     output_file = line.split()[2]
@@ -84,6 +84,14 @@ def run_conda_build_mini(recipe_path, build_only=True):
 def run_conda_build_mini_test(recipe_path):
     """ Call run_mini_build with the build_only parameter as False """
     return run_conda_build_mini(recipe_path, False)
+
+
+def get_user_version_input(max_int_value):
+    while True:
+        answer = input()
+        if (answer.isdigit() and int(answer) in range(0, max_int_value)) or answer == "y":
+            return answer
+        print("Sorry, the input must be an integer in the range [0, {}] or the letter 'y'".format(max_int_value))
 
 
 def choose_version(pkg_name, version_list, py_version):
@@ -110,10 +118,12 @@ def choose_version(pkg_name, version_list, py_version):
     # Ask the user
     print("#" * 40)
     print("We found the following potential versions for", pkg_name)
-    print("Type y to add without version. Else type the number of the wanted package (applied as >=):")
+    print(
+        "Type y to add without version. Else type the number of the wanted package (applied as >=):"
+    )
     for i, ver in enumerate(potential_version):
         print("%d: %s" % (i, ver))
-    answer = input()
+    answer = get_user_version_input(len(potential_version))
     # TODO: add some defensive programming here to avoid 'wrong' user input
     if answer == "y":
         return None
@@ -132,8 +142,10 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     priority of which they are used (first being highest priority).
 
     Returns None if no match was found. """
-    normalised_pkg_name, _ = remove_version_from_pkg(pkg_name)
-    normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
+    normalised_pkg_name, has_version = remove_version_from_pkg(pkg_name)
+    normalised_pkg_name = (
+        normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
+    )
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
     json_dict = json.loads(proc.stdout)
@@ -146,7 +158,9 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
         for cur_pkg in json_dict.keys():
             normalised_cur_pkg = cur_pkg.replace("-", "").replace("_", "")
             normalised_pkg_name = normalised_pkg_name.lower()
-            extra_content_in_name = normalised_cur_pkg.replace(normalised_pkg_name, "", 1)
+            extra_content_in_name = normalised_cur_pkg.replace(
+                normalised_pkg_name, "", 1
+            )
             if extra_content_in_name == "" and best_pkg_idx == len(extensions):
                 best_pkg_match = cur_pkg
             else:
@@ -159,6 +173,9 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
                             break
     if best_pkg_match is None:
         return None
+    elif best_pkg_match == normalised_pkg_name and has_version:
+        print("Added {} as a requirement.".format(pkg_name))
+        return pkg_name
 
     version_list = json_dict[best_pkg_match]
     chosen_version = choose_version(best_pkg_match, version_list, strategy)
@@ -199,7 +216,9 @@ def mini_iterative_build(recipe, build_script):
                 )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
-                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
+                best_pkg_match = get_correct_pkg_name(
+                    pkg_name, ["py", "python"], recipe.strategy
+                )
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "host")
                     added_packages.append(best_pkg_match)
@@ -249,7 +268,8 @@ def mini_iterative_test(recipe, build_script):
                 )
             if not potential_python_pkg:
                 potential_python_pkg = re.search(
-                    r"pkg_resources.distributionnotfound: the '(.*)' distribution was not found", line_normalized
+                    r"pkg_resources.distributionnotfound: the '(.*)' distribution was not found",
+                    line_normalized,
                 )
             if not potential_python_pkg:
                 potential_python_pkg = re.search(
@@ -257,7 +277,9 @@ def mini_iterative_test(recipe, build_script):
                 )
             if potential_python_pkg:
                 pkg_name = potential_python_pkg.group(1)
-                best_pkg_match = get_correct_pkg_name(pkg_name, ["py", "python"], recipe.strategy)
+                best_pkg_match = get_correct_pkg_name(
+                    pkg_name, ["py", "python"], recipe.strategy
+                )
                 if best_pkg_match is not None:
                     new_recipe.add_requirement(best_pkg_match, "run")
                     added_packages.append(best_pkg_match)
