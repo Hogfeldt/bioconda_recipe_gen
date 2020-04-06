@@ -132,7 +132,7 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     priority of which they are used (first being highest priority).
 
     Returns None if no match was found. """
-    normalised_pkg_name, _ = remove_version_from_pkg(pkg_name)
+    normalised_pkg_name, has_version = remove_version_from_pkg(pkg_name)
     normalised_pkg_name = normalised_pkg_name.replace("-", "*").replace("_", "*").replace(".", "*")
     cmd = ["conda", "search", "*%s*" % normalised_pkg_name, "--json"]
     proc = subprocess.run(cmd, encoding="utf-8", stdout=subprocess.PIPE)
@@ -159,6 +159,9 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
                             break
     if best_pkg_match is None:
         return None
+    elif best_pkg_match == normalised_pkg_name and has_version:
+        print("Added {} as a requirement.".format(pkg_name))
+        return pkg_name
 
     version_list = json_dict[best_pkg_match]
     chosen_version = choose_version(best_pkg_match, version_list, strategy)
