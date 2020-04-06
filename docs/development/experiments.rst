@@ -2,7 +2,6 @@
 Experiments
 ===========
 
-BiRG is built on heuristics about how to find dependencies based on the error messages we get from trying to build and run some given software.
 To see how well BiRG performs, we found all python (exclusively python, no other code like for example c)
 and cmake (packages with a CMakeList.txt in the root folder) packages on `bioconda-recipes <https://github.com/bioconda/bioconda-recipes>`_.
 
