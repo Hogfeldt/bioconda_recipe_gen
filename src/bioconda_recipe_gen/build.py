@@ -64,7 +64,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
         )
         result = container.wait()
         stdout = container.logs().decode("utf-8")
-        if result["StatusCode"] is 0:
+        if result["StatusCode"] == 0:
             for line in stdout.split("\n"):
                 if "anaconda upload " in line:
                     output_file = line.split()[2]
