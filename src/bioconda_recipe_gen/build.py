@@ -7,7 +7,7 @@ import logging
 import docker
 import re
 import json
-from os.path import join
+from os.path import join, isdir
 from glob import glob
 from shutil import rmtree, copy2
 from copy import deepcopy
@@ -59,13 +59,14 @@ def run_conda_build_mini(recipe_path, build_only=True):
     try:
         container = client.containers.create(
             "perhogfeldt/conda-build-mini:latest",
-            "conda build %s --output-folder /home/output /mnt/recipe -c bioconda -c conda-forge"
+            "conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
             % flag,
             detach=True,
         )
         for file_path in glob(join(recipe_path, "*")):
-            tarstream = create_tarstream_from_file(file_path)
-            container.put_archive("/mnt/recipe", tarstream)
+            if isdir(file_path) == False:
+                tarstream = create_tarstream_from_file(file_path)
+                container.put_archive("/home", tarstream)
         container.start()
         result = container.wait()
         stdout = container.logs().decode("utf-8")
