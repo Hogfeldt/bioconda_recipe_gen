@@ -42,6 +42,7 @@ def mini_build_setup(recipe, build_script):
 
 def run_conda_build_mini(recipe_path, build_only=True):
     """ Run docker run and build the package in a docker mini image"""
+    REPO_URL = "perhogfeldt/conda-build-mini:latest"
     # Setup image
     client = docker.from_env()
     # Run docker image
@@ -58,15 +59,24 @@ def run_conda_build_mini(recipe_path, build_only=True):
 
     try:
         container = client.containers.create(
-            "perhogfeldt/conda-build-mini:latest",
+            REPO_URL,
             "conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
             % flag,
             detach=True,
         )
-        for file_path in glob(join(recipe_path, "*")):
-            if isdir(file_path) == False:
-                tarstream = create_tarstream_from_file(file_path)
-                container.put_archive("/home", tarstream)
+    except:
+        image = client.images.pull(REPO_URL)
+        container = client.containers.create(
+            image=image,
+            command="conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
+            % flag,
+            detach=True,
+        )
+    for file_path in glob(join(recipe_path, "*")):
+        if isdir(file_path) == False:
+            tarstream = create_tarstream_from_file(file_path)
+            container.put_archive("/home", tarstream)
+    try:
         container.start()
         result = container.wait()
         stdout = container.logs().decode("utf-8")
