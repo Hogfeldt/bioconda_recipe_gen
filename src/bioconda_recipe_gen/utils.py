@@ -6,7 +6,25 @@ import tempfile
 import hashlib
 import tarfile
 import zipfile
+import time
+from io import BytesIO
 from bioconda_utils import recipe
+
+
+def create_tarstream_from_file(file_path):
+    tarstream = BytesIO()
+    tar = tarfile.TarFile(fileobj=tarstream, mode="w")
+    file_data = None
+    with open(file_path) as fp:
+        file_data = fp.read().encode("utf8")
+    name = file_path.split("/")[-1]
+    tarinfo = tarfile.TarInfo(name=name)
+    tarinfo.size = len(file_data)
+    tarinfo.mtime = time.time()
+    tar.addfile(tarinfo, BytesIO(file_data))
+    tar.close()
+    tarstream.seek(0)
+    return tarstream
 
 
 def calculate_md5_checksum(url):
@@ -110,4 +128,3 @@ def remove_version_from_pkg(pkg_name):
         return pkg_name.split("=")[0].strip(), True
     else:
         return pkg_name, False
-

@@ -7,9 +7,11 @@ import logging
 import docker
 import re
 import json
+from os.path import join, isdir
+from glob import glob
 from shutil import rmtree, copy2
 from copy import deepcopy
-from .utils import copytree, remove_version_from_pkg
+from .utils import copytree, remove_version_from_pkg, create_tarstream_from_file
 from .str_to_pkg import str_to_pkg
 from distutils.version import LooseVersion
 
@@ -55,13 +57,17 @@ def run_conda_build_mini(recipe_path, build_only=True):
         recipe_path = os.path.join(os.getcwd(), recipe_path)
 
     try:
-        container = client.containers.run(
+        container = client.containers.create(
             "perhogfeldt/conda-build-mini:latest",
-            "conda build %s --output-folder /home/output /mnt/recipe -c bioconda -c conda-forge"
+            "conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
             % flag,
-            volumes={recipe_path: {"bind": "/mnt/recipe", "mode": "ro"}},
             detach=True,
         )
+        for file_path in glob(join(recipe_path, "*")):
+            if isdir(file_path) == False:
+                tarstream = create_tarstream_from_file(file_path)
+                container.put_archive("/home", tarstream)
+        container.start()
         result = container.wait()
         stdout = container.logs().decode("utf-8")
         if result["StatusCode"] == 0:
@@ -89,9 +95,15 @@ def run_conda_build_mini_test(recipe_path):
 def get_user_version_input(max_int_value):
     while True:
         answer = input()
-        if (answer.isdigit() and int(answer) in range(0, max_int_value)) or answer == "y":
+        if (
+            answer.isdigit() and int(answer) in range(0, max_int_value)
+        ) or answer == "y":
             return answer
-        print("Sorry, the input must be an integer in the range [0, {}] or the letter 'y'".format(max_int_value))
+        print(
+            "Sorry, the input must be an integer in the range [0, {}] or the letter 'y'".format(
+                max_int_value
+            )
+        )
 
 
 def choose_version(pkg_name, version_list, py_version):
