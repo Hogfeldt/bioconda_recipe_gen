@@ -68,7 +68,7 @@ def run_conda_build_mini(recipe_path, build_only=True):
         image = client.images.pull(REPO_URL)
         container = client.containers.create(
             image=image,
-            "conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
+            command="conda build %s --output-folder /home/output /home -c bioconda -c conda-forge"
             % flag,
             detach=True,
         )
