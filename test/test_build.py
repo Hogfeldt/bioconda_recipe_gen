@@ -3,7 +3,7 @@ import os
 import tempfile
 import time #remove this when finished debugging
 
-import bioconda_recipe_gen.build as build
+import birg.build as build
 
 
 class TestMiniIterativeBuild(unittest.TestCase):

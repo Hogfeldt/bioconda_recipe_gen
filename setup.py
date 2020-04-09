@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 # Package meta-data
-NAME = "bioconda_recipe_gen"
-DESCRIPTION = "Recipe generator for Bioconda"
+NAME = "birg"
+DESCRIPTION = "Bioconda Recipe Generator (BiRG) is an heuristic approach to automaticly generating recipes for Bioconda"
 
 setup(
     name=NAME,
@@ -12,7 +12,7 @@ setup(
     test_suite="test",
     install_requires=['docker>=2.0.0', 'gitdb2==2.0.5', 'validators', 'gitpython'],
     entry_points={
-         'console_scripts': ['bioconda-recipe-gen = bioconda_recipe_gen.cli:start'],
+         'console_scripts': ['birg = birg.cli:start'],
     },
     include_package_data=True,
 )

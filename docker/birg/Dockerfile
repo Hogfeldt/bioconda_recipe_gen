@@ -7,11 +7,11 @@ ENV PATH="/opt/conda/envs/birg/bin:${PATH}"
 
 # Install Bioconda_Recipe_Gen
 RUN git clone https://github.com/birgorg/birg.git 
-RUN pip install bioconda_recipe_gen/
+RUN pip install birg/
 
 # TEST
 RUN bioconda-utils --help
-RUN bioconda-recipe-gen --help
+RUN birg --help
 
 ENV TINI_VERSION v0.16.1
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini

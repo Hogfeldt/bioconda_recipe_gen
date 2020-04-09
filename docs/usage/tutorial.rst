@@ -10,7 +10,7 @@ This recipe will then be given as input to BiRG, which will find the necessary d
 Recipe Initilization
 ++++++++++++++++++++
 
-First we will generate an initial recipe, this can be done by using the command `bioconda-recipe-gen init`. 
+First we will generate an initial recipe, this can be done by using the command `birg init`. 
 BiRG will then ask for basic information about the software and create a directory named after the software,
 which contains two files called `meta.yaml` and `build.sh`.
 These files are the initial recipe, that we will transform into the final recipe.

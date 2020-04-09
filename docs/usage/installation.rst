@@ -10,7 +10,7 @@ First clone the BiRG recipe from github with the following command:
 
 .. code-block:: console
 
-    $ git clone https://github.com/Hogfeldt/bioconda_recipe_gen.git
+    $ git clone https://github.com/birgorg/birg.git
 
 
 
@@ -18,9 +18,9 @@ Next up is to create a conda environment from the environment.yml file in the Bi
 
 .. code-block:: console
 
-    $ cd bioconda_recipe_gen
+    $ cd birg
     $ conda env create -f environment.yml
-    $ conda activate bioconda-recipe-gen
+    $ conda activate birg
 
 .. note::
 
@@ -29,7 +29,8 @@ Next up is to create a conda environment from the environment.yml file in the Bi
 
     .. code-block::
 
-        conda create -n bioconda-recipe-gen python=3.6
+        conda create -n birg python=3.6
+        conda activate birg
         conda install bioconda-utils docker-py gitdb2=2.0.5
 
 
@@ -39,7 +40,7 @@ Install it with the setup.py and check if BiRG is installed correctly by running
 .. code-block:: console
 
     $ python setup.py install
-    $ bioconda-recipe-gen -h
+    $ birg -h
 
 
 .. note::

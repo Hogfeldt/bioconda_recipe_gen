@@ -2,7 +2,7 @@ import unittest
 import shutil
 import os
 import filecmp
-from bioconda_recipe_gen.recipe import Recipe
+from birg.recipe import Recipe
 
 
 class TestRecipeClass(unittest.TestCase):
