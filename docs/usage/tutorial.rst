@@ -97,7 +97,7 @@ Before using the recipe for netReg as input to BiRG, we will add some tests to t
 By adding tests, we makes sure that BiRG will try and find run-time dependencies as well as build-time dependencies.
 
 .. code-block:: yaml
-   :caption: netReg/meta.yaml
+   :caption: netreg/meta.yaml
 
     package:
         name: netreg
@@ -114,7 +114,7 @@ By adding tests, we makes sure that BiRG will try and find run-time dependencies
 We will also edit the the `build.sh`, as netReg requires us to set some flags for cmake:
 
 .. code-block:: 
-   :caption: netReg/build.sh
+   :caption: netreg/build.sh
 
     #!/bin/bash
     mkdir -p build
