@@ -1,4 +1,3 @@
-include src/birg/containers/Dockerfile
 include src/birg/recipes/meta.yaml
 include src/birg/recipes/template_build_cmake.sh
 include src/birg/recipes/template_build_autoreconf.sh
