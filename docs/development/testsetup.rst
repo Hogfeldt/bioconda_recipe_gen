@@ -1,7 +1,7 @@
 Test setup
 ==========
 
-The way we have been developing BiRG is by taking a set of packages from `bioconda-recipes <https://github.com/bioconda/bioconda-recipes>`_ and then use our test pipeline which can be found in the repo `bioconda_recipe_gen_ci <https://github.com/birgorg/birg_ci>`_.
+The way we have been developing BiRG is by taking a set of packages from `bioconda-recipes <https://github.com/bioconda/bioconda-recipes>`_ and then use our test pipeline which can be found in the repo `birg_ci <https://github.com/birgorg/birg_ci>`_.
 This pipeline runs BiRG on all the chosen packages and outputs for each package:
 
 - a file with everything from stdout that was generated doing the build
