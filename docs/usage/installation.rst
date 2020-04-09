@@ -4,7 +4,31 @@
 Installation
 ============
 
-This is a quick guide on how to start generating recipes with BiRG.
+BiRG is heavily dependent on Docker, therefor make sure that you have Docker installed and working. We use Docker to ensure that the environment, which we are building and testing in, is clean an reproducible.
+
+If you don't have Docker installed, we recommend that you follow the Docker installation guide which can be found at the following link:
+`Docker installation guide <https://docs.docker.com/install/>`_
+
+When Docker is installed, we recommend following the post-installation step "Manage Docker as a non-root user", the linux guide kan be found `here <https://docs.docker.com/install/linux/linux-postinstall/>`_ .
+Setting up Docker to be used as non-root, will make it possible to run BiRG without escalated privileges.
+
++++++++++++++++
+From Docker Hub
++++++++++++++++
+
+We have prepared a docker image for running BiRG, the docker image can be downloaded from Docker Hub, by running the following command:
+
+.. code-block:: console
+
+    $ docker pull perhogfeldt/birg:latest
+
+That's it you can now proceed to the tutorial, for instructions on how to use the docker image.
+
+:ref: `tutorial`
+
++++++++++++
+From Source
++++++++++++
 
 First clone the BiRG recipe from github with the following command:
 
@@ -41,22 +65,3 @@ Install it with the setup.py and check if BiRG is installed correctly by running
 
     $ python setup.py install
     $ birg -h
-
-
-.. note::
-
-    It's important that you read the next section, if Docker is not installed and working on your system.
-
-++++++++++++
-Dependencies
-++++++++++++
-
-To run BiRG you also to have Docker installed and working. We use Docker to ensure that the
-environment, which we are building and testing in is clean an reproducible.
-
-We recommend that you follow the Docker installation guide which can be found at the following link:
-`Docker installation guide <https://docs.docker.com/install/>`_
-
-When Docker is installed, we recommend following the post-installation step "Manage Docker as a non-root user", the linux guide kan be found `here <https://docs.docker.com/install/linux/linux-postinstall/>`_ .
-Setting up Docker to be used as non-root, will make it possible to run BiRG without escalated privileges.
-
