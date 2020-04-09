@@ -26,13 +26,13 @@ build_libdivsufsort()
 build_lambda()
 {
     data=$DATA_PATH/lambda
-    birg build $data cmake
+    birg build $data cmake -d
 }
 
 build_fuma()
 {
     data=$DATA_PATH/fuma
-    yes | birg build $data python2
+    yes | birg build $data python2 -d
 }
 
 build_crossmap()
