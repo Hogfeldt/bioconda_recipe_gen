@@ -24,7 +24,7 @@ We have prepared a docker image for running BiRG, the docker image can be downlo
 
 That's it you can now proceed to the tutorial, for instructions on how to use the docker image.
 
-:ref: `tutorial`
+:ref:`tutorial`
 
 +++++++++++
 From Source
