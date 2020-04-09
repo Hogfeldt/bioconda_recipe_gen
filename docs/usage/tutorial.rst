@@ -8,6 +8,31 @@ To show how BiRG works, we will create a recipe for a software called netReg.
 We will start with generating an initial recipe, with basic information about netReg.
 This recipe will then be given as input to BiRG, which will find the necessary dependencies required to build, test and run the software.
 
+We assume that you are using the docker image that we provide,but if you have installed BiRG from source, the tutorial still applies, just go directly to `Recipe Initilization`_.
+
+++++++++++++++++++++++
+Using Docker container
+++++++++++++++++++++++
+
+First we need to make sure that the docker container and the host system can communicate. This can be done by running `docker run`, with the following settings.
+
+.. code-block:: console
+    
+    $ docker run -v /var/run/docker.sock:/var/run/docker.sock \
+                 -v $PWD:/home \
+                 -itd perhogfeldt/birg:latest
+
+The first volume we added, with `-v`, is the unix socket that the docker client uses to talk with the docker server. We need to add this socket, since the container will need to spin up more containers, when it tries to build the software.
+The second volume will bind the containers home direcetory to the host systems current directory, this will make sure that files can be shared.
+
+The running container will spin up the container and detach, so that the container is running in the background. The command will return a container id, which we will use to send instructions to the container. The container id can also be found be running `docker ps`.
+
+You can then run the birg commands mentioned in the rest of this tutorial with `docker exec`, the following way:
+
+.. code-block:: console
+    
+    $ docker exec -it <container-id> <command>
+
 ++++++++++++++++++++
 Recipe Initilization
 ++++++++++++++++++++
@@ -28,7 +53,7 @@ Here is the initialization of netReg:
 
 .. code-block:: console
     
-    $ bioconda-recipe-gen init
+    $ birg init
     Package name: netreg
     Version: 1.8.0
     Url to download the code: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
@@ -39,7 +64,7 @@ Here is the initialization of netReg:
 The recipe
 ++++++++++
 
-The basic recipe create by `init` should look something like this:
+The basic recipe create by `init`, can be found in the newly created directory called `netreg` and should look something like this:
 
 .. code-block:: yaml
    :caption: netreg/meta.yaml
@@ -110,10 +135,8 @@ We are now ready to give our inital recipe as input to BiRG. The build command t
 
 .. code-block:: console
     
-    $ bioconda-recipe-gen build --help
-    usage: bioconda-recipe-gen build [-h] [-d]
-                                     bioconda_recipe_path recipe_path
-                                     {cmake,python2,python3}
+    $ birg build --help
+    usage: birg build [-h] [-d] recipe_path {cmake,python2,python3}
 
     positional arguments:
       recipe_path           Path to folder with meta.yaml and build.sh templates
@@ -127,7 +150,7 @@ We are now ready to give our inital recipe as input to BiRG. The build command t
                             This creates an debug.log file that contains all debug
                             prints
 
-recipe_path: Is the path to the recipe directory which was created by running `bioconda-recipe-gen init`.
+recipe_path: Is the path to the recipe directory which was created by running `birg init`.
 
 Strategy: Here you must tell BiRG which building strategy to use, we currently supports three strategies cmake, python2 or python3.
 
@@ -135,10 +158,10 @@ Here is an example on how BiRG is called for building netreg:
 
 .. code-block:: console
     
-    $ bioconda-recipe-gen build netreg/ cmake
+    $ birg build netreg/ cmake
 
 When BiRG is running it will print out a lot of text, this is the output from it's building process.
-BiRG will also some times ask for your help, to determine which version of a dependency it should use.
+BiRG will also, some times, ask for your help, to determine which version of a dependency it should use.
 
 When BiRG is done running (may take around 20 min for this specific package) it will tell you if it was able to build and run your software, and the output recipe can be found in the directory which was created by the `init` command.
 
