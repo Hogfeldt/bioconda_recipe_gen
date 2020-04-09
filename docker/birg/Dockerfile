@@ -1,7 +1,7 @@
 FROM perhogfeldt/conda-base:latest
 
 RUN conda create --yes -n birg python=3.6 bioconda-utils &&\
-    conda clean -all
+    conda clean --all
 
 # Conda activate
 ENV PATH="/opt/conda/envs/birg/bin:${PATH}"
