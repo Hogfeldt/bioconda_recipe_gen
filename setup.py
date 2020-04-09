@@ -12,7 +12,7 @@ setup(
     test_suite="test",
     install_requires=['docker>=2.0.0', 'gitdb2==2.0.5', 'validators', 'gitpython'],
     entry_points={
-         'console_scripts': ['bioconda-recipe-gen = bioconda_recipe_gen.cli:start'],
+         'console_scripts': ['birg = bioconda_recipe_gen.cli:start'],
     },
     include_package_data=True,
 )
