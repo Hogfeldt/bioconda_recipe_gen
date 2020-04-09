@@ -4,12 +4,12 @@ import hashlib
 import os
 from shutil import rmtree, copy2
 
-from bioconda_utils.recipe import Recipe as bioconda_utils_Recipe
+from birg.recipe import Recipe as bioconda_utils_Recipe
 
-from bioconda_recipe_gen.filesystem import Filesystem
-from bioconda_recipe_gen.buildscript import BuildScript
-from bioconda_recipe_gen.recipe import Recipe
-from bioconda_recipe_gen.utils import (
+from birg.filesystem import Filesystem
+from birg.buildscript import BuildScript
+from birg.recipe import Recipe
+from birg.utils import (
     copytree,
     calculate_md5_checksum,
     download_and_unpack_source,

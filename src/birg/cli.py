@@ -6,7 +6,7 @@ from shutil import rmtree
 from tempfile import TemporaryDirectory
 from git import Repo
 
-from .bioconda_recipe_gen import main
+from .birg import main
 from .preprocessors.from_files import preprocess as files_preprocess
 from .preprocessors.sdist_optimization import sdist_optimization
 from .template_generation import init
@@ -41,8 +41,8 @@ def setup_logging(debug, output_dir_path):
 def start():
     # Top-level Parser
     parser = argparse.ArgumentParser(
-        prog="bioconda-recipe-gen",
-        description="bioconda-recipe-gen is a tool for automatically generating a bioconda recipe for a given pice of software",
+        prog="birg",
+        description="Bioconda Recipe Generator is a tool which applies an heuristic approach for automatically generating a bioconda recipe for a given pice of software",
     )
     subparser = parser.add_subparsers(
         help="Which functionality would you like to run: init or build",

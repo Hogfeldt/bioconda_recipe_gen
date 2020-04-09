@@ -1,5 +1,5 @@
 import unittest
-import bioconda_recipe_gen.make_dict
+import birg.make_dict
 
 
 class TestMakeDictModule(unittest.TestCase):

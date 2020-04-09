@@ -2,9 +2,9 @@ import tempfile
 import docker
 import os
 
-from bioconda_recipe_gen.utils import download_and_unpack_source
-from bioconda_recipe_gen.filesystem import Filesystem
-from bioconda_recipe_gen.build import get_correct_pkg_name
+from birg.utils import download_and_unpack_source
+from birg.filesystem import Filesystem
+from birg.build import get_correct_pkg_name
 
 
 def run_setup_sdist(source_path, python_version, setup_filepath):
