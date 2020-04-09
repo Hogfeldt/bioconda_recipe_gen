@@ -4,7 +4,7 @@
 Installation
 ============
 
-BiRG is heavily dependent on Docker, therefor make sure that you have Docker installed and working. We use Docker to ensure that the environment, which we are building and testing in, is clean an reproducible.
+BiRG is heavily dependent on Docker, therefor make sure that you have Docker installed and working. We use Docker to ensure that the environment, which we are building and testing in, is clean and reproducible.
 
 If you don't have Docker installed, we recommend that you follow the Docker installation guide which can be found at the following link:
 `Docker installation guide <https://docs.docker.com/install/>`_
