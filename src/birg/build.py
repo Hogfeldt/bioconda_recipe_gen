@@ -146,7 +146,6 @@ def choose_version(pkg_name, version_list, py_version):
     for i, ver in enumerate(potential_version):
         print("%d: %s" % (i, ver))
     answer = get_user_version_input(len(potential_version))
-    # TODO: add some defensive programming here to avoid 'wrong' user input
     if answer == "y":
         return None
     else:
@@ -208,6 +207,21 @@ def get_correct_pkg_name(pkg_name, extensions, strategy):
     return best_pkg_match
 
 
+def move_recipe_files(recipe, dst_name):
+    dst = os.path.join(recipe.path, "debug_output_files", dst_name)
+    output_src = os.path.join(recipe.path, "output")
+    os.mkdir(dst)
+    copytree(output_src, dst)
+
+    meta_src = os.path.join(recipe.path, "meta.yaml") 
+    meta_dst = os.path.join(dst, "{}_meta.yaml".format(dst_name))
+    copy2(meta_src, meta_dst)
+
+    build_src = os.path.join(recipe.path, "build.sh")
+    build_dst = os.path.join(dst, "{}_build.sh".format(dst_name))
+    copy2(build_src, build_dst)
+
+
 def mini_iterative_build(recipe, build_script):
     """ Build a bioconda package with a Docker mini image and try to find missing packages,
         return a tuple with the last standard output and a list of found dependencies.
@@ -249,20 +263,18 @@ def mini_iterative_build(recipe, build_script):
                 if err_msg in line_normalized and pkg_name not in added_packages:
                     new_recipe.add_requirement(pkg_name, dep_type)
                     added_packages.append(pkg_name)
+        
         if new_recipe == recipe:
             break
-        else:
-            recipe = deepcopy(new_recipe)
-            recipe.write_recipe_to_meta_file()
+       
+        recipe = deepcopy(new_recipe)
+        recipe.write_recipe_to_meta_file()
         return_code = result["StatusCode"]
         c += 1
         print("%s iteration" % c)
-
+        
         if not logging.getLogger().disabled:
-            src = os.path.join(recipe.path, "output")
-            dst = os.path.join(recipe.path, "debug_output_files", "build_iter%d" % c)
-            os.mkdir(dst)
-            copytree(src, dst)
+            move_recipe_files(recipe, "build_iter%d" % c)
 
     return ((result, stdout), recipe, build_script)
 
@@ -358,20 +370,17 @@ def mini_iterative_test(recipe, build_script):
 
         if new_recipe == recipe and new_build_script == build_script:
             break
-        else:
-            recipe = deepcopy(new_recipe)
-            recipe.write_recipe_to_meta_file()
-            build_script = deepcopy(new_build_script)
-            build_script.write_build_script_to_file()
+        
+        recipe = deepcopy(new_recipe)
+        recipe.write_recipe_to_meta_file()
+        build_script = deepcopy(new_build_script)
+        build_script.write_build_script_to_file()
         return_code = result["StatusCode"]
         c += 1
         print("%s iteration" % c)
 
-    if not logging.getLogger().disabled:
-        src = os.path.join(recipe.path, "output")
-        dst = os.path.join(recipe.path, "debug_output_files", "test_iter%d" % c)
-        os.mkdir(dst)
-        copytree(src, dst)
+        if not logging.getLogger().disabled:
+            move_recipe_files(recipe, "test_iter%d" % c)
 
     return (result, stdout), recipe
 
