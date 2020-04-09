@@ -1,13 +1,15 @@
 FROM perhogfeldt/conda-base:latest
 
-RUN conda create --yes -n birg python=3.6 bioconda-utils
+RUN conda create --yes -n birg python=3.6 bioconda-utils &&\
+    conda clean -all
 
 # Conda activate
 ENV PATH="/opt/conda/envs/birg/bin:${PATH}"
 
 # Install Bioconda_Recipe_Gen
-RUN git clone https://github.com/birgorg/birg.git 
-RUN pip install birg/
+RUN git clone https://github.com/birgorg/birg.git &&\
+    pip install birg/ &&\
+    rm -rf birg
 
 # TEST
 RUN bioconda-utils --help
