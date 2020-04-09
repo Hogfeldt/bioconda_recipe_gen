@@ -1,6 +1,7 @@
 FROM perhogfeldt/conda-base:latest
 
-RUN conda install conda-build conda-verify conda-forge-pinning
+RUN conda install conda-build conda-verify conda-forge-pinning &&\
+    conda clean --all
 
 # Add conda_build config_file path to point at 'conda_build_config.yaml' from conda-forge-pinning package
 RUN echo '\nconda_build:\n  config_file:  /opt/conda/conda_build_config.yaml' >> /root/.condarc
