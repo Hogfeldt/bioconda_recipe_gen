@@ -4,7 +4,7 @@ import hashlib
 import os
 from shutil import rmtree, copy2
 
-from birg.recipe import Recipe as bioconda_utils_Recipe
+from bioconda_utils.recipe import Recipe as bioconda_utils_Recipe
 
 from birg.filesystem import Filesystem
 from birg.buildscript import BuildScript
