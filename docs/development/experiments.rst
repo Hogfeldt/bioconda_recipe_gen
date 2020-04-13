@@ -9,9 +9,7 @@ We then tried to build the recipes for these packages with BiRG. We considered t
 running `bioconda-utils build` with the recipe resulted in a successful build, as this is how a recipe should be used
 to make a conda package.
 
-Note: We filtered out all packages that didn't get a successful built with `bioconda-utils build` given its own recipe,
-before running it on BiRG. (E.g. blacklisted packages)
-
+Note: Before running the packages on BiRG, we filtered out all packages that didn't get a successful built with `bioconda-utils build` given its own recipe (E.g. blacklisted packages)
 
 +++++++
 Results

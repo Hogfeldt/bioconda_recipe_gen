@@ -10,7 +10,7 @@ Generalizing how to find binaries/libraries in packages
 **Motivation**: When a package fails to build because of a missing binary file or library header, it can be very hard to figure out which package should be included as a dependency. 
 Our current solution is to map known 'failing signatures' to known packages, and then add the package as a dependency, to observe if adding the package solves the problem.
 This way of mapping seems to work, for a large amount of packages, since many of the packages on Bioconda, seems to use the same dependecies. 
-But it dosn't scale well, since we have to observe and add new signatures manually. 
+But it doesn't scale well, since we have to observe and add new signatures manually.
 
 **Suggestion**: It would be really helpful to index all files in all Bioconda packages, so that we could search for a specific executable or library header file in all Bioconda packages.
 By doing this we could generalize finding binaries/library files by extracting the file name with a regular expression and search for the packages containing this file. 

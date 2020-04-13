@@ -4,12 +4,12 @@
 Installation
 ============
 
-BiRG is heavily dependent on Docker, therefor make sure that you have Docker installed and working. We use Docker to ensure that the environment, which we are building and testing in, is clean and reproducible.
+BiRG is heavily dependent on Docker, therefore make sure that you have Docker installed and working. We use Docker to ensure that the environment, which we are building and testing in, is clean and reproducible.
 
 If you don't have Docker installed, we recommend that you follow the Docker installation guide which can be found at the following link:
 `Docker installation guide <https://docs.docker.com/install/>`_
 
-When Docker is installed, we recommend following the post-installation step "Manage Docker as a non-root user", the linux guide kan be found `here <https://docs.docker.com/install/linux/linux-postinstall/>`_ .
+When Docker is installed, we recommend following the post-installation step "Manage Docker as a non-root user", the linux guide can be found `here <https://docs.docker.com/install/linux/linux-postinstall/>`_ .
 Setting up Docker to be used as non-root, will make it possible to run BiRG without escalated privileges.
 
 +++++++++++++++
