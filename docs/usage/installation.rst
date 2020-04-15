@@ -53,9 +53,8 @@ Next up is to create a conda environment from the environment.yml file in the Bi
 
     .. code-block::
 
-        conda create -n birg python=3.6
+        conda create -n birg python=3.6 bioconda-utils docker-py gitdb2=2.0.5
         conda activate birg
-        conda install bioconda-utils docker-py gitdb2=2.0.5
 
 
 
@@ -63,5 +62,5 @@ Install it with the setup.py and check if BiRG is installed correctly by running
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ pip install .
     $ birg -h
