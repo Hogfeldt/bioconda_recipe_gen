@@ -7,6 +7,7 @@ DESCRIPTION = "Bioconda Recipe Generator (BiRG) is an heuristic approach to auto
 setup(
     name=NAME,
     description=DESCRIPTION,
+    version="0.1.0",
     packages=find_packages("src"),
     package_dir={"": "src"},
     test_suite="test",
