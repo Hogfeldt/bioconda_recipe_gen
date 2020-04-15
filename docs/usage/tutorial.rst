@@ -10,28 +10,41 @@ This recipe will then be given as input to BiRG, which will find the necessary d
 
 We assume that you are using the docker image that we provide, but if you have installed BiRG from source, the tutorial still applies, just go directly to `Recipe Initilization`_.
 
-++++++++++++++++++++++
+++++++++++++++++++++++++++
 Using the Docker Container
-++++++++++++++++++++++
+++++++++++++++++++++++++++
 
-First we need to make sure that the docker container and the host system can communicate. This can be done by running `docker run`, with the following settings.
+The docker container should be called with the following settings, so that the container and the host system can communicate.
 
 .. code-block:: console
     
     $ docker run -v /var/run/docker.sock:/var/run/docker.sock \
                  -v $PWD:/home \
-                 -itd perhogfeldt/birg:latest
+                 --user $(id -u):$(id -g) \
+                 -it perhogfeldt/birg:latest \
+                 <birg-command>
+
+In the rest of this tutorial you can just replace `birg` with the above command.
+
+Here is a short explanation on what the settings are for, if you are not so familiar with docker.
 
 The first volume we added, with `-v`, is the unix socket that the docker client uses to talk with the docker server. We need to add this socket, since the container will need to spin up more containers, when it tries to build the software.
 The second volume will bind the containers home direcetory to the host systems current directory, this will make sure that files can be shared.
+the `--user` option makes sure that files created on you system will be owned by your current user and `-it` just makes sure that you can communicate with the container directly in your current terminal.
 
-The running container will spin up the container and detach, so that the container is running in the background. The command will return a container id, which we will use to send instructions to the container. The container id can also by found be running `docker ps`.
-
-You can then run the BiRG commands mentioned in the rest of this tutorial with `docker exec`, the following way:
+If you prefer not to write all the settings every time you call birg, we recommend exporting the settings in an environment variable like this:
 
 .. code-block:: console
     
-    $ docker exec -it <container-id> <command>
+    $ export BIRG="-v /var/run/docker.sock:/var/run/docker.sock \
+                           -v $PWD:/home --user $(id -u):$(id -g) \
+                           -it perhogfeldt/birg:latest"
+
+Then you can just call birg with the environment variable:
+
+.. code-block:: console
+    
+    $ docker run $BIRG <birg-command>
 
 ++++++++++++++++++++
 Recipe Initilization
