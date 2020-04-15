@@ -1,24 +1,22 @@
 package:
-  name: netreg
-  version: 1.8.0
+  name: kallisto
+  version: 0.46.2
 source:
-  url: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
-  md5: 0cd731c0b9a6902e37c1515858fb38f9
+  url: https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
+  md5: a6257231c6b16cac7fb8ccff1b7cb334
 build:
   number: 2
 test:
   commands:
-  - netReg -h
+  - kallisto cite
 requirements:
   build:
   - cmake
   - make
+  - automake
   - {{ compiler('cxx') }}
   host:
-  - armadillo
   - hdf5
-  - boost
   run:
-  - armadillo
   - hdf5
-  - boost
+  - zlib

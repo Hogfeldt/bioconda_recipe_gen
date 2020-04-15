@@ -4,8 +4,8 @@
 Tutorial
 ========
 
-To show how BiRG works, we will create a recipe for a software called netReg.
-We will start with generating an initial recipe, with basic information about netReg.
+To show how BiRG works, we will create a recipe for a software called kallisto.
+We will start with generating an initial recipe, with basic information about kallisto.
 This recipe will then be given as input to BiRG, which will find the necessary dependencies required to build, test and run the software.
 
 We assume that you are using the docker image that we provide, but if you have installed BiRG from source, the tutorial still applies, just go directly to `Recipe Initilization`_.
@@ -49,14 +49,14 @@ The init command will ask for the following informations:
 - Source url
 - A build strategy to use
 
-Here is the initialization of netReg:
+Here is the initialization of kallisto:
 
 .. code-block:: console
     
     $ birg init
-    Package name: netreg
-    Version: 1.8.0
-    Url to download the code: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
+    Package name: kallisto
+    Version: 0.46.2
+    Url to download the code: https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
     Choose the strategy that you use to run your code
     ['cmake', 'python2', 'python3']: cmake
 
@@ -64,68 +64,77 @@ Here is the initialization of netReg:
 The Recipe
 ++++++++++
 
-The basic recipe created by `init`, can be found in the newly created directory called `netreg` and should look like this:
+The basic recipe created by `init`, can be found in the newly created directory called `kallisto` and should look like this:
 
 .. code-block:: yaml
-   :caption: netreg/meta.yaml
+   :caption: kallisto/meta.yaml
 
     package:
-        name: netreg
-        version: 1.8.0
+       name: kallisto
+       version: 0.46.2
     source:
-        url: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
-        md5: 0cd731c0b9a6902e37c1515858fb38f9
+       url: https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
+       md5: a6257231c6b16cac7fb8ccff1b7cb334
     build:
-        number: 0
+       number: 0
+
 
 .. code-block::
-   :caption: netreg/build.sh
+   :caption: kallisto/build.sh
 
-    #!/bin/bash
-    mkdir -p build
-    cd build
-    cmake ..
-    make
-    make install
+     #!/bin/bash
+     mkdir -p build
+     cd build
+     cmake ..
+     make
+     make install
 
 This is the minimal initial recipe, that you can give as input to BiRG.
 To make it easier for BiRG to find run-time dependencies it is important to add tests to the `meta.yaml` file.
 If you have a patch or would like to add some additional meta data, feel free to do so. 
 For information on what data and configuration you can add to a recipe, see the official Conda documentation `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_
 
-Before using the recipe for netReg as input to BiRG, we will add some tests to the `meta.yaml` file.
+Before using the recipe for kallisto as input to BiRG, we will add some tests to the `meta.yaml` file.
 By adding tests, we makes sure that BiRG will try and find run-time dependencies as well as build-time dependencies.
 
 .. code-block:: yaml
-   :caption: netreg/meta.yaml
+   :caption: kallisto/meta.yaml
 
     package:
-        name: netreg
-        version: 1.8.0
+       name: kallisto
+       version: 0.46.2
     source:
-        url: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
-        md5: 0cd731c0b9a6902e37c1515858fb38f9
+       url: https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
+       md5: a6257231c6b16cac7fb8ccff1b7cb334
     build:
-        number: 0
+       number: 0
     test:
-        commands:
-        - netReg -h
+       commands:
+          - kallisto cite
 
-We will also edit the the `build.sh`, as netReg requires us to set some flags for cmake:
+
+We will also edit the the `build.sh`, as kallisto requires us to run autoreconf and to set some flags for cmake:
 
 .. code-block:: 
-   :caption: netreg/build.sh
+   :caption: kallisto/build.sh
 
     #!/bin/bash
+
+    cd ext/htslib
+    autoreconf
+    cd ../..
+
+    mkdir -p $PREFIX/bin
     mkdir -p build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBOOST_ROOT="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" ..
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .. -DUSE_HDF5=ON
     make
     make install
 
+
 .. note::
 
-    The recipe for netReg can be found in our github repo `here <https://github.com/Hogfeldt/bioconda_recipe_gen/tree/master/examples/cmake/input>`_
+    The recipe for kallisto can be found in our github repo `here <https://github.com/Hogfeldt/bioconda_recipe_gen/tree/master/examples/cmake/input>`_
 
 ++++++++++++
 Recipe Build
@@ -154,54 +163,59 @@ recipe_path: Is the path to the recipe directory which was created by running `b
 
 strategy: Here you must tell BiRG which building strategy to use. BiRG currently supports three strategies: cmake, python2 and python3.
 
-Here is an example on how BiRG is called for building netreg:
+Here is an example on how BiRG is called for building kallisto:
 
 .. code-block:: console
     
-    $ birg build netreg/ cmake
+    $ birg build kallisto/ cmake
 
 When BiRG is running it will print out a lot of text, this is the output from it's building process.
 BiRG will also, sometimes, ask for your help, to determine which version of a dependency it should use.
 
-When BiRG is done running (may take around 20 min for this specific package) it will tell you if it was able to build and run your software, and the output recipe can be found in the directory which was created by the `init` command.
+When BiRG is done running it will tell you if it was able to build and run your software, and the output recipe can be found in the directory which was created by the `init` command.
 
-Here is the final recipe for netReg:
+Here is the final recipe for kallisto:
 
 .. code-block:: yaml
-   :caption: netreg/meta.yaml
+   :caption: kallisto/meta.yaml
 
     package:
-        name: netreg
-        version: 1.8.0
+      name: kallisto
+      version: 0.46.2
     source:
-        url: https://github.com/dirmeier/netReg/archive/v1.8.0.tar.gz
-        md5: 0cd731c0b9a6902e37c1515858fb38f9
+      url: https://github.com/pachterlab/kallisto/archive/v0.46.2.tar.gz
+      md5: a6257231c6b16cac7fb8ccff1b7cb334
     build:
-        number: 2
+      number: 2
     test:
-        commands:
-        - netReg -h
+      commands:
+      - kallisto cite
     requirements:
-        build:
-        - cmake
-        - make
-        - {{ compiler('cxx') }}
-        host:
-        - armadillo
-        - hdf5
-        - boost
-        run:
-        - armadillo
-        - hdf5
-        - boost
+      build:
+      - cmake
+      - make
+      - automake
+      - {{ compiler('cxx') }}
+      host:
+      - hdf5
+      run:
+      - hdf5
+      - zlib
+
     
 .. code-block:: 
-   :caption: netreg/build.sh
+   :caption: kallisto/build.sh
 
     #!/bin/bash
+
+    cd ext/htslib
+    autoreconf
+    cd ../..
+
+    mkdir -p $PREFIX/bin
     mkdir -p build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBOOST_ROOT="${PREFIX}" -DCMAKE_CXX_COMPILER="${CXX}" ..
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .. -DUSE_HDF5=ON
     make
     make install
 
